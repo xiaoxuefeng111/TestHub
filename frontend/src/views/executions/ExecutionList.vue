@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="page-header">
-      <h1 class="page-title">{{ $t('execution.title') }}</h1>
+      <h1 class="page-title">{{ $t("execution.title") }}</h1>
     </div>
 
     <div class="card-container">

@@ -1,20 +1,34 @@
 <template>
   <div class="generated-testcase-list">
     <div class="page-header">
-      <h2>{{ $t('generatedTestCases.title') }}</h2>
+      <h2>{{ $t("generatedTestCases.title") }}</h2>
     </div>
 
     <div class="filters-section">
       <div class="filter-card">
         <div class="filter-group">
-          <label>{{ $t('generatedTestCases.statusFilter') }}</label>
-          <select v-model="selectedStatus" @change="loadTasks" class="filter-select">
-            <option value="">{{ $t('generatedTestCases.allStatus') }}</option>
-            <option value="pending">{{ $t('generatedTestCases.statusPending') }}</option>
-            <option value="generating">{{ $t('generatedTestCases.statusGenerating') }}</option>
-            <option value="reviewing">{{ $t('generatedTestCases.statusReviewing') }}</option>
-            <option value="completed">{{ $t('generatedTestCases.statusCompleted') }}</option>
-            <option value="failed">{{ $t('generatedTestCases.statusFailed') }}</option>
+          <label>{{ $t("generatedTestCases.statusFilter") }}</label>
+          <select
+            v-model="selectedStatus"
+            class="filter-select"
+            @change="loadTasks"
+          >
+            <option value="">{{ $t("generatedTestCases.allStatus") }}</option>
+            <option value="pending">
+              {{ $t("generatedTestCases.statusPending") }}
+            </option>
+            <option value="generating">
+              {{ $t("generatedTestCases.statusGenerating") }}
+            </option>
+            <option value="reviewing">
+              {{ $t("generatedTestCases.statusReviewing") }}
+            </option>
+            <option value="completed">
+              {{ $t("generatedTestCases.statusCompleted") }}
+            </option>
+            <option value="failed">
+              {{ $t("generatedTestCases.statusFailed") }}
+            </option>
           </select>
         </div>
 
@@ -22,37 +36,52 @@
           <button
             v-if="selectedTasks.length > 0"
             class="batch-delete-btn"
+            :disabled="isDeleting"
             @click="batchDeleteTasks"
-            :disabled="isDeleting">
-            <span v-if="isDeleting">{{ $t('generatedTestCases.deleting') }}</span>
-            <span v-else>{{ $t('generatedTestCases.batchDelete', { count: selectedTasks.length }) }}</span>
+          >
+            <span v-if="isDeleting">{{
+              $t("generatedTestCases.deleting")
+            }}</span>
+            <span v-else>{{
+              $t("generatedTestCases.batchDelete", {
+                count: selectedTasks.length,
+              })
+            }}</span>
           </button>
-          <button class="refresh-btn" @click="loadTasks" :disabled="isLoading">
-            <span v-if="isLoading">{{ $t('generatedTestCases.loading') }}</span>
-            <span v-else>{{ $t('generatedTestCases.refresh') }}</span>
+          <button class="refresh-btn" :disabled="isLoading" @click="loadTasks">
+            <span v-if="isLoading">{{ $t("generatedTestCases.loading") }}</span>
+            <span v-else>{{ $t("generatedTestCases.refresh") }}</span>
           </button>
         </div>
       </div>
     </div>
 
     <!-- 统计信息 -->
-    <div class="stats-section" v-if="allStats.total > 0">
+    <div v-if="allStats.total > 0" class="stats-section">
       <div class="stats-card">
         <div class="stat-item">
           <span class="stat-number">{{ allStats.total }}</span>
-          <span class="stat-label">{{ $t('generatedTestCases.totalTasks') }}</span>
+          <span class="stat-label">{{
+            $t("generatedTestCases.totalTasks")
+          }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-number">{{ allStats.completed }}</span>
-          <span class="stat-label">{{ $t('generatedTestCases.completedCount') }}</span>
+          <span class="stat-label">{{
+            $t("generatedTestCases.completedCount")
+          }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-number">{{ allStats.running }}</span>
-          <span class="stat-label">{{ $t('generatedTestCases.runningCount') }}</span>
+          <span class="stat-label">{{
+            $t("generatedTestCases.runningCount")
+          }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-number">{{ allStats.failed }}</span>
-          <span class="stat-label">{{ $t('generatedTestCases.failedCount') }}</span>
+          <span class="stat-label">{{
+            $t("generatedTestCases.failedCount")
+          }}</span>
         </div>
       </div>
     </div>
@@ -60,13 +89,19 @@
     <!-- AI任务列表 -->
     <div class="testcases-section">
       <div v-if="isLoading" class="loading-state">
-        <p>{{ $t('generatedTestCases.loadingTasks') }}</p>
+        <p>{{ $t("generatedTestCases.loadingTasks") }}</p>
       </div>
 
       <div v-else-if="tasks.length === 0" class="empty-state">
         <div class="empty-icon">📝</div>
-        <h3>{{ $t('generatedTestCases.noTasks') }}</h3>
-        <p>{{ $t('generatedTestCases.emptyHint') }}<router-link to="/ai-generation/requirement-analysis">{{ $t('generatedTestCases.aiGeneration') }}</router-link>{{ $t('generatedTestCases.createTask') }}</p>
+        <h3>{{ $t("generatedTestCases.noTasks") }}</h3>
+        <p>
+          {{ $t("generatedTestCases.emptyHint")
+          }}<router-link to="/ai-generation/requirement-analysis">{{
+            $t("generatedTestCases.aiGeneration")
+          }}</router-link
+          >{{ $t("generatedTestCases.createTask") }}
+        </p>
       </div>
 
       <div v-else class="testcases-table">
@@ -74,33 +109,52 @@
           <div class="header-cell checkbox-cell">
             <input
               type="checkbox"
-              @change="toggleSelectAll"
               :checked="isAllSelected"
-              class="task-checkbox">
+              class="task-checkbox"
+              @change="toggleSelectAll"
+            />
           </div>
-          <div class="header-cell serial-cell">{{ $t('generatedTestCases.serialNumber') }}</div>
-          <div class="header-cell task-id-cell">{{ $t('generatedTestCases.taskId') }}</div>
-          <div class="header-cell requirement-name-cell">{{ $t('generatedTestCases.requirement') }}</div>
-          <div class="header-cell status-cell">{{ $t('generatedTestCases.status') }}</div>
-          <div class="header-cell count-cell">{{ $t('generatedTestCases.caseCount') }}</div>
-          <div class="header-cell time-cell">{{ $t('generatedTestCases.generationTime') }}</div>
-          <div class="header-cell action-cell">{{ $t('generatedTestCases.actions') }}</div>
+          <div class="header-cell serial-cell">
+            {{ $t("generatedTestCases.serialNumber") }}
+          </div>
+          <div class="header-cell task-id-cell">
+            {{ $t("generatedTestCases.taskId") }}
+          </div>
+          <div class="header-cell requirement-name-cell">
+            {{ $t("generatedTestCases.requirement") }}
+          </div>
+          <div class="header-cell status-cell">
+            {{ $t("generatedTestCases.status") }}
+          </div>
+          <div class="header-cell count-cell">
+            {{ $t("generatedTestCases.caseCount") }}
+          </div>
+          <div class="header-cell time-cell">
+            {{ $t("generatedTestCases.generationTime") }}
+          </div>
+          <div class="header-cell action-cell">
+            {{ $t("generatedTestCases.actions") }}
+          </div>
         </div>
-        
+
         <div class="table-body">
-          <div 
-            v-for="(task, index) in tasks" 
+          <div
+            v-for="(task, index) in tasks"
             :key="task.task_id"
             class="table-row"
-            :class="{ 'selected': isTaskSelected(task.task_id) }">
+            :class="{ selected: isTaskSelected(task.task_id) }"
+          >
             <div class="body-cell checkbox-cell">
               <input
                 type="checkbox"
                 :checked="isTaskSelected(task.task_id)"
+                class="task-checkbox"
                 @change="toggleTaskSelection(task.task_id)"
-                class="task-checkbox">
+              />
             </div>
-            <div class="body-cell serial-cell">{{ getSerialNumber(index) }}</div>
+            <div class="body-cell serial-cell">
+              {{ getSerialNumber(index) }}
+            </div>
             <div class="body-cell task-id-cell">{{ task.task_id }}</div>
             <div class="body-cell requirement-name-cell">
               <span class="requirement-name">{{ task.title }}</span>
@@ -113,25 +167,27 @@
             <div class="body-cell count-cell">
               <span class="count-badge">{{ getTestCaseCount(task) }}</span>
             </div>
-            <div class="body-cell time-cell">{{ formatDateTime(task.created_at) }}</div>
+            <div class="body-cell time-cell">
+              {{ formatDateTime(task.created_at) }}
+            </div>
             <div class="body-cell action-cell">
               <div class="action-buttons">
-                <button
-                  class="view-detail-btn"
-                  @click="viewTaskDetail(task)">
-                  {{ $t('generatedTestCases.viewDetail') }}
+                <button class="view-detail-btn" @click="viewTaskDetail(task)">
+                  {{ $t("generatedTestCases.viewDetail") }}
                 </button>
                 <button
                   v-if="task.status === 'completed'"
                   class="adopt-btn"
-                  @click="batchAdoptTask(task)">
-                  {{ $t('generatedTestCases.batchAdopt') }}
+                  @click="batchAdoptTask(task)"
+                >
+                  {{ $t("generatedTestCases.batchAdopt") }}
                 </button>
                 <button
                   v-if="task.status === 'completed'"
                   class="discard-btn"
-                  @click="batchDiscardTask(task)">
-                  {{ $t('generatedTestCases.batchDiscard') }}
+                  @click="batchDiscardTask(task)"
+                >
+                  {{ $t("generatedTestCases.batchDiscard") }}
                 </button>
               </div>
             </div>
@@ -145,14 +201,18 @@
       <div class="pagination-info">
         {{ paginationInfo }}
       </div>
-      
+
       <div class="pagination-controls">
         <!-- 每页条数选择 -->
         <div class="page-size-selector">
-          <label>{{ $t('generatedTestCases.pageSize') }}</label>
+          <label>{{ $t("generatedTestCases.pageSize") }}</label>
           <select v-model="pagination.pageSize" @change="onPageSizeChange">
-            <option v-for="size in pagination.pageSizeOptions" :key="size" :value="size">
-              {{ $t('generatedTestCases.pageSizeUnit', { size: size }) }}
+            <option
+              v-for="size in pagination.pageSizeOptions"
+              :key="size"
+              :value="size"
+            >
+              {{ $t("generatedTestCases.pageSizeUnit", { size: size }) }}
             </option>
           </select>
         </div>
@@ -162,43 +222,53 @@
           <button
             class="page-btn"
             :disabled="pagination.currentPage <= 1"
-            @click="goToPage(pagination.currentPage - 1)">
-            {{ $t('generatedTestCases.previousPage') }}
+            @click="goToPage(pagination.currentPage - 1)"
+          >
+            {{ $t("generatedTestCases.previousPage") }}
           </button>
-          
+
           <!-- 页码显示 -->
           <div class="page-numbers">
-            <span v-for="page in getVisiblePages()" :key="page" class="page-number">
-              <button 
+            <span
+              v-for="page in getVisiblePages()"
+              :key="page"
+              class="page-number"
+            >
+              <button
                 v-if="page !== '...'"
                 class="page-btn"
                 :class="{ active: page === pagination.currentPage }"
-                @click="goToPage(page)">
+                @click="goToPage(page)"
+              >
                 {{ page }}
               </button>
               <span v-else class="ellipsis">...</span>
             </span>
           </div>
-          
+
           <button
             class="page-btn"
             :disabled="pagination.currentPage >= totalPages"
-            @click="goToPage(pagination.currentPage + 1)">
-            {{ $t('generatedTestCases.nextPage') }}
+            @click="goToPage(pagination.currentPage + 1)"
+          >
+            {{ $t("generatedTestCases.nextPage") }}
           </button>
         </div>
 
         <!-- 页码跳转 -->
         <div class="page-jumper">
-          <label>{{ $t('generatedTestCases.jumpTo') }}</label>
+          <label>{{ $t("generatedTestCases.jumpTo") }}</label>
           <input
             v-model="jumpPage"
             type="number"
             :min="1"
             :max="totalPages"
+            :placeholder="$t('generatedTestCases.pageNumber')"
             @keyup.enter="jumpToPage"
-            :placeholder="$t('generatedTestCases.pageNumber')">
-          <button class="jump-btn" @click="jumpToPage">{{ $t('generatedTestCases.jump') }}</button>
+          />
+          <button class="jump-btn" @click="jumpToPage">
+            {{ $t("generatedTestCases.jump") }}
+          </button>
         </div>
       </div>
     </div>
@@ -212,51 +282,64 @@
         </div>
         <div class="modal-body">
           <div class="detail-item">
-            <label>{{ $t('generatedTestCases.caseNumber') }}</label>
+            <label>{{ $t("generatedTestCases.caseNumber") }}</label>
             <span>{{ selectedTestCaseDetail.case_id }}</span>
           </div>
           <div class="detail-item">
-            <label>{{ $t('generatedTestCases.relatedRequirement') }}</label>
-            <span>{{ selectedTestCaseDetail.requirement_name }} ({{ selectedTestCaseDetail.requirement_id_display }})</span>
+            <label>{{ $t("generatedTestCases.relatedRequirement") }}</label>
+            <span
+              >{{ selectedTestCaseDetail.requirement_name }} ({{
+                selectedTestCaseDetail.requirement_id_display
+              }})</span
+            >
           </div>
           <div class="detail-item">
-            <label>{{ $t('generatedTestCases.priority') }}</label>
-            <span class="priority-tag" :class="selectedTestCaseDetail.priority.toLowerCase()">
+            <label>{{ $t("generatedTestCases.priority") }}</label>
+            <span
+              class="priority-tag"
+              :class="selectedTestCaseDetail.priority.toLowerCase()"
+            >
               {{ selectedTestCaseDetail.priority_display }}
             </span>
           </div>
           <div class="detail-item">
-            <label>{{ $t('generatedTestCases.status') }}</label>
+            <label>{{ $t("generatedTestCases.status") }}</label>
             <span class="status-tag" :class="selectedTestCaseDetail.status">
               {{ selectedTestCaseDetail.status_display }}
             </span>
           </div>
           <div class="detail-item">
-            <label>{{ $t('generatedTestCases.preconditions') }}</label>
+            <label>{{ $t("generatedTestCases.preconditions") }}</label>
             <p>{{ selectedTestCaseDetail.precondition }}</p>
           </div>
           <div class="detail-item">
-            <label>{{ $t('generatedTestCases.testSteps') }}</label>
-            <p class="test-steps" v-html="selectedTestCaseDetail.test_steps"></p>
+            <label>{{ $t("generatedTestCases.testSteps") }}</label>
+            <p
+              class="test-steps"
+              v-html="selectedTestCaseDetail.test_steps"
+            ></p>
           </div>
           <div class="detail-item">
-            <label>{{ $t('generatedTestCases.expectedResult') }}</label>
+            <label>{{ $t("generatedTestCases.expectedResult") }}</label>
             <p v-html="selectedTestCaseDetail.expected_result"></p>
           </div>
-          <div class="detail-item" v-if="selectedTestCaseDetail.review_comments">
-            <label>{{ $t('generatedTestCases.reviewComments') }}</label>
+          <div
+            v-if="selectedTestCaseDetail.review_comments"
+            class="detail-item"
+          >
+            <label>{{ $t("generatedTestCases.reviewComments") }}</label>
             <p>{{ selectedTestCaseDetail.review_comments }}</p>
           </div>
           <div class="detail-item">
-            <label>{{ $t('generatedTestCases.generatedAI') }}</label>
+            <label>{{ $t("generatedTestCases.generatedAI") }}</label>
             <span>{{ selectedTestCaseDetail.generated_by_ai }}</span>
           </div>
-          <div class="detail-item" v-if="selectedTestCaseDetail.reviewed_by_ai">
-            <label>{{ $t('generatedTestCases.reviewedAI') }}</label>
+          <div v-if="selectedTestCaseDetail.reviewed_by_ai" class="detail-item">
+            <label>{{ $t("generatedTestCases.reviewedAI") }}</label>
             <span>{{ selectedTestCaseDetail.reviewed_by_ai }}</span>
           </div>
           <div class="detail-item">
-            <label>{{ $t('generatedTestCases.generatedTime') }}</label>
+            <label>{{ $t("generatedTestCases.generatedTime") }}</label>
             <span>{{ formatDateTime(selectedTestCaseDetail.created_at) }}</span>
           </div>
         </div>
@@ -267,110 +350,203 @@
     <div v-if="showAdoptModal" class="testcase-detail-modal">
       <div class="modal-content large-modal" @click.stop>
         <div class="modal-header">
-          <h3>{{ $t('generatedTestCases.adoptModalTitle') }}</h3>
+          <h3>{{ $t("generatedTestCases.adoptModalTitle") }}</h3>
           <button class="close-btn" @click="closeAdoptModal">×</button>
         </div>
         <div class="modal-body">
           <form class="adopt-form">
             <div class="form-row">
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.caseTitle') }}</label>
-                <input v-model="adoptForm.title" type="text" :placeholder="$t('generatedTestCases.caseTitlePlaceholder')" />
+                <label>{{ $t("generatedTestCases.caseTitle") }}</label>
+                <input
+                  v-model="adoptForm.title"
+                  type="text"
+                  :placeholder="$t('generatedTestCases.caseTitlePlaceholder')"
+                />
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.caseDescription') }}</label>
-                <textarea v-model="adoptForm.description" rows="3" :placeholder="$t('generatedTestCases.caseDescriptionPlaceholder')"></textarea>
+                <label>{{ $t("generatedTestCases.caseDescription") }}</label>
+                <textarea
+                  v-model="adoptForm.description"
+                  rows="3"
+                  :placeholder="
+                    $t('generatedTestCases.caseDescriptionPlaceholder')
+                  "
+                ></textarea>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.belongsToProject') }} <span class="required">*</span></label>
-                <select v-model="adoptForm.project_id" @change="onAdoptProjectChange">
-                  <option value="">{{ $t('generatedTestCases.selectProject') }}</option>
-                  <option v-for="project in projects" :key="project.id" :value="project.id">
+                <label
+                  >{{ $t("generatedTestCases.belongsToProject") }}
+                  <span class="required">*</span></label
+                >
+                <select
+                  v-model="adoptForm.project_id"
+                  @change="onAdoptProjectChange"
+                >
+                  <option value="">
+                    {{ $t("generatedTestCases.selectProject") }}
+                  </option>
+                  <option
+                    v-for="project in projects"
+                    :key="project.id"
+                    :value="project.id"
+                  >
                     {{ project.name }}
                   </option>
                 </select>
               </div>
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.relatedVersion') }} <span class="required">*</span></label>
+                <label
+                  >{{ $t("generatedTestCases.relatedVersion") }}
+                  <span class="required">*</span></label
+                >
                 <select v-model="adoptForm.version_id">
-                  <option value="">{{ $t('generatedTestCases.selectVersion') }}</option>
-                  <option v-for="version in availableVersions" :key="version.id" :value="version.id">
-                    {{ version.name }}{{ version.is_baseline ? $t('generatedTestCases.baseline') : '' }}
+                  <option value="">
+                    {{ $t("generatedTestCases.selectVersion") }}
+                  </option>
+                  <option
+                    v-for="version in availableVersions"
+                    :key="version.id"
+                    :value="version.id"
+                  >
+                    {{ version.name
+                    }}{{
+                      version.is_baseline
+                        ? $t("generatedTestCases.baseline")
+                        : ""
+                    }}
                   </option>
                 </select>
                 <small class="form-hint">
-                  {{ adoptForm.project_id ?
-                      $t('generatedTestCases.showingProjectVersions', { project: getProjectName(adoptForm.project_id) }) :
-                      $t('generatedTestCases.showingAllVersions') }}
+                  {{
+                    adoptForm.project_id
+                      ? $t("generatedTestCases.showingProjectVersions", {
+                          project: getProjectName(adoptForm.project_id),
+                        })
+                      : $t("generatedTestCases.showingAllVersions")
+                  }}
                 </small>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.priority') }}</label>
+                <label>{{ $t("generatedTestCases.priority") }}</label>
                 <select v-model="adoptForm.priority">
-                  <option value="low">{{ $t('generatedTestCases.priorityLow') }}</option>
-                  <option value="medium">{{ $t('generatedTestCases.priorityMedium') }}</option>
-                  <option value="high">{{ $t('generatedTestCases.priorityHigh') }}</option>
-                  <option value="critical">{{ $t('generatedTestCases.priorityCritical') }}</option>
+                  <option value="low">
+                    {{ $t("generatedTestCases.priorityLow") }}
+                  </option>
+                  <option value="medium">
+                    {{ $t("generatedTestCases.priorityMedium") }}
+                  </option>
+                  <option value="high">
+                    {{ $t("generatedTestCases.priorityHigh") }}
+                  </option>
+                  <option value="critical">
+                    {{ $t("generatedTestCases.priorityCritical") }}
+                  </option>
                 </select>
               </div>
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.testType') }}</label>
+                <label>{{ $t("generatedTestCases.testType") }}</label>
                 <select v-model="adoptForm.test_type">
-                  <option value="functional">{{ $t('generatedTestCases.testTypeFunctional') }}</option>
-                  <option value="integration">{{ $t('generatedTestCases.testTypeIntegration') }}</option>
-                  <option value="api">{{ $t('generatedTestCases.testTypeAPI') }}</option>
-                  <option value="ui">{{ $t('generatedTestCases.testTypeUI') }}</option>
-                  <option value="performance">{{ $t('generatedTestCases.testTypePerformance') }}</option>
-                  <option value="security">{{ $t('generatedTestCases.testTypeSecurity') }}</option>
+                  <option value="functional">
+                    {{ $t("generatedTestCases.testTypeFunctional") }}
+                  </option>
+                  <option value="integration">
+                    {{ $t("generatedTestCases.testTypeIntegration") }}
+                  </option>
+                  <option value="api">
+                    {{ $t("generatedTestCases.testTypeAPI") }}
+                  </option>
+                  <option value="ui">
+                    {{ $t("generatedTestCases.testTypeUI") }}
+                  </option>
+                  <option value="performance">
+                    {{ $t("generatedTestCases.testTypePerformance") }}
+                  </option>
+                  <option value="security">
+                    {{ $t("generatedTestCases.testTypeSecurity") }}
+                  </option>
                 </select>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.status') }}</label>
+                <label>{{ $t("generatedTestCases.status") }}</label>
                 <select v-model="adoptForm.status">
-                  <option value="draft">{{ $t('generatedTestCases.statusDraft') }}</option>
-                  <option value="active">{{ $t('generatedTestCases.statusActive') }}</option>
+                  <option value="draft">
+                    {{ $t("generatedTestCases.statusDraft") }}
+                  </option>
+                  <option value="active">
+                    {{ $t("generatedTestCases.statusActive") }}
+                  </option>
                 </select>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.preconditions') }}</label>
-                <textarea v-model="adoptForm.preconditions" rows="3" :placeholder="$t('generatedTestCases.preconditionsPlaceholder')"></textarea>
+                <label>{{ $t("generatedTestCases.preconditions") }}</label>
+                <textarea
+                  v-model="adoptForm.preconditions"
+                  rows="3"
+                  :placeholder="
+                    $t('generatedTestCases.preconditionsPlaceholder')
+                  "
+                ></textarea>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.operationSteps') }}</label>
-                <textarea v-model="adoptForm.steps" rows="6" :placeholder="$t('generatedTestCases.operationStepsPlaceholder')"></textarea>
+                <label>{{ $t("generatedTestCases.operationSteps") }}</label>
+                <textarea
+                  v-model="adoptForm.steps"
+                  rows="6"
+                  :placeholder="
+                    $t('generatedTestCases.operationStepsPlaceholder')
+                  "
+                ></textarea>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>{{ $t('generatedTestCases.expectedResult') }}</label>
-                <textarea v-model="adoptForm.expected_result" rows="3" :placeholder="$t('generatedTestCases.expectedResultPlaceholder')"></textarea>
+                <label>{{ $t("generatedTestCases.expectedResult") }}</label>
+                <textarea
+                  v-model="adoptForm.expected_result"
+                  rows="3"
+                  :placeholder="
+                    $t('generatedTestCases.expectedResultPlaceholder')
+                  "
+                ></textarea>
               </div>
             </div>
 
             <div class="form-actions">
-              <button type="button" class="confirm-btn" @click="confirmAdopt" :disabled="isAdopting">
-                {{ isAdopting ? $t('generatedTestCases.adopting') : $t('generatedTestCases.confirmAdopt') }}
+              <button
+                type="button"
+                class="confirm-btn"
+                :disabled="isAdopting"
+                @click="confirmAdopt"
+              >
+                {{
+                  isAdopting
+                    ? $t("generatedTestCases.adopting")
+                    : $t("generatedTestCases.confirmAdopt")
+                }}
               </button>
-              <button type="button" class="cancel-btn" @click="closeAdoptModal">{{ $t('generatedTestCases.cancel') }}</button>
+              <button type="button" class="cancel-btn" @click="closeAdoptModal">
+                {{ $t("generatedTestCases.cancel") }}
+              </button>
             </div>
           </form>
         </div>
@@ -380,16 +556,16 @@
 </template>
 
 <script>
-import api from '@/utils/api'
-import { ElMessage } from 'element-plus'
+import api from "@/utils/api";
+import { ElMessage } from "element-plus";
 
 export default {
-  name: 'GeneratedTestCaseList',
+  name: "GeneratedTestCaseList",
   data() {
     return {
       isLoading: false,
       tasks: [], // 改为任务列表
-      selectedStatus: '',
+      selectedStatus: "",
       selectedTaskDetail: null,
       selectedTestCaseDetail: null,
       showAdoptModal: false,
@@ -398,16 +574,16 @@ export default {
       projectVersions: [],
       allVersions: [], // 存储所有版本列表
       adoptForm: {
-        title: '',
-        description: '',
+        title: "",
+        description: "",
         project_id: null,
-        priority: 'low', // 修改默认值为"低"
-        test_type: 'functional',
-        status: 'draft',
-        preconditions: '',
-        steps: '',
-        expected_result: '',
-        version_id: null // 改为单选
+        priority: "low", // 修改默认值为"低"
+        test_type: "functional",
+        status: "draft",
+        preconditions: "",
+        steps: "",
+        expected_result: "",
+        version_id: null, // 改为单选
       },
       currentAdoptingTask: null,
       // 选择相关数据
@@ -418,17 +594,17 @@ export default {
         currentPage: 1,
         pageSize: 10, // 改为默认10条
         total: 0,
-        pageSizeOptions: [10, 20, 50]
+        pageSizeOptions: [10, 20, 50],
       },
-      jumpPage: '', // 页码跳转输入
+      jumpPage: "", // 页码跳转输入
       // 统计数据
       allStats: {
         total: 0,
         completed: 0,
         running: 0,
-        failed: 0
-      }
-    }
+        failed: 0,
+      },
+    };
   },
 
   computed: {
@@ -436,398 +612,469 @@ export default {
     availableVersions() {
       if (this.adoptForm.project_id) {
         // 如果选择了项目，显示该项目的版本
-        return this.projectVersions
+        return this.projectVersions;
       } else {
         // 如果没有选择项目，显示系统所有版本
-        return this.allVersions
+        return this.allVersions;
       }
     },
-    
+
     // 计算总页数
     totalPages() {
-      return Math.ceil(this.pagination.total / this.pagination.pageSize)
+      return Math.ceil(this.pagination.total / this.pagination.pageSize);
     },
-    
+
     // 计算分页显示信息
     paginationInfo() {
-      const start = (this.pagination.currentPage - 1) * this.pagination.pageSize + 1
-      const end = Math.min(this.pagination.currentPage * this.pagination.pageSize, this.pagination.total)
-      return this.$t('generatedTestCases.paginationInfo', { start, end, total: this.pagination.total })
+      const start =
+        (this.pagination.currentPage - 1) * this.pagination.pageSize + 1;
+      const end = Math.min(
+        this.pagination.currentPage * this.pagination.pageSize,
+        this.pagination.total,
+      );
+      return this.$t("generatedTestCases.paginationInfo", {
+        start,
+        end,
+        total: this.pagination.total,
+      });
     },
-    
+
     // 是否全选
     isAllSelected() {
-      return this.tasks.length > 0 && this.selectedTasks.length === this.tasks.length
-    }
+      return (
+        this.tasks.length > 0 && this.selectedTasks.length === this.tasks.length
+      );
+    },
   },
-  
+
   mounted() {
-    this.loadTasks()
-    this.fetchProjects()
-    this.fetchAllVersions()
+    this.loadTasks();
+    this.fetchProjects();
+    this.fetchAllVersions();
   },
-  
+
   methods: {
     async loadTasks() {
-      this.isLoading = true
+      this.isLoading = true;
       try {
-        let url = '/requirement-analysis/testcase-generation/'
-        const params = new URLSearchParams()
-        
+        let url = "/requirement-analysis/testcase-generation/";
+        const params = new URLSearchParams();
+
         // 添加分页参数
-        params.append('page', String(this.pagination.currentPage))
-        params.append('page_size', String(this.pagination.pageSize))
-        
+        params.append("page", String(this.pagination.currentPage));
+        params.append("page_size", String(this.pagination.pageSize));
+
         if (this.selectedStatus) {
-          params.append('status', this.selectedStatus)
+          params.append("status", this.selectedStatus);
         }
-        
+
         if (params.toString()) {
-          url += '?' + params.toString()
+          url += "?" + params.toString();
         }
-        
-        const response = await api.get(url)
-        
+
+        const response = await api.get(url);
+
         if (response.data.results) {
-          this.tasks = response.data.results
-          this.pagination.total = response.data.count || 0
+          this.tasks = response.data.results;
+          this.pagination.total = response.data.count || 0;
         } else {
-          this.tasks = response.data || []
-          this.pagination.total = this.tasks.length
+          this.tasks = response.data || [];
+          this.pagination.total = this.tasks.length;
         }
-        
+
         // 更新统计数据（统计所有数据，不只是当前页）
-        this.updateStats()
-        
+        this.updateStats();
       } catch (error) {
-        console.error(this.$t('generatedTestCases.loadTasksFailed'), error)
-        this.tasks = []
-        this.pagination.total = 0
+        console.error(this.$t("generatedTestCases.loadTasksFailed"), error);
+        this.tasks = [];
+        this.pagination.total = 0;
       } finally {
-        this.isLoading = false
+        this.isLoading = false;
         // 清空选择（因为任务列表已更新）
-        this.selectedTasks = []
+        this.selectedTasks = [];
       }
     },
 
     // 获取序号
     getSerialNumber(index) {
-      return (this.pagination.currentPage - 1) * this.pagination.pageSize + index + 1
+      return (
+        (this.pagination.currentPage - 1) * this.pagination.pageSize + index + 1
+      );
     },
 
     // 切换任务选择
     toggleTaskSelection(taskId) {
-      const index = this.selectedTasks.indexOf(taskId)
+      const index = this.selectedTasks.indexOf(taskId);
       if (index > -1) {
-        this.selectedTasks.splice(index, 1)
+        this.selectedTasks.splice(index, 1);
       } else {
-        this.selectedTasks.push(taskId)
+        this.selectedTasks.push(taskId);
       }
     },
 
     // 判断任务是否被选中
     isTaskSelected(taskId) {
-      return this.selectedTasks.includes(taskId)
+      return this.selectedTasks.includes(taskId);
     },
 
     // 切换全选
     toggleSelectAll() {
       if (this.isAllSelected) {
-        this.selectedTasks = []
+        this.selectedTasks = [];
       } else {
-        this.selectedTasks = this.tasks.map(task => task.task_id)
+        this.selectedTasks = this.tasks.map((task) => task.task_id);
       }
     },
 
     // 批量删除任务
     async batchDeleteTasks() {
       if (this.selectedTasks.length === 0) {
-        ElMessage.warning(this.$t('generatedTestCases.selectTasksFirst'))
-        return
+        ElMessage.warning(this.$t("generatedTestCases.selectTasksFirst"));
+        return;
       }
 
-      if (!confirm(this.$t('generatedTestCases.batchDeleteConfirm', { count: this.selectedTasks.length }))) {
-        return
+      if (
+        !confirm(
+          this.$t("generatedTestCases.batchDeleteConfirm", {
+            count: this.selectedTasks.length,
+          }),
+        )
+      ) {
+        return;
       }
 
-      this.isDeleting = true
-      let successCount = 0
-      let failCount = 0
+      this.isDeleting = true;
+      let successCount = 0;
+      let failCount = 0;
 
       try {
         // 逐个删除选中的任务
         for (const taskId of this.selectedTasks) {
           try {
-            await api.delete(`/requirement-analysis/testcase-generation/${taskId}/`)
-            successCount++
+            await api.delete(
+              `/requirement-analysis/testcase-generation/${taskId}/`,
+            );
+            successCount++;
           } catch (error) {
-            console.error(`删除任务 ${taskId} 失败:`, error)
-            failCount++
+            console.error(`删除任务 ${taskId} 失败:`, error);
+            failCount++;
           }
         }
 
         // 显示删除结果
         if (successCount > 0) {
-          ElMessage.success(this.$t('generatedTestCases.deleteSuccess', { success: successCount, failed: failCount }))
+          ElMessage.success(
+            this.$t("generatedTestCases.deleteSuccess", {
+              success: successCount,
+              failed: failCount,
+            }),
+          );
         } else {
-          ElMessage.error(this.$t('generatedTestCases.deleteFailed'))
+          ElMessage.error(this.$t("generatedTestCases.deleteFailed"));
         }
 
         // 清空选择并重新加载列表
-        this.selectedTasks = []
-        this.loadTasks()
-
+        this.selectedTasks = [];
+        this.loadTasks();
       } catch (error) {
-        console.error(this.$t('generatedTestCases.batchDeleteFailed'), error)
-        ElMessage.error(this.$t('generatedTestCases.batchDeleteFailed') + ': ' + (error.message || this.$t('generatedTestCases.unknownError')))
+        console.error(this.$t("generatedTestCases.batchDeleteFailed"), error);
+        ElMessage.error(
+          this.$t("generatedTestCases.batchDeleteFailed") +
+            ": " +
+            (error.message || this.$t("generatedTestCases.unknownError")),
+        );
       } finally {
-        this.isDeleting = false
+        this.isDeleting = false;
       }
     },
 
     updateStats() {
       // 不再使用当前页数据统计，改为调用专门的统计方法
-      this.loadAllStats()
+      this.loadAllStats();
     },
 
     // 新增方法：获取所有数据的统计信息
     async loadAllStats() {
       try {
         // 构建统计请求URL
-        let url = '/requirement-analysis/testcase-generation/'
-        const params = new URLSearchParams()
-        
+        let url = "/requirement-analysis/testcase-generation/";
+        const params = new URLSearchParams();
+
         // 获取所有数据来进行统计
-        params.append('page_size', '10000') // 设置足够大的页面大小来获取所有数据
-        params.append('page', '1')
-        
+        params.append("page_size", "10000"); // 设置足够大的页面大小来获取所有数据
+        params.append("page", "1");
+
         // 如果有状态筛选，也应用到统计中
         if (this.selectedStatus) {
-          params.append('status', this.selectedStatus)
+          params.append("status", this.selectedStatus);
         }
-        
-        url += '?' + params.toString()
-        
-        const response = await api.get(url)
-        const allTasks = response.data.results || response.data || []
-        
+
+        url += "?" + params.toString();
+
+        const response = await api.get(url);
+        const allTasks = response.data.results || response.data || [];
+
         // 统计各状态的数量
-        this.allStats.total = allTasks.length
-        this.allStats.completed = allTasks.filter(t => t.status === 'completed').length
-        this.allStats.running = allTasks.filter(t => ['pending', 'generating', 'reviewing'].includes(t.status)).length
-        this.allStats.failed = allTasks.filter(t => t.status === 'failed').length
-        
+        this.allStats.total = allTasks.length;
+        this.allStats.completed = allTasks.filter(
+          (t) => t.status === "completed",
+        ).length;
+        this.allStats.running = allTasks.filter((t) =>
+          ["pending", "generating", "reviewing"].includes(t.status),
+        ).length;
+        this.allStats.failed = allTasks.filter(
+          (t) => t.status === "failed",
+        ).length;
       } catch (error) {
-        console.error(this.$t('generatedTestCases.loadStatsFailed'), error)
+        console.error(this.$t("generatedTestCases.loadStatsFailed"), error);
         // 如果获取统计失败，使用分页信息的总数作为备选
-        this.allStats.total = this.pagination.total || 0
-        this.allStats.completed = 0
-        this.allStats.running = 0
-        this.allStats.failed = 0
+        this.allStats.total = this.pagination.total || 0;
+        this.allStats.completed = 0;
+        this.allStats.running = 0;
+        this.allStats.failed = 0;
       }
     },
 
     getStatusText(status) {
       const statusMap = {
-        'pending': this.$t('generatedTestCases.statusPending'),
-        'generating': this.$t('generatedTestCases.statusGenerating'),
-        'reviewing': this.$t('generatedTestCases.statusReviewing'),
-        'completed': this.$t('generatedTestCases.statusCompleted'),
-        'failed': this.$t('generatedTestCases.statusFailed')
-      }
-      return statusMap[status] || status
+        pending: this.$t("generatedTestCases.statusPending"),
+        generating: this.$t("generatedTestCases.statusGenerating"),
+        reviewing: this.$t("generatedTestCases.statusReviewing"),
+        completed: this.$t("generatedTestCases.statusCompleted"),
+        failed: this.$t("generatedTestCases.statusFailed"),
+      };
+      return statusMap[status] || status;
     },
 
     // 获取测试用例条数
     getTestCaseCount(task) {
       if (!task.final_test_cases) {
-        return 0
+        return 0;
       }
 
       // 解析测试用例内容，计算条数
-      const content = task.final_test_cases
-      const lines = content.split('\n').filter(line => line.trim())
+      const content = task.final_test_cases;
+      const lines = content.split("\n").filter((line) => line.trim());
 
       // 尝试表格格式
-      let tableRows = 0
-      let isFirstRow = true
-      let isTableFormat = false
+      let tableRows = 0;
+      let isFirstRow = true;
+      let isTableFormat = false;
 
       for (let line of lines) {
-        if (line.includes('|') && !line.includes('--------')) {
-          const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell)
+        if (line.includes("|") && !line.includes("--------")) {
+          const cells = line
+            .split("|")
+            .map((cell) => cell.trim())
+            .filter((cell) => cell);
           if (cells.length > 1) {
             // 检查第一行是否是表头
             if (isFirstRow) {
-              isFirstRow = false
+              isFirstRow = false;
               // 如果第一行包含表头标识，标记为表格格式
-              if (line.includes('测试用例编号') || line.includes('ID') || line.includes('用例ID') ||
-                  line.includes('场景') || line.includes('步骤')) {
-                isTableFormat = true
-                continue  // 跳过表头行
+              if (
+                line.includes("测试用例编号") ||
+                line.includes("ID") ||
+                line.includes("用例ID") ||
+                line.includes("场景") ||
+                line.includes("步骤")
+              ) {
+                isTableFormat = true;
+                continue; // 跳过表头行
               }
             }
 
-            tableRows++
+            tableRows++;
             if (tableRows >= 1) {
-              isTableFormat = true
+              isTableFormat = true;
             }
           }
         }
       }
 
       if (isTableFormat && tableRows > 0) {
-        return tableRows
+        return tableRows;
       }
 
       // 尝试结构化文本格式
-      let caseCount = 0
+      let caseCount = 0;
       for (const line of lines) {
-        if (line.includes('测试用例') || line.includes('Test Case') || line.match(/^(\d+\.|测试场景)/)) {
-          caseCount++
+        if (
+          line.includes("测试用例") ||
+          line.includes("Test Case") ||
+          line.match(/^(\d+\.|测试场景)/)
+        ) {
+          caseCount++;
         }
       }
 
-      return caseCount || 0
+      return caseCount || 0;
     },
 
     viewTaskDetail(task) {
-      if (['pending', 'generating', 'reviewing'].includes(task.status)) {
-        ElMessage.info(this.$t('generatedTestCases.generatingWait'))
-        return
+      if (["pending", "generating", "reviewing"].includes(task.status)) {
+        ElMessage.info(this.$t("generatedTestCases.generatingWait"));
+        return;
       }
-      
-      if (task.status === 'completed') {
+
+      if (task.status === "completed") {
         // 在新标签页打开任务详情
         const url = this.$router.resolve({
-          name: 'TaskDetail',
-          params: { taskId: task.task_id }
-        }).href
-        window.open(url, '_blank')
+          name: "TaskDetail",
+          params: { taskId: task.task_id },
+        }).href;
+        window.open(url, "_blank");
       }
     },
 
     async batchAdoptTask(task) {
-      if (!confirm(this.$t('generatedTestCases.adoptConfirm', { title: task.title }))) {
-        return
+      if (
+        !confirm(
+          this.$t("generatedTestCases.adoptConfirm", { title: task.title }),
+        )
+      ) {
+        return;
       }
 
       try {
         // 调用后端API批量采纳该任务的所有测试用例
         // await api.post(`/requirement-analysis/testcase-generation/${task.task_id}/batch-adopt/`)
-        await api.post(`/requirement-analysis/testcase-generation/${task.task_id}/batch_adopt/`)
-        ElMessage.success(this.$t('generatedTestCases.adoptSuccess'))
-        this.loadTasks()
+        await api.post(
+          `/requirement-analysis/testcase-generation/${task.task_id}/batch_adopt/`,
+        );
+        ElMessage.success(this.$t("generatedTestCases.adoptSuccess"));
+        this.loadTasks();
       } catch (error) {
-        console.error(this.$t('generatedTestCases.adoptFailed'), error)
-        ElMessage.error(this.$t('generatedTestCases.adoptFailed') + ': ' + (error.response?.data?.message || error.message))
+        console.error(this.$t("generatedTestCases.adoptFailed"), error);
+        ElMessage.error(
+          this.$t("generatedTestCases.adoptFailed") +
+            ": " +
+            (error.response?.data?.message || error.message),
+        );
       }
     },
 
     async batchDiscardTask(task) {
-      if (!confirm(this.$t('generatedTestCases.discardConfirm', { title: task.title }))) {
-        return
+      if (
+        !confirm(
+          this.$t("generatedTestCases.discardConfirm", { title: task.title }),
+        )
+      ) {
+        return;
       }
 
       try {
         // 调用后端API批量删除该任务的所有测试用例
         // await api.post(`/requirement-analysis/testcase-generation/${task.task_id}/batch-discard/`)
-        await api.post(`/requirement-analysis/testcase-generation/${task.task_id}/batch_discard/`)
-        ElMessage.success(this.$t('generatedTestCases.discardSuccess'))
-        this.loadTasks()
+        await api.post(
+          `/requirement-analysis/testcase-generation/${task.task_id}/batch_discard/`,
+        );
+        ElMessage.success(this.$t("generatedTestCases.discardSuccess"));
+        this.loadTasks();
       } catch (error) {
-        console.error(this.$t('generatedTestCases.discardFailed'), error)
-        ElMessage.error(this.$t('generatedTestCases.discardFailed') + ': ' + (error.response?.data?.message || error.message))
+        console.error(this.$t("generatedTestCases.discardFailed"), error);
+        ElMessage.error(
+          this.$t("generatedTestCases.discardFailed") +
+            ": " +
+            (error.response?.data?.message || error.message),
+        );
       }
     },
 
     formatDateTime(dateString) {
-      if (!dateString) return ''
-      const date = new Date(dateString)
-      return date.toLocaleString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
+      if (!dateString) return "";
+      const date = new Date(dateString);
+      return date.toLocaleString("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     },
 
     // 获取项目列表
     async fetchProjects() {
       try {
-        const response = await api.get('/projects/list/')
-        this.projects = response.data.results || []
+        const response = await api.get("/projects/list/");
+        this.projects = response.data.results || [];
       } catch (error) {
-        console.error(this.$t('generatedTestCases.fetchProjectsFailed'), error)
+        console.error(this.$t("generatedTestCases.fetchProjectsFailed"), error);
       }
     },
 
     // 获取所有版本列表
     async fetchAllVersions() {
       try {
-        const response = await api.get('/versions/')
-        this.allVersions = response.data.results || response.data || []
+        const response = await api.get("/versions/");
+        this.allVersions = response.data.results || response.data || [];
       } catch (error) {
-        console.error(this.$t('generatedTestCases.fetchVersionsFailed'), error)
-        this.allVersions = []
+        console.error(this.$t("generatedTestCases.fetchVersionsFailed"), error);
+        this.allVersions = [];
       }
     },
 
     // 获取项目版本列表
     async fetchProjectVersions(projectId) {
       if (!projectId) {
-        this.projectVersions = []
-        return
+        this.projectVersions = [];
+        return;
       }
 
       try {
-        const response = await api.get(`/versions/projects/${projectId}/versions/`)
-        this.projectVersions = response.data || []
+        const response = await api.get(
+          `/versions/projects/${projectId}/versions/`,
+        );
+        this.projectVersions = response.data || [];
       } catch (error) {
-        console.error(this.$t('generatedTestCases.fetchProjectVersionsFailed'), error)
-        this.projectVersions = []
+        console.error(
+          this.$t("generatedTestCases.fetchProjectVersionsFailed"),
+          error,
+        );
+        this.projectVersions = [];
       }
     },
 
     // 采纳测试用例
     async adoptTestCase(testCase) {
-      this.currentAdoptingTask = testCase
-      
+      this.currentAdoptingTask = testCase;
+
       // 预填充表单数据
       this.adoptForm = {
         title: testCase.title,
         description: testCase.title, // 用标题作为描述的默认值
         project_id: null,
-        priority: 'low', // 设置默认值为"低"
-        test_type: 'functional',
-        status: 'draft',
-        preconditions: testCase.precondition || '',
-        steps: testCase.test_steps || '',
-        expected_result: testCase.expected_result || '',
-        version_id: null // 改为单选
-      }
-      
-      this.showAdoptModal = true
+        priority: "low", // 设置默认值为"低"
+        test_type: "functional",
+        status: "draft",
+        preconditions: testCase.precondition || "",
+        steps: testCase.test_steps || "",
+        expected_result: testCase.expected_result || "",
+        version_id: null, // 改为单选
+      };
+
+      this.showAdoptModal = true;
     },
 
     // 项目改变时的处理
     async onAdoptProjectChange() {
       if (this.adoptForm.project_id) {
         // 选择了项目，加载该项目的版本
-        await this.fetchProjectVersions(this.adoptForm.project_id)
-        
+        await this.fetchProjectVersions(this.adoptForm.project_id);
+
         // 检查当前选择的版本是否属于新项目，如果不属于则清空
         if (this.adoptForm.version_id) {
-          const versionExists = this.projectVersions.some(v => v.id === this.adoptForm.version_id)
+          const versionExists = this.projectVersions.some(
+            (v) => v.id === this.adoptForm.version_id,
+          );
           if (!versionExists) {
-            this.adoptForm.version_id = null
+            this.adoptForm.version_id = null;
           }
         }
       } else {
         // 清空项目选择时，清空项目版本列表
         // 此时版本下拉会自动切换到显示所有版本（通过computed属性）
-        this.projectVersions = []
+        this.projectVersions = [];
         // 保持当前版本选择，因为可以从所有版本中选择
       }
     },
@@ -836,180 +1083,193 @@ export default {
     async confirmAdopt() {
       // 必填项验证
       if (!this.adoptForm.project_id) {
-        alert(this.$t('generatedTestCases.selectProjectRequired'))
-        return
+        alert(this.$t("generatedTestCases.selectProjectRequired"));
+        return;
       }
 
       if (!this.adoptForm.version_id) {
-        alert(this.$t('generatedTestCases.selectVersionRequired'))
-        return
+        alert(this.$t("generatedTestCases.selectVersionRequired"));
+        return;
       }
 
       if (!this.adoptForm.title.trim()) {
-        alert(this.$t('generatedTestCases.enterCaseTitle'))
-        return
+        alert(this.$t("generatedTestCases.enterCaseTitle"));
+        return;
       }
 
       if (!this.adoptForm.expected_result.trim()) {
-        alert(this.$t('generatedTestCases.enterExpectedResult'))
-        return
+        alert(this.$t("generatedTestCases.enterExpectedResult"));
+        return;
       }
-      
-      this.isAdopting = true
-      
+
+      this.isAdopting = true;
+
       try {
         // 准备提交的数据，将单选版本转换为数组格式（如果API需要）
         const submitData = {
           title: this.adoptForm.title,
           description: this.adoptForm.description,
           project_id: this.adoptForm.project_id,
-          priority: this.adoptForm.priority || 'low',
+          priority: this.adoptForm.priority || "low",
           test_type: this.adoptForm.test_type,
           status: this.adoptForm.status,
           preconditions: this.adoptForm.preconditions,
           steps: this.adoptForm.steps,
           expected_result: this.adoptForm.expected_result,
-          version_ids: this.adoptForm.version_id ? [this.adoptForm.version_id] : []
-        }
-        
+          version_ids: this.adoptForm.version_id
+            ? [this.adoptForm.version_id]
+            : [],
+        };
+
         // 确保优先级有默认值
         if (!submitData.priority) {
-          submitData.priority = 'low'
+          submitData.priority = "low";
         }
-        
+
         // 调用API创建测试用例
-        await api.post('/testcases/', submitData)
-        
+        await api.post("/testcases/", submitData);
+
         // 将AI生成的用例状态更新为"已采纳"
         try {
-          await api.patch(`/requirement-analysis/test-cases/${this.currentAdoptingTask.id}/`, {
-            status: 'adopted'
-          })
+          await api.patch(
+            `/requirement-analysis/test-cases/${this.currentAdoptingTask.id}/`,
+            {
+              status: "adopted",
+            },
+          );
         } catch (updateError) {
-          console.warn(this.$t('generatedTestCases.updateStatusFailed'), updateError)
+          console.warn(
+            this.$t("generatedTestCases.updateStatusFailed"),
+            updateError,
+          );
           // 即使状态更新失败，用例已成功导入，仍然提示成功
         }
 
-        alert(this.$t('generatedTestCases.adoptModalSuccess'))
-        this.closeAdoptModal()
-        this.loadTestCases() // 重新加载列表
-
+        alert(this.$t("generatedTestCases.adoptModalSuccess"));
+        this.closeAdoptModal();
+        this.loadTestCases(); // 重新加载列表
       } catch (error) {
-        console.error(this.$t('generatedTestCases.adoptCaseFailed'), error)
-        alert(this.$t('generatedTestCases.adoptCaseFailedRetry'))
-      } finally{
-        this.isAdopting = false
+        console.error(this.$t("generatedTestCases.adoptCaseFailed"), error);
+        alert(this.$t("generatedTestCases.adoptCaseFailedRetry"));
+      } finally {
+        this.isAdopting = false;
       }
     },
 
     // 弃用测试用例
     async discardTestCase(testCase) {
-      if (!confirm(this.$t('generatedTestCases.discardCaseConfirm', { title: testCase.title }))) {
-        return
+      if (
+        !confirm(
+          this.$t("generatedTestCases.discardCaseConfirm", {
+            title: testCase.title,
+          }),
+        )
+      ) {
+        return;
       }
 
       try {
         // 将状态更新为"已弃用"
         await api.patch(`/requirement-analysis/test-cases/${testCase.id}/`, {
-          status: 'discarded'
-        })
-        alert(this.$t('generatedTestCases.caseDiscarded'))
-        this.loadTestCases() // 重新加载列表，已弃用的用例会被过滤掉
+          status: "discarded",
+        });
+        alert(this.$t("generatedTestCases.caseDiscarded"));
+        this.loadTestCases(); // 重新加载列表，已弃用的用例会被过滤掉
       } catch (error) {
-        console.error(this.$t('generatedTestCases.discardCaseFailed'), error)
-        alert(this.$t('generatedTestCases.discardCaseFailedRetry'))
+        console.error(this.$t("generatedTestCases.discardCaseFailed"), error);
+        alert(this.$t("generatedTestCases.discardCaseFailedRetry"));
       }
     },
 
     // 关闭采纳弹框
     closeAdoptModal() {
-      this.showAdoptModal = false
-      this.currentAdoptingTask = null
-      this.projectVersions = []
+      this.showAdoptModal = false;
+      this.currentAdoptingTask = null;
+      this.projectVersions = [];
     },
 
     // 关闭测试用例详情弹窗
     closeTestCaseDetail() {
-      this.selectedTestCaseDetail = null
+      this.selectedTestCaseDetail = null;
     },
 
     // 加载测试用例列表（别名，与loadTasks一致）
     loadTestCases() {
-      this.loadTasks()
+      this.loadTasks();
     },
 
     // 获取项目名称的辅助方法
     getProjectName(projectId) {
-      const project = this.projects.find(p => p.id === projectId)
-      return project ? project.name : ''
+      const project = this.projects.find((p) => p.id === projectId);
+      return project ? project.name : "";
     },
 
     // 分页相关方法
     onPageSizeChange() {
-      this.pagination.currentPage = 1
-      this.loadTasks()
+      this.pagination.currentPage = 1;
+      this.loadTasks();
     },
 
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
-        this.pagination.currentPage = page
-        this.loadTasks()
+        this.pagination.currentPage = page;
+        this.loadTasks();
       }
     },
 
     jumpToPage() {
-      const page = parseInt(this.jumpPage)
+      const page = parseInt(this.jumpPage);
       if (page >= 1 && page <= this.totalPages) {
-        this.pagination.currentPage = page
-        this.jumpPage = ''
-        this.loadTasks()
+        this.pagination.currentPage = page;
+        this.jumpPage = "";
+        this.loadTasks();
       } else {
-        alert(`请输入 1-${this.totalPages} 之间的页码`)
+        alert(`请输入 1-${this.totalPages} 之间的页码`);
       }
     },
 
     getVisiblePages() {
-      const current = this.pagination.currentPage
-      const total = this.totalPages
-      const pages = []
+      const current = this.pagination.currentPage;
+      const total = this.totalPages;
+      const pages = [];
 
       if (total <= 7) {
         // 总页数少于等于7页，显示所有页码
         for (let i = 1; i <= total; i++) {
-          pages.push(i)
+          pages.push(i);
         }
       } else {
         // 总页数大于7页，智能显示页码
         if (current <= 4) {
           // 当前页在前部
           for (let i = 1; i <= 5; i++) {
-            pages.push(i)
+            pages.push(i);
           }
-          pages.push('...')
-          pages.push(total)
+          pages.push("...");
+          pages.push(total);
         } else if (current >= total - 3) {
           // 当前页在后部
-          pages.push(1)
-          pages.push('...')
+          pages.push(1);
+          pages.push("...");
           for (let i = total - 4; i <= total; i++) {
-            pages.push(i)
+            pages.push(i);
           }
         } else {
           // 当前页在中部
-          pages.push(1)
-          pages.push('...')
+          pages.push(1);
+          pages.push("...");
           for (let i = current - 1; i <= current + 1; i++) {
-            pages.push(i)
+            pages.push(i);
           }
-          pages.push('...')
-          pages.push(total)
+          pages.push("...");
+          pages.push(total);
         }
       }
 
-      return pages
-    }
-  }
-}
+      return pages;
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -1166,7 +1426,8 @@ export default {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.loading-state, .empty-state {
+.loading-state,
+.empty-state {
   text-align: center;
   padding: 60px 20px;
   color: #666;
@@ -1825,48 +2086,48 @@ export default {
   .table-body .table-row {
     grid-template-columns: 120px 1fr 80px 120px 240px;
   }
-  
+
   .header-cell,
   .body-cell {
     padding: 8px;
     font-size: 0.8rem;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     gap: 2px;
     align-items: stretch;
   }
-  
+
   .view-detail-btn,
   .adopt-btn,
   .discard-btn {
     font-size: 0.65rem;
     padding: 2px 4px;
   }
-  
+
   .form-row {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .large-modal {
     max-width: 95%;
   }
-  
+
   .pagination-section {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
   }
-  
+
   .pagination-controls {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
     width: 100%;
   }
-  
+
   .pagination-buttons {
     justify-content: center;
     width: 100%;

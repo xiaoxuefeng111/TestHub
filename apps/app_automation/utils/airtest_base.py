@@ -7,13 +7,17 @@ from airtest.core.api import (
     init_device, start_app, stop_app, Template, sleep
 )
 from airtest.core.error import NoDeviceError, TargetNotFoundError
-import os
-import time
 import logging
-import threading
+import os
 import queue
-from typing import Optional
+import re
+import subprocess
+import threading
+import time
+from typing import Dict, Optional, Tuple
 from django.conf import settings
+
+from .android_ui_hierarchy import AndroidUiHierarchyHelper
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +45,7 @@ class AirtestBase:
         """
         self.device_id = device_id
         self.is_connected = False
+        self.adb_path = AndroidUiHierarchyHelper.get_adb_path()
         
         # 设置截图目录: media/app-automation/screenshots/{username}/
         if screenshots_dir:
@@ -132,9 +137,9 @@ class AirtestBase:
             try:
                 logger.info(f"线程中开始调用 init_device()...")
                 if uuid:
-                    init_device(platform=platform, uuid=uuid)
+                    init_device(platform=platform, uuid=uuid, adb_path=self.adb_path)
                 else:
-                    init_device(platform=platform)
+                    init_device(platform=platform, adb_path=self.adb_path)
                 logger.info(f"线程中 init_device() 调用完成")
                 result_queue.put(True)
             except Exception as e:
@@ -219,6 +224,176 @@ class AirtestBase:
             logger.error(f"截图失败: {str(e)}", exc_info=True)
             return ""
     
+    @staticmethod
+    def _get_subprocess_kwargs() -> Dict[str, int]:
+        create_no_window = getattr(subprocess, 'CREATE_NO_WINDOW', None)
+        return {'creationflags': create_no_window} if create_no_window is not None else {}
+
+    def _run_adb_command(self, args: list[str], timeout: int = 15) -> subprocess.CompletedProcess:
+        if not self.device_id:
+            raise ValueError('device_id is required for adb command execution')
+        return subprocess.run(
+            [self.adb_path, '-s', self.device_id, *args],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding='utf-8',
+            errors='ignore',
+            timeout=timeout,
+            **self._get_subprocess_kwargs(),
+        )
+
+    def _extract_focused_package(self, window_output: str) -> str:
+        current_focus_match = re.search(r'mCurrentFocus=(.*)', window_output or '')
+        if current_focus_match:
+            current_focus_line = current_focus_match.group(1)
+            if any(token in current_focus_line for token in ('StatusBar', 'NotificationShade', 'Keyguard')):
+                return 'com.android.systemui'
+            package_match = re.search(r'\s([A-Za-z0-9._]+)/', current_focus_line)
+            if package_match:
+                return package_match.group(1)
+
+        focused_app_match = re.search(r'mFocusedApp=.*?\s([A-Za-z0-9._]+)/', window_output or '')
+        if focused_app_match:
+            return focused_app_match.group(1)
+        return ''
+
+    def _get_device_state(self) -> Optional[Dict[str, object]]:
+        power_output = ''
+        window_output = ''
+
+        try:
+            power_output = self._run_adb_command(['shell', 'dumpsys', 'power'], timeout=10).stdout or ''
+        except Exception as exc:
+            logger.warning(f'读取设备电源状态失败: {exc}')
+
+        try:
+            window_output = self._run_adb_command(['shell', 'dumpsys', 'window'], timeout=10).stdout or ''
+        except Exception as exc:
+            logger.warning(f'读取设备窗口状态失败: {exc}')
+
+        if not power_output and not window_output:
+            return None
+
+        wakefulness_match = re.search(r'mWakefulness=(\w+)', power_output)
+        display_state_match = re.search(r'Display Power: state=(\w+)', power_output)
+        wakefulness = (wakefulness_match.group(1) if wakefulness_match else '').lower()
+        display_state = (display_state_match.group(1) if display_state_match else '').upper()
+
+        is_awake = wakefulness == 'awake' or display_state == 'ON'
+        if wakefulness == 'asleep' or display_state == 'OFF':
+            is_awake = False
+
+        focused_package = self._extract_focused_package(window_output)
+        keyguard_patterns = (
+            r'Keyguard[^\n]*showing=true',
+            r'mShowingLockscreen=true',
+            r'isStatusBarKeyguard=true',
+            r'keyguard[^\n]*=true',
+            r'lockscreen[^\n]*=true',
+        )
+        is_locked = any(re.search(pattern, window_output, re.IGNORECASE) for pattern in keyguard_patterns)
+        if not is_locked and focused_package == 'com.android.systemui' and 'showing=true' in window_output:
+            is_locked = True
+
+        return {
+            'wakefulness': wakefulness,
+            'display_state': display_state,
+            'focused_package': focused_package,
+            'is_awake': is_awake,
+            'is_locked': is_locked,
+        }
+
+    def _needs_unlock(self, state: Optional[Dict[str, object]]) -> bool:
+        if not state:
+            return False
+        return (
+            not bool(state.get('is_awake', True))
+            or bool(state.get('is_locked', False))
+            or state.get('focused_package') == 'com.android.systemui'
+        )
+
+    def _send_keyevent(self, keycode: str) -> None:
+        self._run_adb_command(['shell', 'input', 'keyevent', keycode], timeout=10)
+
+    def _get_screen_resolution(self) -> Tuple[int, int]:
+        try:
+            output = self._run_adb_command(['shell', 'wm', 'size'], timeout=10).stdout or ''
+            match = re.search(r'(?:Physical|Override) size:\s*(\d+)x(\d+)', output)
+            if match:
+                return int(match.group(1)), int(match.group(2))
+        except Exception as exc:
+            logger.warning(f'读取屏幕分辨率失败: {exc}')
+        return 1080, 1920
+
+    def _wake_device(self) -> None:
+        try:
+            self._send_keyevent('KEYCODE_WAKEUP')
+        except Exception as exc:
+            logger.warning(f'唤醒设备失败: {exc}')
+
+    def _unlock_device(self) -> None:
+        try:
+            self._run_adb_command(['shell', 'wm', 'dismiss-keyguard'], timeout=10)
+        except Exception as exc:
+            logger.debug(f'dismiss-keyguard 执行失败: {exc}')
+
+        width, height = self._get_screen_resolution()
+        start_x = max(width // 2, 1)
+        start_y = max(int(height * 0.85), 1)
+        end_y = max(int(height * 0.15), 1)
+
+        commands = [
+            ['shell', 'input', 'touchscreen', 'swipe', str(start_x), str(start_y), str(start_x), str(end_y), '350'],
+            ['shell', 'input', 'keyevent', 'KEYCODE_MENU'],
+            ['shell', 'input', 'keyevent', 'KEYCODE_BACK'],
+        ]
+        for command in commands:
+            try:
+                self._run_adb_command(command, timeout=10)
+            except Exception as exc:
+                logger.debug(f'自动解锁命令执行失败 {command}: {exc}')
+
+    def ensure_device_ready(self, max_unlock_attempts: int = 3) -> bool:
+        if not self.is_connected:
+            logger.warning('设备未连接，无法检查锁屏状态')
+            return False
+
+        state = self._get_device_state()
+        if state is None:
+            logger.warning('未能读取设备状态，执行一次最佳努力唤醒/解锁')
+            self._wake_device()
+            time.sleep(1)
+            self._unlock_device()
+            time.sleep(1)
+            return True
+
+        if not bool(state.get('is_awake', True)):
+            logger.info('检测到设备处于熄屏状态，尝试自动唤醒')
+            self._wake_device()
+            time.sleep(1)
+            state = self._get_device_state() or state
+
+        attempt = 0
+        while self._needs_unlock(state) and attempt < max_unlock_attempts:
+            attempt += 1
+            logger.info(f'检测到设备仍处于锁屏或系统界面，尝试自动解锁 ({attempt}/{max_unlock_attempts})')
+            self._unlock_device()
+            time.sleep(1)
+            state = self._get_device_state() or state
+
+        ready = not self._needs_unlock(state)
+        if ready:
+            logger.info('设备已处于可操作状态')
+        else:
+            logger.warning(
+                '设备自动解锁失败: awake=%s, locked=%s, focused_package=%s',
+                state.get('is_awake') if state else None,
+                state.get('is_locked') if state else None,
+                state.get('focused_package') if state else None,
+            )
+        return ready
+
     def open_app(self, package_name: str, retry_count: int = 3, retry_interval: int = 5) -> bool:
         """
         启动指定包名的应用，包含智能重试机制

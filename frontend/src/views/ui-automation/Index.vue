@@ -2,8 +2,8 @@
   <div class="ui-automation-container">
     <!-- 页面头部 -->
     <div class="page-header">
-      <h1 class="page-title">{{ $t('uiAutomation.nav.title') }}</h1>
-      <p class="page-subtitle">{{ $t('uiAutomation.nav.subtitle') }}</p>
+      <h1 class="page-title">{{ $t("uiAutomation.nav.title") }}</h1>
+      <p class="page-subtitle">{{ $t("uiAutomation.nav.subtitle") }}</p>
     </div>
 
     <!-- 子路由内容显示区域 -->
@@ -12,10 +12,10 @@
 </template>
 
 <script setup>
-import { useI18n } from 'vue-i18n'
+import { useI18n } from "vue-i18n";
 
 // 初始化国际化
-const { t } = useI18n()
+const { t } = useI18n();
 
 // 主页面仅包含布局和router-view，所有具体内容已移至各个子页面
 </script>

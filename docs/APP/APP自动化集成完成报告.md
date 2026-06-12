@@ -645,6 +645,6 @@ test_case = AppTestCase.objects.create(
 ---
 
 **集成完成时间**: 2026-02-04 11:21  
-**集成人员**: TestHub Team  
+**集成人员**: 通达信测试平台 Team  
 **集成状态**: ✅ Phase 1 + Phase 2 核心框架完成  
 **版本**: v1.0.0

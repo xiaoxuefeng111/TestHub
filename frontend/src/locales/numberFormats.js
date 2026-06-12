@@ -1,46 +1,46 @@
 export const numberFormats = /** @type {const} */ ({
-  'zh-cn': {
+  "zh-cn": {
     currency: {
-      style: 'currency',
-      currency: 'CNY',
-      currencyDisplay: 'symbol'
+      style: "currency",
+      currency: "CNY",
+      currencyDisplay: "symbol",
     },
     decimal: {
-      style: 'decimal',
+      style: "decimal",
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     },
     percent: {
-      style: 'percent',
+      style: "percent",
       minimumFractionDigits: 1,
-      maximumFractionDigits: 1
+      maximumFractionDigits: 1,
     },
     integer: {
-      style: 'decimal',
+      style: "decimal",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }
+      maximumFractionDigits: 0,
+    },
   },
-  'en': {
+  en: {
     currency: {
-      style: 'currency',
-      currency: 'USD',
-      currencyDisplay: 'symbol'
+      style: "currency",
+      currency: "USD",
+      currencyDisplay: "symbol",
     },
     decimal: {
-      style: 'decimal',
+      style: "decimal",
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     },
     percent: {
-      style: 'percent',
+      style: "percent",
       minimumFractionDigits: 1,
-      maximumFractionDigits: 1
+      maximumFractionDigits: 1,
     },
     integer: {
-      style: 'decimal',
+      style: "decimal",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }
-  }
-})
+      maximumFractionDigits: 0,
+    },
+  },
+});

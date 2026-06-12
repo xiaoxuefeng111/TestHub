@@ -1,4 +1,4 @@
-# TestHub 前端 Docker 部署指南
+# 通达信测试平台前端 Docker 部署指南
 
 ## 📋 目录
 
@@ -117,14 +117,14 @@ services:
   frontend:
     environment:
       - VITE_API_BASE_URL=http://localhost:8000
-      - VITE_APP_TITLE=TestHub
+      - VITE_APP_TITLE=通达信测试平台
 ```
 
 或创建 `.env` 文件：
 
 ```bash
 VITE_API_BASE_URL=http://localhost:8000
-VITE_APP_TITLE=TestHub
+VITE_APP_TITLE=通达信测试平台
 ```
 
 ## 常用命令

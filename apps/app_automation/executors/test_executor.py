@@ -89,13 +89,7 @@ class AppTestExecutor:
             os.makedirs(allure_results_dir, exist_ok=True)
             
             # 构建 pytest 参数
-            pytest_args = [
-                sys.executable, '-m', 'pytest',
-                'apps/app_automation/tests/',  # 测试目录
-                '-s', '-v',
-                '--alluredir', allure_results_dir,
-                '--tb=short',
-            ]
+            pytest_args = self._build_pytest_args(allure_results_dir)
             
             logger.info(f"执行命令: {' '.join(pytest_args)}")
             logger.info(f"工作目录: {os.getcwd()}")
@@ -175,6 +169,17 @@ class AppTestExecutor:
         finally:
             os.chdir(original_cwd)
     
+    def _build_pytest_args(self, allure_results_dir: str) -> list[str]:
+        """构建 APP 业务用例执行参数，只运行 UI Flow 入口，避免收集整个测试目录。"""
+        app_flow_test = 'apps/app_automation/tests/test_app_flow.py::TestAppFlow::test_execute_ui_flow'
+        return [
+            sys.executable, '-m', 'pytest',
+            app_flow_test,
+            '-s', '-v',
+            '--alluredir', allure_results_dir,
+            '--tb=short',
+        ]
+
     def _get_log_file_path(self, username: str) -> str:
         """生成日志文件路径: logs/app_automation/{username}/{日期}.log"""
         today = datetime.now().strftime('%Y-%m-%d')

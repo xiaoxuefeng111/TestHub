@@ -1910,7 +1910,8 @@ class BaseBrowserAgent:
         except KeyboardInterrupt:
             pass
         except Exception as e:
-            logger.error(f"Agent execution error: {e}")
+            error_summary = f"{type(e).__name__}: {e}" if str(e).strip() else type(e).__name__
+            logger.error(f"Agent execution error: {error_summary}", exc_info=True)
             raise
 
         # 在任务结束时检查不一致的任务状态

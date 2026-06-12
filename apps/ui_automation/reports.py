@@ -320,21 +320,67 @@ class AIExecutionReportGenerator:
             'gif_path': self.record.gif_path  # 添加GIF路径
         }
 
-    def _parse_detailed_steps(self, logs: str, steps_completed: List) -> List[Dict[str, Any]]:
-        """解析详细步骤信息"""
-        detailed_steps = []
+    def _normalize_step_entry(self, step: Any, index: int) -> Dict[str, Any]:
+        """统一 steps_completed 的多种历史格式。"""
+        if isinstance(step, str):
+            return {
+                'step_number': index + 1,
+                'action': step,
+                'element': '',
+                'status': 'completed',
+                'timestamp': '',
+                'thinking': '',
+                'screenshot': '',
+            }
 
-        # 先从 steps_completed 中提取信息
-        for step in steps_completed:
-            detailed_steps.append({
-                'step_number': step.get('step_number', 0),
-                'action': step.get('action', ''),
+        if isinstance(step, dict):
+            if step.get('step_number') is not None:
+                step_number = step.get('step_number')
+            elif isinstance(step.get('step'), int):
+                step_number = step.get('step') + 1
+            else:
+                step_number = index + 1
+
+            action = step.get('action', '')
+            if isinstance(action, dict):
+                action = ' | '.join(
+                    f"{key}: {value}"
+                    for key, value in action.items()
+                    if value not in (None, '')
+                )
+
+            if not action:
+                thinking = step.get('thinking', '')
+                element = step.get('element', '')
+                action = f"{thinking} {element}".strip()
+
+            return {
+                'step_number': step_number,
+                'action': action or f"步骤 {index + 1}",
                 'element': step.get('element', ''),
                 'status': step.get('status', 'completed'),
                 'timestamp': step.get('timestamp', ''),
                 'thinking': step.get('thinking', ''),
                 'screenshot': step.get('screenshot', ''),
-            })
+            }
+
+        return {
+            'step_number': index + 1,
+            'action': str(step) if step is not None else f"步骤 {index + 1}",
+            'element': '',
+            'status': 'completed',
+            'timestamp': '',
+            'thinking': '',
+            'screenshot': '',
+        }
+
+    def _parse_detailed_steps(self, logs: str, steps_completed: List) -> List[Dict[str, Any]]:
+        """解析详细步骤信息"""
+        detailed_steps = []
+
+        # 先从 steps_completed 中提取信息
+        for index, step in enumerate(steps_completed):
+            detailed_steps.append(self._normalize_step_entry(step, index))
 
         # 如果没有 steps_completed，从日志中解析
         if not detailed_steps:
@@ -390,9 +436,10 @@ class AIExecutionReportGenerator:
     def _get_screenshots_from_steps(self, steps_completed: List) -> List[str]:
         """从步骤中提取截图"""
         screenshots = []
-        for step in steps_completed:
-            if step.get('screenshot'):
-                screenshots.append(step['screenshot'])
+        for index, step in enumerate(steps_completed):
+            normalized_step = self._normalize_step_entry(step, index)
+            if normalized_step.get('screenshot'):
+                screenshots.append(normalized_step['screenshot'])
         return screenshots
 
     def _generate_task_progression(self, planned_tasks: List[Dict]) -> List[Dict[str, Any]]:
@@ -415,14 +462,10 @@ class AIExecutionReportGenerator:
         all_steps = []
         if steps_completed:
             for i, step in enumerate(steps_completed):
-                action_desc = step.get('action', '')
-                if not action_desc:
-                    thinking = step.get('thinking', '')
-                    element = step.get('element', '')
-                    action_desc = f"{thinking} {element}".strip() or f"步骤 {i + 1}"
+                normalized_step = self._normalize_step_entry(step, i)
                 all_steps.append({
-                    'step_number': step.get('step_number', i + 1),
-                    'action': action_desc
+                    'step_number': normalized_step['step_number'],
+                    'action': normalized_step['action']
                 })
         else:
             # 从日志中解析步骤

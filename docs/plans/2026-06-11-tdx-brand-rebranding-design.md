@@ -5,7 +5,7 @@
 
 ## 1. 目标
 
-将当前开源项目中面向用户可见的 `TestHub` / `testhub` 品牌统一替换为 **通达信测试平台**，并接入用户提供的通达信品牌图标。在保持现有开发、启动、部署兼容性的前提下，尽可能清理低风险内部品牌痕迹；对数据库名、环境变量、脚本名等高风险内部标识采用“兼容过渡”策略，而非一次性硬切。
+将当前开源项目中面向用户可见的 `Tongdaxin Testing Platform` / `testhub` 品牌统一替换为 **通达信测试平台**，并接入用户提供的通达信品牌图标。在保持现有开发、启动、部署兼容性的前提下，尽可能清理低风险内部品牌痕迹；对数据库名、环境变量、脚本名等高风险内部标识采用“兼容过渡”策略，而非一次性硬切。
 
 ## 2. 用户确认的品牌信息
 
@@ -16,7 +16,7 @@
 
 ## 3. 设计原则
 
-1. **对外彻底品牌化**：浏览器标题、登录页、导航栏、接口文档、报告页、主要中英文文案不再出现 `TestHub`。
+1. **对外彻底品牌化**：浏览器标题、登录页、导航栏、接口文档、报告页、主要中英文文案不再出现 `Tongdaxin Testing Platform`。
 2. **内部兼容优先**：数据库默认值、环境变量、脚本引用、前端存储 key 等高风险项不做激进硬改，优先支持新旧兼容。
 3. **最小化破坏**：不修改仓库目录名、Python 包路径、Django app 名、迁移历史和 import 路径。
 4. **分层落地**：先改品牌资源与可见入口，再改低风险内部标识，最后处理兼容项。
@@ -33,7 +33,7 @@
   - 左上角 logo 资源替换
   - `alt` 文案改为通达信相关
 - `frontend/src/views/auth/Login.vue`
-  - `TestHub` 改为 `通达信测试平台`
+  - `Tongdaxin Testing Platform` 改为 `通达信测试平台`
   - `AI-Powered Testing Platform` 改为 `AI 一体化测试平台`
   - 将现有内联 SVG 品牌图形改为通达信 logo 显示
 - `frontend/src/views/Home.vue`
@@ -49,7 +49,7 @@
 - `frontend/src/locales/lang/en/auth.js`
 - `frontend/src/locales/lang/en/project.js`
 - `frontend/src/locales/lang/en/ui-automation.js`
-- 如有其他可见页面中直接写死 `TestHub`，一并替换
+- 如有其他可见页面中直接写死 `Tongdaxin Testing Platform`，一并替换
 
 #### 后台与接口文档
 - `backend/settings.py`
@@ -127,7 +127,7 @@
 ## 8. 验收标准
 
 ### 8.1 可见品牌验收
-以下入口不再显示 `TestHub`：
+以下入口不再显示 `Tongdaxin Testing Platform`：
 - 浏览器标题
 - 登录页主品牌名
 - 登录页副标题
@@ -142,7 +142,7 @@
 - 前端旧存储 key 至少可被兼容读取
 
 ### 8.3 代码清理验收
-- 关键代码入口的 `TestHub` / `testhub` 命中显著下降
+- 关键代码入口的 `Tongdaxin Testing Platform` / `testhub` 命中显著下降
 - 保留的 `testhub` 主要集中在兼容层、目录名、历史文档、脚本名或非本轮范围内容中
 
 ## 9. 实施顺序

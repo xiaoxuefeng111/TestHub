@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TestHub is an AI-driven test management platform built with Django 4.2 (backend) + Vue 3 (frontend). It provides test case management, API testing, UI automation testing, AI-powered requirement analysis, and test case generation capabilities.
+Tongdaxin Testing Platform is an AI-driven test management platform built with Django 4.2 (backend) + Vue 3 (frontend). It provides test case management, API testing, UI automation testing, AI-powered requirement analysis, and test case generation capabilities.
 
 ## Common Commands
 # Activate the virtual environment(Windows)

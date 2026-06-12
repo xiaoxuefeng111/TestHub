@@ -11,6 +11,8 @@ import copy
 from typing import Any, Dict, List, Optional
 from django.conf import settings
 
+from ..utils.android_ui_hierarchy import AndroidUiHierarchyHelper
+
 from airtest.core.api import (
     Template,
     wait,
@@ -22,14 +24,16 @@ from airtest.core.api import (
     double_click,
     G,
     ST,
+    start_app,
     text as airtest_text,
 )
 
 # 导入 OCR 工具
 try:
-    from ..utils.ocr_helper import get_ocr_helper
+    from ..utils.ocr_helper import OCRRuntimeError, get_ocr_helper
     OCR_AVAILABLE = True
 except ImportError:
+    OCRRuntimeError = RuntimeError
     OCR_AVAILABLE = False
 
 try:
@@ -41,10 +45,14 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+class StopExecution(Exception):
+    """用于在步骤边界安全停止 UI Flow。"""
+
+
 class UiFlowRunner:
     """将 ui_flow 转换为 Airtest 动作并执行"""
     
-    def __init__(self, image_base_dir: Optional[str] = None, username: Optional[str] = None):
+    def __init__(self, image_base_dir: Optional[str] = None, username: Optional[str] = None, device_id: Optional[str] = None):
         """
         初始化 UiFlowRunner
         
@@ -81,6 +89,8 @@ class UiFlowRunner:
         
         # OCR 工具（延迟初始化）
         self._ocr_helper = None
+        self.device_id = device_id
+        self._ui_hierarchy_helper = None
         
         logger.info(f"初始化UiFlowRunner，图片目录: {self.image_base_dir}")
     
@@ -89,7 +99,8 @@ class UiFlowRunner:
         ui_flow: List[Dict[str, Any]],
         variables: Optional[List[Dict[str, Any]]] = None,
         runtime: Optional[Dict[str, Any]] = None,
-        progress_callback: Optional[Any] = None
+        progress_callback: Optional[Any] = None,
+        should_stop: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """
         执行 UI Flow
@@ -118,6 +129,10 @@ class UiFlowRunner:
         logger.info(f"开始执行 UI Flow，共 {total_steps} 个步骤")
         
         for idx, step in enumerate(ui_flow, 1):
+            if should_stop and should_stop():
+                logger.info("检测到停止信号，终止 UI Flow 执行")
+                raise StopExecution("任务已停止")
+
             step_name = step.get('name', step.get('type', 'unknown'))
             
             # 通知：步骤开始执行
@@ -290,6 +305,11 @@ class UiFlowRunner:
             'click': self._action_click,
             'touch': self._action_click,
             'input': self._action_input,
+            'start_app': self._action_start_app,
+            'tap_text': self._action_tap_text,
+            'wait_text': self._action_wait_text,
+            'swipe_until_text': self._action_swipe_until_text,
+            'keyevent': self._action_keyevent,
             'swipe': self._action_swipe,
             'double_click': self._action_double_click,
             'long_press': self._action_long_press,
@@ -317,6 +337,7 @@ class UiFlowRunner:
             
             # 断言
             'assert': self._action_assert,
+            'assert_text_visible': self._action_assert_text_visible,
             'foreach_assert': self._action_foreach_assert,
         }
         
@@ -610,6 +631,220 @@ class UiFlowRunner:
             logger.info(f"等待 {timeout} 秒")
             sleep(timeout)
     
+    def _parse_region_value(self, region_value: Any) -> Optional[tuple]:
+        """解析 OCR 动作用到的区域参数。"""
+        if not region_value:
+            return None
+        if isinstance(region_value, str):
+            parts = [p.strip() for p in region_value.split(',')]
+            if len(parts) >= 4:
+                return tuple(int(p) for p in parts[:4])
+            return None
+        if isinstance(region_value, (list, tuple)) and len(region_value) >= 4:
+            return tuple(int(x) for x in region_value[:4])
+        return None
+
+    def _get_ui_hierarchy_helper(self):
+        if not self.device_id:
+            return None
+        if self._ui_hierarchy_helper is None:
+            self._ui_hierarchy_helper = AndroidUiHierarchyHelper(device_id=self.device_id)
+        return self._ui_hierarchy_helper
+
+    def _find_text_match_with_ui_hierarchy(
+        self,
+        text_value: str,
+        match_mode: str,
+        region: Optional[tuple],
+        index: int,
+    ) -> Optional[Dict[str, Any]]:
+        helper = self._get_ui_hierarchy_helper()
+        if helper is None:
+            return None
+        try:
+            return helper.find_text(
+                text_value,
+                match_mode=match_mode,
+                region=region,
+                index=index,
+            )
+        except Exception as exc:
+            logger.warning(f"Android 视图树文本定位失败: {exc}")
+            return None
+
+    def _find_text_match_with_ocr(
+        self,
+        text_value: str,
+        match_mode: str,
+        region: Optional[tuple],
+        index: int,
+        min_confidence: float,
+    ) -> Optional[Dict[str, Any]]:
+        try:
+            ocr = self._get_ocr_helper()
+            return ocr.find_text(
+                text_value,
+                match_mode=match_mode,
+                region=region,
+                index=index,
+                min_confidence=min_confidence,
+            )
+        except OCRRuntimeError as exc:
+            raise RuntimeError(f"OCR 文本定位失败，无法查找目标文字“{text_value}”: {exc}") from exc
+
+    def _find_text_match(self, step: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """在当前屏幕中查找文字并返回匹配结果。"""
+        text_value = self._render_value(step.get('text') or step.get('target_text') or '')
+        if not text_value:
+            raise ValueError("缺少目标文字参数")
+
+        match_mode = str(step.get('match_mode', 'contains')).lower()
+        region = self._parse_region_value(step.get('region'))
+        index = int(step.get('index', 0) or 0)
+        min_confidence = float(step.get('min_confidence', 0.3) or 0.3)
+
+        hierarchy_match = self._find_text_match_with_ui_hierarchy(
+            text_value,
+            match_mode=match_mode,
+            region=region,
+            index=index,
+        )
+        if hierarchy_match:
+            return hierarchy_match
+
+        return self._find_text_match_with_ocr(
+            text_value,
+            match_mode=match_mode,
+            region=region,
+            index=index,
+            min_confidence=min_confidence,
+        )
+
+    def _swipe_by_direction(self, direction: str):
+        resolution = G.DEVICE.get_current_resolution()
+        width, height = resolution[0], resolution[1]
+
+        if direction == 'up':
+            swipe((width // 2, int(height * 0.7)), (width // 2, int(height * 0.3)))
+        elif direction == 'down':
+            swipe((width // 2, int(height * 0.3)), (width // 2, int(height * 0.7)))
+        elif direction == 'left':
+            swipe((int(width * 0.7), height // 2), (int(width * 0.3), height // 2))
+        elif direction == 'right':
+            swipe((int(width * 0.3), height // 2), (int(width * 0.7), height // 2))
+        else:
+            raise ValueError(f"不支持的滑动方向: {direction}")
+
+    def _action_start_app(self, step: Dict[str, Any]):
+        """启动应用包。"""
+        package_name = self._render_value(step.get('package_name') or '')
+        if not package_name:
+            raise ValueError("start_app 缺少 package_name 参数")
+        logger.info(f"启动应用: {package_name}")
+        start_app(package_name)
+        wait_after = float(step.get('wait_after', 2) or 0)
+        if wait_after > 0:
+            time.sleep(wait_after)
+
+    def _action_tap_text(self, step: Dict[str, Any]):
+        """基于 OCR 点击指定文字中心点。"""
+        match = self._find_text_match(step)
+        text_value = self._render_value(step.get('text') or step.get('target_text') or '')
+        if not match:
+            raise ValueError(f"未找到目标文字: {text_value}")
+        logger.info(f"点击文字: {text_value}, 坐标: {match['center']}")
+        touch(match['center'])
+        self._run_post_tap_validation(step)
+
+    def _run_post_tap_validation(self, step: Dict[str, Any]):
+        post_wait_text = self._render_value(step.get('post_wait_text') or '')
+        if post_wait_text:
+            self._action_wait_text({
+                'text': post_wait_text,
+                'match_mode': step.get('post_wait_match_mode', step.get('match_mode', 'contains')),
+                'timeout': step.get('post_wait_timeout', 8),
+                'interval': step.get('post_wait_interval', 0.5),
+                'region': step.get('post_wait_region'),
+                'index': step.get('post_wait_index', 0),
+                'min_confidence': step.get('post_wait_min_confidence', step.get('min_confidence', 0.3)),
+            })
+
+        post_absent_text = self._render_value(step.get('post_absent_text') or '')
+        if post_absent_text:
+            self._wait_for_text_absent({
+                'text': post_absent_text,
+                'match_mode': step.get('post_absent_match_mode', step.get('match_mode', 'contains')),
+                'timeout': step.get('post_absent_timeout', 5),
+                'interval': step.get('post_absent_interval', 0.5),
+                'region': step.get('post_absent_region'),
+                'index': step.get('post_absent_index', 0),
+                'min_confidence': step.get('post_absent_min_confidence', step.get('min_confidence', 0.3)),
+            })
+
+    def _wait_for_text_absent(self, step: Dict[str, Any]):
+        text_value = self._render_value(step.get('text') or step.get('target_text') or '')
+        timeout = float(step.get('timeout', 5) or 5)
+        interval = float(step.get('interval', 0.5) or 0.5)
+        deadline = time.time() + timeout
+
+        while True:
+            match = self._find_text_match(step)
+            if not match:
+                logger.info(f"等待文字消失成功: {text_value}")
+                return
+            if time.time() >= deadline:
+                raise ValueError(f"点击后目标文字仍可见: {text_value}")
+            time.sleep(interval)
+
+    def _action_wait_text(self, step: Dict[str, Any]):
+        """等待指定文字出现。"""
+        text_value = self._render_value(step.get('text') or step.get('target_text') or '')
+        timeout = float(step.get('timeout', 10) or 10)
+        interval = float(step.get('interval', 0.5) or 0.5)
+        deadline = time.time() + timeout
+
+        while True:
+            match = self._find_text_match(step)
+            if match:
+                logger.info(f"等待文字成功: {text_value}")
+                return
+            if time.time() >= deadline:
+                raise ValueError(f"未找到目标文字: {text_value}")
+            time.sleep(interval)
+
+    def _action_swipe_until_text(self, step: Dict[str, Any]):
+        """持续滑动直到目标文字出现。"""
+        text_value = self._render_value(step.get('text') or step.get('target_text') or '')
+        direction = str(step.get('direction', 'up')).lower()
+        max_swipes = int(step.get('max_swipes', 5) or 5)
+        interval = float(step.get('interval', 0.5) or 0.5)
+
+        for attempt in range(max_swipes + 1):
+            match = self._find_text_match(step)
+            if match:
+                logger.info(f"找到目标文字: {text_value}")
+                return
+            if attempt >= max_swipes:
+                break
+            logger.info(f"第 {attempt + 1}/{max_swipes} 次滑动查找文字: {text_value}")
+            self._swipe_by_direction(direction)
+            time.sleep(interval)
+
+        raise ValueError(f"滑动后仍未找到目标文字: {text_value}")
+
+    def _action_keyevent(self, step: Dict[str, Any]):
+        """发送 Android 按键事件。"""
+        key_code = self._render_value(step.get('keycode') or 'KEYCODE_BACK')
+        from airtest.core.api import keyevent
+
+        logger.info(f"发送按键事件: {key_code}")
+        keyevent(key_code)
+
+    def _action_assert_text_visible(self, step: Dict[str, Any]):
+        """断言指定文字可见。"""
+        timeout = step.get('timeout', 5)
+        self._action_wait_text({**step, 'timeout': timeout})
+
     def _action_snapshot(self, step: Dict[str, Any]):
         """截图"""
         name = step.get('name', f'snapshot_{int(time.time())}')
@@ -875,7 +1110,12 @@ class UiFlowRunner:
     def _action_input(self, step: Dict[str, Any]):
         """输入文本"""
         target = self._resolve_selector(step)
-        value = step.get('value', '')
+        raw_value = step.get('value')
+        if raw_value is None:
+            raw_value = step.get('text')
+        if raw_value is None:
+            raise ValueError("input 动作缺少 value/text 参数")
+        value = raw_value
         
         # 解析变量表达式（如随机数函数）
         from apps.core.variable_resolver import resolve_variables
@@ -1251,24 +1491,57 @@ class UiFlowRunner:
             return response.text
     
     def _action_if(self, step: Dict[str, Any]):
-        """条件分支，支持丰富的操作符"""
-        left = self._render_value(step.get('left', ''))
-        right = self._render_value(step.get('right', ''))
-        operator = step.get('operator', '==')
+        """条件分支，支持丰富的操作符。"""
         then_steps = step.get('then_steps', [])
         else_steps = step.get('else_steps', [])
-        
-        condition = self._eval_condition(left, operator, right)
-        
-        logger.info(f"条件判断: {left} {operator} {right} = {condition}")
-        
-        # 执行分支
+
+        condition_config = step.get('condition')
+        if isinstance(condition_config, dict) and condition_config.get('kind'):
+            condition = self._evaluate_runtime_condition(condition_config)
+            logger.info(f"运行时条件判断: {condition_config} = {condition}")
+        else:
+            left = self._render_value(step.get('left', ''))
+            right = self._render_value(step.get('right', ''))
+            operator = step.get('operator', '==')
+            condition = self._eval_condition(left, operator, right)
+            logger.info(f"条件判断: {left} {operator} {right} = {condition}")
+
         if condition:
             for sub_step in then_steps:
                 self._execute_step(sub_step)
         else:
             for sub_step in else_steps:
                 self._execute_step(sub_step)
+
+    def _evaluate_runtime_condition(self, condition: Dict[str, Any]) -> bool:
+        kind = str(condition.get('kind') or '').strip().lower()
+        if kind == 'field_empty':
+            target = self._render_value(condition.get('target') or '')
+            if not target:
+                raise ValueError('field_empty 条件缺少 target 参数')
+
+            helper = self._get_ui_hierarchy_helper()
+            if helper is None:
+                raise ValueError(f'field_empty 条件缺少可用的 device_id: {target}')
+
+            result = helper.is_field_empty(str(target))
+            if result is not None:
+                return result
+
+            fallback_match = self._find_text_match_with_ui_hierarchy(
+                str(target),
+                match_mode='contains',
+                region=None,
+                index=0,
+            )
+            if fallback_match is not None:
+                logger.warning(f'无法精确判断字段是否为空，检测到字段标签仍可见，回退为按空字段处理: {target}')
+                return True
+
+            logger.warning(f'无法精确判断字段是否为空，未检测到字段标签，回退为按已填写处理: {target}')
+            return False
+
+        raise ValueError(f"Unsupported runtime condition kind: {kind or 'unknown'}")
     
     @staticmethod
     def _eval_condition(left, operator: str, right) -> bool:
@@ -1434,7 +1707,7 @@ class UiFlowRunner:
         if self._ocr_helper is None:
             if not OCR_AVAILABLE:
                 raise RuntimeError("OCR 功能不可用，请安装: pip install easyocr opencv-python")
-            self._ocr_helper = get_ocr_helper(languages=['en'], use_gpu=False)
+            self._ocr_helper = get_ocr_helper(languages=['ch_sim', 'en'], use_gpu=False)
         return self._ocr_helper
     
     

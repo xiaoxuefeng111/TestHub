@@ -1,23 +1,35 @@
 <template>
   <div class="page-container">
     <div class="page-header">
-      <h1 class="page-title">{{ isEdit ? $t('reviewForm.editTitle') : $t('reviewForm.createTitle') }}</h1>
+      <h1 class="page-title">
+        {{ isEdit ? $t("reviewForm.editTitle") : $t("reviewForm.createTitle") }}
+      </h1>
       <div>
-        <el-button @click="$router.back()">{{ $t('reviewForm.back') }}</el-button>
-        <el-button type="primary" @click="saveReview" :loading="saving">{{ $t('reviewForm.save') }}</el-button>
+        <el-button @click="$router.back()">{{
+          $t("reviewForm.back")
+        }}</el-button>
+        <el-button type="primary" :loading="saving" @click="saveReview">{{
+          $t("reviewForm.save")
+        }}</el-button>
       </div>
     </div>
 
     <div class="form-container">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="120px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
         <el-row :gutter="24">
           <el-col :span="12">
             <el-form-item :label="$t('reviewForm.reviewTitle')" prop="title">
-              <el-input v-model="form.title" :placeholder="$t('reviewForm.reviewTitlePlaceholder')" />
+              <el-input
+                v-model="form.title"
+                :placeholder="$t('reviewForm.reviewTitlePlaceholder')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('reviewForm.associatedProject')" prop="projects">
+            <el-form-item
+              :label="$t('reviewForm.associatedProject')"
+              prop="projects"
+            >
               <el-select
                 v-model="form.projects"
                 multiple
@@ -38,11 +50,23 @@
         <el-row :gutter="24">
           <el-col :span="12">
             <el-form-item :label="$t('reviewForm.priority')" prop="priority">
-              <el-select v-model="form.priority" :placeholder="$t('reviewForm.selectPriority')">
+              <el-select
+                v-model="form.priority"
+                :placeholder="$t('reviewForm.selectPriority')"
+              >
                 <el-option :label="$t('reviewForm.priorityLow')" value="low" />
-                <el-option :label="$t('reviewForm.priorityMedium')" value="medium" />
-                <el-option :label="$t('reviewForm.priorityHigh')" value="high" />
-                <el-option :label="$t('reviewForm.priorityUrgent')" value="urgent" />
+                <el-option
+                  :label="$t('reviewForm.priorityMedium')"
+                  value="medium"
+                />
+                <el-option
+                  :label="$t('reviewForm.priorityHigh')"
+                  value="high"
+                />
+                <el-option
+                  :label="$t('reviewForm.priorityUrgent')"
+                  value="urgent"
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -68,20 +92,25 @@
           />
         </el-form-item>
 
-        <el-form-item :label="$t('reviewForm.selectTestcases')" prop="testcases">
+        <el-form-item
+          :label="$t('reviewForm.selectTestcases')"
+          prop="testcases"
+        >
           <div class="testcase-selector">
             <div class="search-bar">
               <el-input
                 v-model="testcaseSearch"
                 :placeholder="$t('reviewForm.searchTestcases')"
-                @input="searchTestcases"
                 clearable
+                @input="searchTestcases"
               >
                 <template #prefix>
                   <el-icon><Search /></el-icon>
                 </template>
               </el-input>
-              <el-button type="primary" @click="showTestcaseSelector">{{ $t('reviewForm.selectTestcasesBtn') }}</el-button>
+              <el-button type="primary" @click="showTestcaseSelector">{{
+                $t("reviewForm.selectTestcasesBtn")
+              }}</el-button>
             </div>
 
             <div class="selected-testcases">
@@ -89,13 +118,13 @@
                 v-for="testcase in selectedTestcases"
                 :key="testcase.id"
                 closable
-                @close="removeTestcase(testcase.id)"
                 class="testcase-tag"
+                @close="removeTestcase(testcase.id)"
               >
                 {{ testcase.title }}
               </el-tag>
               <div v-if="selectedTestcases.length === 0" class="empty-tip">
-                {{ $t('reviewForm.emptyTestcasesTip') }}
+                {{ $t("reviewForm.emptyTestcasesTip") }}
               </div>
             </div>
           </div>
@@ -118,7 +147,11 @@
         </el-form-item>
 
         <el-form-item :label="$t('reviewForm.reviewTemplate')">
-          <el-select v-model="form.template" :placeholder="$t('reviewForm.selectTemplate')" @change="applyTemplate">
+          <el-select
+            v-model="form.template"
+            :placeholder="$t('reviewForm.selectTemplate')"
+            @change="applyTemplate"
+          >
             <el-option
               v-for="template in templates"
               :key="template.id"
@@ -131,13 +164,18 @@
     </div>
 
     <!-- 用例选择对话框 -->
-    <el-dialog v-model="testcaseSelectorVisible" :title="$t('reviewForm.testcaseSelectorTitle')" :close-on-click-modal="false" width="800px">
+    <el-dialog
+      v-model="testcaseSelectorVisible"
+      :title="$t('reviewForm.testcaseSelectorTitle')"
+      :close-on-click-modal="false"
+      width="800px"
+    >
       <div class="testcase-selector-content">
         <el-input
           v-model="testcaseSearchInDialog"
           :placeholder="$t('reviewForm.searchTestcases')"
-          @input="searchTestcasesInDialog"
           clearable
+          @input="searchTestcasesInDialog"
         >
           <template #prefix>
             <el-icon><Search /></el-icon>
@@ -146,388 +184,444 @@
 
         <el-table
           :data="filteredTestcases"
-          @selection-change="handleTestcaseSelection"
           max-height="400"
           class="testcase-table"
+          @selection-change="handleTestcaseSelection"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="title" :label="$t('reviewForm.testcaseTitle')" min-width="200" show-overflow-tooltip />
-          <el-table-column prop="test_type" :label="$t('reviewForm.testType')" width="120" />
-          <el-table-column prop="priority" :label="$t('reviewForm.priority')" width="100">
+          <el-table-column
+            prop="title"
+            :label="$t('reviewForm.testcaseTitle')"
+            min-width="200"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="test_type"
+            :label="$t('reviewForm.testType')"
+            width="120"
+          />
+          <el-table-column
+            prop="priority"
+            :label="$t('reviewForm.priority')"
+            width="100"
+          >
             <template #default="{ row }">
-              <el-tag :class="`priority-tag ${row.priority}`">{{ getPriorityText(row.priority) }}</el-tag>
+              <el-tag :class="`priority-tag ${row.priority}`">{{
+                getPriorityText(row.priority)
+              }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="author.username" :label="$t('reviewForm.author')" width="120" />
+          <el-table-column
+            prop="author.username"
+            :label="$t('reviewForm.author')"
+            width="120"
+          />
         </el-table>
       </div>
       <template #footer>
-        <el-button @click="testcaseSelectorVisible = false">{{ $t('reviewForm.cancel') }}</el-button>
-        <el-button type="primary" @click="confirmTestcaseSelection">{{ $t('reviewForm.confirm') }}</el-button>
+        <el-button @click="testcaseSelectorVisible = false">{{
+          $t("reviewForm.cancel")
+        }}</el-button>
+        <el-button type="primary" @click="confirmTestcaseSelection">{{
+          $t("reviewForm.confirm")
+        }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
-import api from '@/utils/api'
+import { ref, reactive, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import { Search } from "@element-plus/icons-vue";
+import api from "@/utils/api";
 
-const route = useRoute()
-const router = useRouter()
-const { t } = useI18n()
-const isEdit = computed(() => !!route.params.id)
+const route = useRoute();
+const router = useRouter();
+const { t } = useI18n();
+const isEdit = computed(() => !!route.params.id);
 
-const formRef = ref()
-const saving = ref(false)
-const testcaseSelectorVisible = ref(false)
-const testcaseSearch = ref('')
-const testcaseSearchInDialog = ref('')
+const formRef = ref();
+const saving = ref(false);
+const testcaseSelectorVisible = ref(false);
+const testcaseSearch = ref("");
+const testcaseSearchInDialog = ref("");
 
-const projects = ref([])
-const projectUsers = ref([])
-const templates = ref([])
-const testcases = ref([])
-const selectedTestcases = ref([])
-const tempSelectedTestcases = ref([])
+const projects = ref([]);
+const projectUsers = ref([]);
+const templates = ref([]);
+const testcases = ref([]);
+const selectedTestcases = ref([]);
+const tempSelectedTestcases = ref([]);
 
 const form = reactive({
-  title: '',
-  description: '',
+  title: "",
+  description: "",
   projects: [],
-  priority: 'medium',
-  deadline: '',
+  priority: "medium",
+  deadline: "",
   testcases: [],
   reviewers: [],
-  template: ''
-})
+  template: "",
+});
 
 const rules = computed(() => ({
-  title: [{ required: true, message: t('reviewForm.titleRequired'), trigger: 'blur' }],
-  projects: [{ required: true, message: t('reviewForm.projectRequired'), trigger: 'change' }],
-  testcases: [{ required: true, message: t('reviewForm.testcasesRequired'), trigger: 'change' }],
-  reviewers: [{ required: true, message: t('reviewForm.reviewersRequired'), trigger: 'change' }]
-}))
+  title: [
+    { required: true, message: t("reviewForm.titleRequired"), trigger: "blur" },
+  ],
+  projects: [
+    {
+      required: true,
+      message: t("reviewForm.projectRequired"),
+      trigger: "change",
+    },
+  ],
+  testcases: [
+    {
+      required: true,
+      message: t("reviewForm.testcasesRequired"),
+      trigger: "change",
+    },
+  ],
+  reviewers: [
+    {
+      required: true,
+      message: t("reviewForm.reviewersRequired"),
+      trigger: "change",
+    },
+  ],
+}));
 
 const filteredTestcases = computed(() => {
-  if (!testcaseSearchInDialog.value) return testcases.value
-  return testcases.value.filter(tc =>
-    tc.title.toLowerCase().includes(testcaseSearchInDialog.value.toLowerCase())
-  )
-})
+  if (!testcaseSearchInDialog.value) return testcases.value;
+  return testcases.value.filter((tc) =>
+    tc.title.toLowerCase().includes(testcaseSearchInDialog.value.toLowerCase()),
+  );
+});
 
 const fetchProjects = async () => {
   try {
-    const response = await api.get('/projects/')
-    projects.value = response.data.results || response.data
+    const response = await api.get("/projects/");
+    projects.value = response.data.results || response.data;
   } catch (error) {
-    ElMessage.error(t('reviewForm.fetchProjectsFailed'))
+    ElMessage.error(t("reviewForm.fetchProjectsFailed"));
   }
-}
+};
 
 const fetchProjectUsers = async () => {
   try {
-    const response = await api.get('/auth/users/')
-    projectUsers.value = response.data.results || response.data || []
-    console.log('All users:', projectUsers.value)
+    const response = await api.get("/auth/users/");
+    projectUsers.value = response.data.results || response.data || [];
+    console.log("All users:", projectUsers.value);
   } catch (error) {
-    console.error('Fetch users failed:', error)
-    ElMessage.error(t('reviewForm.fetchUsersFailed'))
-    projectUsers.value = []
+    console.error("Fetch users failed:", error);
+    ElMessage.error(t("reviewForm.fetchUsersFailed"));
+    projectUsers.value = [];
   }
-}
+};
 
 const fetchTestcases = async (projectIds) => {
   try {
     // 如果没有选择项目，清空用例列表
     if (!projectIds || projectIds.length === 0) {
-      testcases.value = []
-      return
+      testcases.value = [];
+      return;
     }
 
     // 获取所有选中项目的用例
-    const promises = projectIds.map(projectId =>
-      api.get('/testcases/', { params: { project: projectId } })
-    )
+    const promises = projectIds.map((projectId) =>
+      api.get("/testcases/", { params: { project: projectId } }),
+    );
 
-    const responses = await Promise.all(promises)
-    const allTestcases = []
+    const responses = await Promise.all(promises);
+    const allTestcases = [];
 
-    responses.forEach(response => {
-      const cases = response.data.results || response.data || []
-      allTestcases.push(...cases)
-    })
+    responses.forEach((response) => {
+      const cases = response.data.results || response.data || [];
+      allTestcases.push(...cases);
+    });
 
     // 去重（基于用例ID）
-    const uniqueTestcases = allTestcases.filter((testcase, index, self) =>
-      index === self.findIndex(t => t.id === testcase.id)
-    )
+    const uniqueTestcases = allTestcases.filter(
+      (testcase, index, self) =>
+        index === self.findIndex((t) => t.id === testcase.id),
+    );
 
-    testcases.value = uniqueTestcases
+    testcases.value = uniqueTestcases;
   } catch (error) {
-    console.error('Fetch testcases failed:', error)
+    console.error("Fetch testcases failed:", error);
   }
-}
+};
 
 const fetchTemplates = async (projectIds) => {
   try {
     // 如果没有选择项目，清空模板列表
     if (!projectIds || projectIds.length === 0) {
-      templates.value = []
-      return
+      templates.value = [];
+      return;
     }
 
     // 获取所有选中项目的模板
-    const promises = projectIds.map(projectId =>
-      api.get('/reviews/review-templates/', { params: { project: projectId } })
-    )
+    const promises = projectIds.map((projectId) =>
+      api.get("/reviews/review-templates/", { params: { project: projectId } }),
+    );
 
-    const responses = await Promise.all(promises)
-    const allTemplates = []
+    const responses = await Promise.all(promises);
+    const allTemplates = [];
 
-    responses.forEach(response => {
-      const temps = response.data.results || response.data || []
-      allTemplates.push(...temps)
-    })
+    responses.forEach((response) => {
+      const temps = response.data.results || response.data || [];
+      allTemplates.push(...temps);
+    });
 
     // 去重（基于模板ID）
-    const uniqueTemplates = allTemplates.filter((template, index, self) =>
-      index === self.findIndex(t => t.id === template.id)
-    )
+    const uniqueTemplates = allTemplates.filter(
+      (template, index, self) =>
+        index === self.findIndex((t) => t.id === template.id),
+    );
 
-    templates.value = uniqueTemplates
+    templates.value = uniqueTemplates;
   } catch (error) {
-    console.error('Fetch templates failed:', error)
+    console.error("Fetch templates failed:", error);
   }
-}
+};
 
 const onProjectChange = (projectIds) => {
   if (projectIds && projectIds.length > 0) {
-    fetchTestcases(projectIds)
-    fetchTemplates(projectIds)
+    fetchTestcases(projectIds);
+    fetchTemplates(projectIds);
   } else {
     // 如果没有选择项目，清空相关数据
-    testcases.value = []
-    templates.value = []
+    testcases.value = [];
+    templates.value = [];
   }
 
   // 清空相关选择
-  form.reviewers = []
-  form.testcases = []
-  selectedTestcases.value = []
-}
+  form.reviewers = [];
+  form.testcases = [];
+  selectedTestcases.value = [];
+};
 
 const showTestcaseSelector = () => {
   if (!form.projects || form.projects.length === 0) {
-    ElMessage.warning(t('reviewForm.selectProjectFirst'))
-    return
+    ElMessage.warning(t("reviewForm.selectProjectFirst"));
+    return;
   }
-  testcaseSelectorVisible.value = true
-}
+  testcaseSelectorVisible.value = true;
+};
 
 const handleTestcaseSelection = (selection) => {
-  tempSelectedTestcases.value = selection
-}
+  tempSelectedTestcases.value = selection;
+};
 
 const confirmTestcaseSelection = () => {
-  selectedTestcases.value = [...tempSelectedTestcases.value]
-  form.testcases = selectedTestcases.value.map(tc => tc.id)
-  testcaseSelectorVisible.value = false
-}
+  selectedTestcases.value = [...tempSelectedTestcases.value];
+  form.testcases = selectedTestcases.value.map((tc) => tc.id);
+  testcaseSelectorVisible.value = false;
+};
 
 const removeTestcase = (id) => {
-  selectedTestcases.value = selectedTestcases.value.filter(tc => tc.id !== id)
-  form.testcases = selectedTestcases.value.map(tc => tc.id)
-}
+  selectedTestcases.value = selectedTestcases.value.filter(
+    (tc) => tc.id !== id,
+  );
+  form.testcases = selectedTestcases.value.map((tc) => tc.id);
+};
 
 const onReviewersChange = () => {
   // 可以在这里添加评审人员变更的逻辑
-}
+};
 
 const applyTemplate = async (templateId) => {
-  if (!templateId) return
+  if (!templateId) return;
 
   try {
-    const template = templates.value.find(t => t.id === templateId)
+    const template = templates.value.find((t) => t.id === templateId);
     if (template) {
       // 应用模板的默认评审人员
-      form.reviewers = template.default_reviewers.map(u => u.id)
+      form.reviewers = template.default_reviewers.map((u) => u.id);
     }
   } catch (error) {
-    console.error('Apply template failed:', error)
+    console.error("Apply template failed:", error);
   }
-}
+};
 
 const saveReview = async () => {
-  if (!formRef.value) return
+  if (!formRef.value) return;
 
   try {
-    await formRef.value.validate()
-    saving.value = true
+    await formRef.value.validate();
+    saving.value = true;
 
     const data = {
       ...form,
       testcases: form.testcases,
       reviewers: form.reviewers,
       // 确保包含 template 字段
-      template: form.template || null
-    }
+      template: form.template || null,
+    };
 
     if (isEdit.value) {
-      await api.put(`/reviews/reviews/${route.params.id}/`, data)
-      ElMessage.success(t('reviewForm.updateSuccess'))
+      await api.put(`/reviews/reviews/${route.params.id}/`, data);
+      ElMessage.success(t("reviewForm.updateSuccess"));
     } else {
-      await api.post('/reviews/reviews/', data)
-      ElMessage.success(t('reviewForm.createSuccess'))
+      await api.post("/reviews/reviews/", data);
+      ElMessage.success(t("reviewForm.createSuccess"));
     }
 
-    router.push('/ai-generation/reviews')
-
+    router.push("/ai-generation/reviews");
   } catch (error) {
     if (error.response?.data) {
-      const errors = Object.values(error.response.data).flat()
-      ElMessage.error(errors[0] || t('reviewForm.saveFailed'))
+      const errors = Object.values(error.response.data).flat();
+      ElMessage.error(errors[0] || t("reviewForm.saveFailed"));
     } else {
-      ElMessage.error(t('reviewForm.saveFailed'))
+      ElMessage.error(t("reviewForm.saveFailed"));
     }
   } finally {
-    saving.value = false
+    saving.value = false;
   }
-}
+};
 
 const getPriorityText = (priority) => {
   const textMap = {
-    low: t('reviewForm.priorityLow'),
-    medium: t('reviewForm.priorityMedium'),
-    high: t('reviewForm.priorityHigh'),
-    critical: t('reviewForm.priorityUrgent')
-  }
-  return textMap[priority] || priority
-}
+    low: t("reviewForm.priorityLow"),
+    medium: t("reviewForm.priorityMedium"),
+    high: t("reviewForm.priorityHigh"),
+    critical: t("reviewForm.priorityUrgent"),
+  };
+  return textMap[priority] || priority;
+};
 
 const findMatchingTemplate = (review, templateList) => {
-  if (!templateList || templateList.length === 0) return null
+  if (!templateList || templateList.length === 0) return null;
 
   // 获取评审的项目ID列表和评审人ID列表
-  const reviewProjectIds = review.projects.map(p => p.id).sort()
-  const reviewReviewerIds = review.assignments.map(a => a.reviewer.id).sort()
+  const reviewProjectIds = review.projects.map((p) => p.id).sort();
+  const reviewReviewerIds = review.assignments.map((a) => a.reviewer.id).sort();
 
-  let bestMatch = null
-  let bestScore = 0
+  let bestMatch = null;
+  let bestScore = 0;
 
   for (const template of templateList) {
-    let score = 0
+    let score = 0;
 
     // 检查项目匹配度
-    const templateProjectIds = (template.project || []).map(p => p.id).sort()
-    const projectIntersection = reviewProjectIds.filter(id => templateProjectIds.includes(id))
+    const templateProjectIds = (template.project || []).map((p) => p.id).sort();
+    const projectIntersection = reviewProjectIds.filter((id) =>
+      templateProjectIds.includes(id),
+    );
     if (projectIntersection.length > 0) {
-      score += projectIntersection.length * 2 // 项目匹配权重更高
+      score += projectIntersection.length * 2; // 项目匹配权重更高
     }
 
     // 检查默认评审人匹配度
-    const templateReviewerIds = (template.default_reviewers || []).map(r => r.id).sort()
-    const reviewerIntersection = reviewReviewerIds.filter(id => templateReviewerIds.includes(id))
+    const templateReviewerIds = (template.default_reviewers || [])
+      .map((r) => r.id)
+      .sort();
+    const reviewerIntersection = reviewReviewerIds.filter((id) =>
+      templateReviewerIds.includes(id),
+    );
     if (reviewerIntersection.length > 0) {
-      score += reviewerIntersection.length // 评审人匹配
+      score += reviewerIntersection.length; // 评审人匹配
     }
 
     // 如果有更高的匹配分数，更新最佳匹配
     if (score > bestScore) {
-      bestScore = score
-      bestMatch = template
+      bestScore = score;
+      bestMatch = template;
     }
   }
 
   // 只有当匹配分数大于0时才返回匹配的模板
-  return bestScore > 0 ? bestMatch : null
-}
+  return bestScore > 0 ? bestMatch : null;
+};
 
 const fetchReviewData = async (reviewId) => {
   try {
-    const response = await api.get(`/reviews/reviews/${reviewId}/`)
-    const review = response.data
+    const response = await api.get(`/reviews/reviews/${reviewId}/`);
+    const review = response.data;
 
     // 填充表单数据
-    form.title = review.title
-    form.description = review.description
-    form.projects = review.projects.map(p => p.id)
-    form.priority = review.priority
-    form.deadline = review.deadline
-    form.reviewers = review.assignments.map(a => a.reviewer.id)
+    form.title = review.title;
+    form.description = review.description;
+    form.projects = review.projects.map((p) => p.id);
+    form.priority = review.priority;
+    form.deadline = review.deadline;
+    form.reviewers = review.assignments.map((a) => a.reviewer.id);
 
     // 处理测试用例
-    selectedTestcases.value = review.testcases
-    form.testcases = review.testcases.map(tc => tc.id)
+    selectedTestcases.value = review.testcases;
+    form.testcases = review.testcases.map((tc) => tc.id);
 
     // 加载项目相关数据
     if (form.projects.length > 0) {
-      await fetchTestcases(form.projects)
-      await fetchTemplates(form.projects)
+      await fetchTestcases(form.projects);
+      await fetchTemplates(form.projects);
 
       // 在模板加载完成后，尝试找到匹配的模板
-      const matchingTemplate = findMatchingTemplate(review, templates.value)
+      const matchingTemplate = findMatchingTemplate(review, templates.value);
       if (matchingTemplate) {
-        form.template = matchingTemplate.id
+        form.template = matchingTemplate.id;
       }
     }
-
   } catch (error) {
-    console.error('Fetch review data failed:', error)
-    ElMessage.error(t('reviewForm.fetchReviewFailed'))
-    router.push('/ai-generation/reviews')
+    console.error("Fetch review data failed:", error);
+    ElMessage.error(t("reviewForm.fetchReviewFailed"));
+    router.push("/ai-generation/reviews");
   }
-}
+};
 
 const searchTestcases = () => {
   // 搜索用例的逻辑
-}
+};
 
 const searchTestcasesInDialog = () => {
   // 在对话框中搜索用例的逻辑
-}
+};
 
 onMounted(async () => {
-  await fetchProjects()
-  fetchProjectUsers() // 页面加载时就获取所有用户
+  await fetchProjects();
+  fetchProjectUsers(); // 页面加载时就获取所有用户
 
   if (isEdit.value) {
     // 如果是编辑模式，加载现有数据
-    fetchReviewData(route.params.id)
+    fetchReviewData(route.params.id);
   } else {
     // 创建模式，检查是否有模板参数
-    const templateId = route.query.template
+    const templateId = route.query.template;
     if (templateId) {
       try {
         // 获取模板详情
-        const response = await api.get(`/reviews/review-templates/${templateId}/`)
-        const template = response.data
+        const response = await api.get(
+          `/reviews/review-templates/${templateId}/`,
+        );
+        const template = response.data;
 
         // 设置模板ID到表单
-        form.template = parseInt(templateId)
+        form.template = parseInt(templateId);
 
         // 自动填充项目
         if (template.project && template.project.length > 0) {
-          form.projects = template.project.map(p => p.id)
+          form.projects = template.project.map((p) => p.id);
 
           // 触发项目变更，加载对应的用例和模板
-          await onProjectChange(form.projects)
+          await onProjectChange(form.projects);
 
           // 应用模板的默认评审人
-          if (template.default_reviewers && template.default_reviewers.length > 0) {
-            form.reviewers = template.default_reviewers.map(u => u.id)
+          if (
+            template.default_reviewers &&
+            template.default_reviewers.length > 0
+          ) {
+            form.reviewers = template.default_reviewers.map((u) => u.id);
           }
         }
       } catch (error) {
-        console.error('加载模板失败:', error)
+        console.error("加载模板失败:", error);
       }
     }
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -563,9 +657,18 @@ onMounted(async () => {
 }
 
 .priority-tag {
-  &.low { color: #67c23a; }
-  &.medium { color: #e6a23c; }
-  &.high { color: #f56c6c; }
-  &.critical { color: #f56c6c; font-weight: bold; }
+  &.low {
+    color: #67c23a;
+  }
+  &.medium {
+    color: #e6a23c;
+  }
+  &.high {
+    color: #f56c6c;
+  }
+  &.critical {
+    color: #f56c6c;
+    font-weight: bold;
+  }
 }
 </style>

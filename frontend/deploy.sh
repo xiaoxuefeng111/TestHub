@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TestHub 前端 Docker 部署脚本
+# 通达信测试平台前端 Docker 部署脚本
 # 用法: ./deploy.sh [build|start|stop|restart|logs|dev]
 
 set -e
@@ -122,7 +122,7 @@ clean() {
 show_menu() {
     echo ""
     echo "========================================="
-    echo "   TestHub 前端 Docker 部署工具"
+    echo "   通达信测试平台前端 Docker 部署工具"
     echo "========================================="
     echo "1. 构建镜像"
     echo "2. 启动生产环境"

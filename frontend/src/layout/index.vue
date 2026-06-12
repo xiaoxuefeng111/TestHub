@@ -3,8 +3,9 @@
     <el-container>
       <!-- 侧边栏 -->
       <el-aside width="240px">
-        <div class="logo" @click="router.push('/home')" style="cursor: pointer;">
-          <img :src="logoImage" alt="TestHub" class="logo-img" />
+        <div class="logo" style="cursor: pointer" @click="router.push('/home')">
+          <img :src="brandLogo" alt="通达信测试平台" class="logo-img" />
+          <span class="logo-text">通达信测试平台</span>
         </div>
         <el-menu
           :default-active="$route.path"
@@ -18,39 +19,47 @@
             <el-sub-menu index="requirement">
               <template #title>
                 <el-icon><MagicStick /></el-icon>
-                <span>{{ $t('menu.intelligentCaseGeneration') }}</span>
+                <span>{{ $t("menu.intelligentCaseGeneration") }}</span>
               </template>
-              <el-menu-item index="/ai-generation/requirement-analysis">{{ $t('menu.aiCaseGeneration') }}</el-menu-item>
-              <el-menu-item index="/ai-generation/generated-testcases">{{ $t('menu.aiGeneratedTestcases') }}</el-menu-item>
+              <el-menu-item index="/ai-generation/requirement-analysis">{{
+                $t("menu.aiCaseGeneration")
+              }}</el-menu-item>
+              <el-menu-item index="/ai-generation/generated-testcases">{{
+                $t("menu.aiGeneratedTestcases")
+              }}</el-menu-item>
             </el-sub-menu>
             <el-menu-item index="/ai-generation/projects">
               <el-icon><Folder /></el-icon>
-              <span>{{ $t('menu.projectManagement') }}</span>
+              <span>{{ $t("menu.projectManagement") }}</span>
             </el-menu-item>
             <el-menu-item index="/ai-generation/testcases">
               <el-icon><Document /></el-icon>
-              <span>{{ $t('menu.testCases') }}</span>
+              <span>{{ $t("menu.testCases") }}</span>
             </el-menu-item>
             <el-menu-item index="/ai-generation/versions">
               <el-icon><Flag /></el-icon>
-              <span>{{ $t('menu.versionManagement') }}</span>
+              <span>{{ $t("menu.versionManagement") }}</span>
             </el-menu-item>
             <el-sub-menu index="reviews">
               <template #title>
                 <el-icon><Check /></el-icon>
-                <span>{{ $t('menu.reviewManagement') }}</span>
+                <span>{{ $t("menu.reviewManagement") }}</span>
               </template>
-              <el-menu-item index="/ai-generation/reviews">{{ $t('menu.reviewList') }}</el-menu-item>
-              <el-menu-item index="/ai-generation/review-templates">{{ $t('menu.reviewTemplates') }}</el-menu-item>
+              <el-menu-item index="/ai-generation/reviews">{{
+                $t("menu.reviewList")
+              }}</el-menu-item>
+              <el-menu-item index="/ai-generation/review-templates">{{
+                $t("menu.reviewTemplates")
+              }}</el-menu-item>
             </el-sub-menu>
 
             <el-menu-item index="/ai-generation/executions">
               <el-icon><VideoPlay /></el-icon>
-              <span>{{ $t('menu.testPlan') }}</span>
+              <span>{{ $t("menu.testPlan") }}</span>
             </el-menu-item>
             <el-menu-item index="/ai-generation/reports">
               <el-icon><DataAnalysis /></el-icon>
-              <span>{{ $t('menu.testReport') }}</span>
+              <span>{{ $t("menu.testReport") }}</span>
             </el-menu-item>
           </template>
 
@@ -58,39 +67,39 @@
           <template v-else-if="currentModule === 'api-testing'">
             <el-menu-item index="/api-testing/dashboard">
               <el-icon><Odometer /></el-icon>
-              <span>{{ $t('menu.dashboard') }}</span>
+              <span>{{ $t("menu.dashboard") }}</span>
             </el-menu-item>
             <el-menu-item index="/api-testing/projects">
               <el-icon><Folder /></el-icon>
-              <span>{{ $t('menu.projectManagement') }}</span>
+              <span>{{ $t("menu.projectManagement") }}</span>
             </el-menu-item>
             <el-menu-item index="/api-testing/interfaces">
               <el-icon><Link /></el-icon>
-              <span>{{ $t('menu.interfaceManagement') }}</span>
+              <span>{{ $t("menu.interfaceManagement") }}</span>
             </el-menu-item>
             <el-menu-item index="/api-testing/automation">
               <el-icon><VideoPlay /></el-icon>
-              <span>{{ $t('menu.automationTesting') }}</span>
+              <span>{{ $t("menu.automationTesting") }}</span>
             </el-menu-item>
             <el-menu-item index="/api-testing/history">
               <el-icon><Timer /></el-icon>
-              <span>{{ $t('menu.requestHistory') }}</span>
+              <span>{{ $t("menu.requestHistory") }}</span>
             </el-menu-item>
             <el-menu-item index="/api-testing/environments">
               <el-icon><Setting /></el-icon>
-              <span>{{ $t('menu.environmentManagement') }}</span>
+              <span>{{ $t("menu.environmentManagement") }}</span>
             </el-menu-item>
             <el-menu-item index="/api-testing/reports">
               <el-icon><DataAnalysis /></el-icon>
-              <span>{{ $t('menu.testReport') }}</span>
+              <span>{{ $t("menu.testReport") }}</span>
             </el-menu-item>
             <el-menu-item index="/api-testing/scheduled-tasks">
               <el-icon><AlarmClock /></el-icon>
-              <span>{{ $t('menu.scheduledTasks') }}</span>
+              <span>{{ $t("menu.scheduledTasks") }}</span>
             </el-menu-item>
             <el-menu-item index="/api-testing/notification-logs">
               <el-icon><Bell /></el-icon>
-              <span>{{ $t('menu.notificationList') }}</span>
+              <span>{{ $t("menu.notificationList") }}</span>
             </el-menu-item>
           </template>
 
@@ -98,47 +107,47 @@
           <template v-else-if="currentModule === 'ui-automation'">
             <el-menu-item index="/ui-automation/dashboard">
               <el-icon><Odometer /></el-icon>
-              <span>{{ $t('menu.dashboard') }}</span>
+              <span>{{ $t("menu.dashboard") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/projects">
               <el-icon><Folder /></el-icon>
-              <span>{{ $t('menu.projectManagement') }}</span>
+              <span>{{ $t("menu.projectManagement") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/elements-enhanced">
               <el-icon><Aim /></el-icon>
-              <span>{{ $t('menu.elementManagement') }}</span>
+              <span>{{ $t("menu.elementManagement") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/test-cases">
               <el-icon><Document /></el-icon>
-              <span>{{ $t('menu.caseManagement') }}</span>
+              <span>{{ $t("menu.caseManagement") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/scripts-enhanced">
               <el-icon><Edit /></el-icon>
-              <span>{{ $t('menu.scriptGeneration') }}</span>
+              <span>{{ $t("menu.scriptGeneration") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/scripts">
               <el-icon><DocumentCopy /></el-icon>
-              <span>{{ $t('menu.scriptList') }}</span>
+              <span>{{ $t("menu.scriptList") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/suites">
               <el-icon><Collection /></el-icon>
-              <span>{{ $t('menu.suiteManagement') }}</span>
+              <span>{{ $t("menu.suiteManagement") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/executions">
               <el-icon><VideoPlay /></el-icon>
-              <span>{{ $t('menu.executionRecords') }}</span>
+              <span>{{ $t("menu.executionRecords") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/reports">
               <el-icon><DataAnalysis /></el-icon>
-              <span>{{ $t('menu.testReport') }}</span>
+              <span>{{ $t("menu.testReport") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/scheduled-tasks">
               <el-icon><AlarmClock /></el-icon>
-              <span>{{ $t('menu.scheduledTasks') }}</span>
+              <span>{{ $t("menu.scheduledTasks") }}</span>
             </el-menu-item>
             <el-menu-item index="/ui-automation/notification-logs">
               <el-icon><Bell /></el-icon>
-              <span>{{ $t('menu.notificationList') }}</span>
+              <span>{{ $t("menu.notificationList") }}</span>
             </el-menu-item>
           </template>
 
@@ -198,17 +207,16 @@
           <template v-else-if="currentModule === 'ai-intelligent-mode'">
             <el-menu-item index="/ai-intelligent-mode/testing">
               <el-icon><VideoPlay /></el-icon>
-              <span>{{ $t('menu.aiIntelligentTesting') }}</span>
+              <span>{{ $t("menu.aiIntelligentTesting") }}</span>
             </el-menu-item>
             <el-menu-item index="/ai-intelligent-mode/cases">
               <el-icon><Document /></el-icon>
-              <span>{{ $t('menu.aiCaseManagement') }}</span>
+              <span>{{ $t("menu.aiCaseManagement") }}</span>
             </el-menu-item>
             <el-menu-item index="/ai-intelligent-mode/execution-records">
               <el-icon><Timer /></el-icon>
-              <span>{{ $t('menu.aiExecutionRecords') }}</span>
+              <span>{{ $t("menu.aiExecutionRecords") }}</span>
             </el-menu-item>
-
           </template>
 
           <!-- 配置中心模块菜单 -->
@@ -216,24 +224,24 @@
             <el-sub-menu index="ai-case-generation">
               <template #title>
                 <el-icon><MagicStick /></el-icon>
-                <span>{{ $t('menu.aiCaseGenerationConfig') }}</span>
+                <span>{{ $t("menu.aiCaseGenerationConfig") }}</span>
               </template>
               <el-menu-item index="/configuration/ai-model">
                 <el-icon><Cpu /></el-icon>
-                <span>{{ $t('menu.aiModelConfig') }}</span>
+                <span>{{ $t("menu.aiModelConfig") }}</span>
               </el-menu-item>
               <el-menu-item index="/configuration/prompt-config">
                 <el-icon><Edit /></el-icon>
-                <span>{{ $t('menu.promptConfig') }}</span>
+                <span>{{ $t("menu.promptConfig") }}</span>
               </el-menu-item>
               <el-menu-item index="/configuration/generation-config">
                 <el-icon><Setting /></el-icon>
-                <span>{{ $t('menu.generationConfig') }}</span>
+                <span>{{ $t("menu.generationConfig") }}</span>
               </el-menu-item>
             </el-sub-menu>
             <el-menu-item index="/configuration/ui-env">
               <el-icon><Monitor /></el-icon>
-              <span>{{ $t('menu.uiEnvConfig') }}</span>
+              <span>{{ $t("menu.uiEnvConfig") }}</span>
             </el-menu-item>
             <el-menu-item index="/configuration/app-env">
               <el-icon><Cellphone /></el-icon>
@@ -241,15 +249,15 @@
             </el-menu-item>
             <el-menu-item index="/configuration/ai-mode">
               <el-icon><MagicStick /></el-icon>
-              <span>{{ $t('menu.aiModeConfig') }}</span>
+              <span>{{ $t("menu.aiModeConfig") }}</span>
             </el-menu-item>
             <el-menu-item index="/configuration/scheduled-task">
               <el-icon><Timer /></el-icon>
-              <span>{{ $t('menu.scheduledTaskConfig') }}</span>
+              <span>{{ $t("menu.scheduledTaskConfig") }}</span>
             </el-menu-item>
             <el-menu-item index="/configuration/dify">
               <el-icon><ChatDotRound /></el-icon>
-              <span>{{ $t('menu.difyConfig') }}</span>
+              <span>{{ $t("menu.difyConfig") }}</span>
             </el-menu-item>
           </template>
         </el-menu>
@@ -262,25 +270,40 @@
           <div class="header-content">
             <div class="header-left">
               <el-breadcrumb separator="/">
-                <el-breadcrumb-item :to="{ path: '/home' }">{{ $t('nav.home') }}</el-breadcrumb-item>
-                <el-breadcrumb-item v-if="moduleName">{{ moduleName }}</el-breadcrumb-item>
+                <el-breadcrumb-item :to="{ path: '/home' }">{{
+                  $t("nav.home")
+                }}</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="moduleName">{{
+                  moduleName
+                }}</el-breadcrumb-item>
                 <el-breadcrumb-item>{{ breadcrumbTitle }}</el-breadcrumb-item>
               </el-breadcrumb>
             </div>
             <div class="header-right">
               <!-- 语言切换 -->
-              <el-dropdown @command="handleLanguageChange" class="language-dropdown">
+              <el-dropdown
+                class="language-dropdown"
+                @command="handleLanguageChange"
+              >
                 <span class="language-selector">
-                  <span class="language-flag">{{ appStore.language === 'zh-cn' ? '🇨🇳' : '🇺🇸' }}</span>
+                  <span class="language-flag">{{
+                    appStore.language === "zh-cn" ? "🇨🇳" : "🇺🇸"
+                  }}</span>
                   <span>{{ currentLanguage }}</span>
                   <el-icon class="el-icon--right"><ArrowDown /></el-icon>
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item command="zh-cn" :disabled="appStore.language === 'zh-cn'">
+                    <el-dropdown-item
+                      command="zh-cn"
+                      :disabled="appStore.language === 'zh-cn'"
+                    >
                       <span class="dropdown-flag">🇨🇳</span> 简体中文
                     </el-dropdown-item>
-                    <el-dropdown-item command="en" :disabled="appStore.language === 'en'">
+                    <el-dropdown-item
+                      command="en"
+                      :disabled="appStore.language === 'en'"
+                    >
                       <span class="dropdown-flag">🇺🇸</span> English
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -288,7 +311,7 @@
               </el-dropdown>
 
               <!-- 用户信息 -->
-              <el-dropdown @command="handleCommand" class="user-dropdown">
+              <el-dropdown class="user-dropdown" @command="handleCommand">
                 <span class="user-info">
                   <el-avatar :size="32" :src="userStore.user?.avatar" />
                   <span class="username">{{ userStore.user?.username }}</span>
@@ -296,8 +319,12 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item command="profile">{{ $t('nav.profile') }}</el-dropdown-item>
-                    <el-dropdown-item divided command="logout">{{ $t('nav.logout') }}</el-dropdown-item>
+                    <el-dropdown-item command="profile">{{
+                      $t("nav.profile")
+                    }}</el-dropdown-item>
+                    <el-dropdown-item divided command="logout">{{
+                      logoutLabel
+                    }}</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -315,145 +342,170 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-import { useAppStore } from '@/stores/app'
-import { ElMessage } from 'element-plus'
-import { useI18n } from 'vue-i18n'
+import { computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useUserStore } from "@/stores/user";
+import { useAppStore } from "@/stores/app";
+import { ElMessage } from "element-plus";
+import { useI18n } from "vue-i18n";
 import {
-  Monitor, Folder, Document, Flag, Check, Collection, VideoPlay,
-  DataAnalysis, ChatDotRound, DocumentCopy, Link, MagicStick,
-  Odometer, Timer, Setting, AlarmClock, Bell, Aim, Edit, Cpu, ArrowDown, Cellphone, Connection, FolderOpened
-} from '@element-plus/icons-vue'
-import logoSvg from '@/assets/images/logo.svg'
-import logoHomePng from '@/assets/images/logo_home.png'
+  Monitor,
+  Folder,
+  Document,
+  Flag,
+  Check,
+  Collection,
+  VideoPlay,
+  DataAnalysis,
+  ChatDotRound,
+  DocumentCopy,
+  Link,
+  MagicStick,
+  Odometer,
+  Timer,
+  Setting,
+  AlarmClock,
+  Bell,
+  Aim,
+  Edit,
+  Cpu,
+  ArrowDown,
+  Cellphone,
+  Connection,
+  FolderOpened,
+} from "@element-plus/icons-vue";
+import brandLogo from "@/assets/images/tdx-logo.png";
 
-const router = useRouter()
-const route = useRoute()
-const userStore = useUserStore()
-const appStore = useAppStore()
-const { t } = useI18n()
+const router = useRouter();
+const route = useRoute();
+const userStore = useUserStore();
+const appStore = useAppStore();
+const { t } = useI18n();
+const LOCAL_DEV_AUTH_ENABLED = import.meta.env.DEV;
 
-const logoImage = computed(() => {
-		return route.path === '/home' ? logoSvg : logoHomePng
-	})
-	
+const logoutLabel = computed(() => {
+  return LOCAL_DEV_AUTH_ENABLED ? "重置本地会话" : t("nav.logout");
+});
+
 
 // 当前语言显示
 const currentLanguage = computed(() => {
-  return appStore.language === 'zh-cn' ? '简体中文' : 'English'
-})
+  return appStore.language === "zh-cn" ? "简体中文" : "English";
+});
 
 // 切换语言（无需刷新页面）
 const handleLanguageChange = (lang) => {
-  appStore.setLanguage(lang)
-  ElMessage.success(lang === 'zh-cn' ? '语言已切换为中文' : 'Language switched to English')
-}
+  appStore.setLanguage(lang);
+  ElMessage.success(
+    lang === "zh-cn" ? "语言已切换为中文" : "Language switched to English",
+  );
+};
 
 const currentModule = computed(() => {
-  if (route.path.startsWith('/ai-generation')) return 'ai-generation'
-  if (route.path.startsWith('/api-testing')) return 'api-testing'
-  if (route.path.startsWith('/ui-automation')) return 'ui-automation'
-  if (route.path.startsWith('/app-automation')) return 'app-automation'
-  if (route.path.startsWith('/ai-intelligent-mode')) return 'ai-intelligent-mode'
-  if (route.path.startsWith('/configuration')) return 'configuration'
-  return ''
-})
+  if (route.path.startsWith("/ai-generation")) return "ai-generation";
+  if (route.path.startsWith("/api-testing")) return "api-testing";
+  if (route.path.startsWith("/ui-automation")) return "ui-automation";
+  if (route.path.startsWith("/app-automation")) return "app-automation";
+  if (route.path.startsWith("/ai-intelligent-mode"))
+    return "ai-intelligent-mode";
+  if (route.path.startsWith("/configuration")) return "configuration";
+  return "";
+});
 
 const moduleName = computed(() => {
   const map = {
-    'ai-generation': t('modules.aiGeneration'),
-    'api-testing': t('modules.apiTesting'),
-    'ui-automation': t('modules.uiAutomation'),
-    'app-automation': 'APP自动化测试',
-    'ai-intelligent-mode': t('modules.aiIntelligentMode'),
-    'configuration': t('modules.configuration')
-  }
-  return map[currentModule.value] || ''
-})
+    "ai-generation": t("modules.aiGeneration"),
+    "api-testing": t("modules.apiTesting"),
+    "ui-automation": t("modules.uiAutomation"),
+    "app-automation": "APP自动化测试",
+    "ai-intelligent-mode": t("modules.aiIntelligentMode"),
+    configuration: t("modules.configuration"),
+  };
+  return map[currentModule.value] || "";
+});
 
 const breadcrumbTitle = computed(() => {
   const routeMap = {
     // AI用例生成
-    '/ai-generation/requirement-analysis': t('menu.aiCaseGeneration'),
-    '/ai-generation/generated-testcases': t('menu.aiGeneratedTestcases'),
-    '/ai-generation/projects': t('menu.projectManagement'),
-    '/ai-generation/testcases': t('menu.testCases'),
-    '/ai-generation/versions': t('menu.versionManagement'),
-    '/ai-generation/reviews': t('menu.reviewList'),
-    '/ai-generation/review-templates': t('menu.reviewTemplates'),
-    '/ai-generation/testsuites': t('menu.suiteManagement'),
-    '/ai-generation/executions': t('menu.executionRecords'),
-    '/ai-generation/reports': t('menu.testReport'),
+    "/ai-generation/requirement-analysis": t("menu.aiCaseGeneration"),
+    "/ai-generation/generated-testcases": t("menu.aiGeneratedTestcases"),
+    "/ai-generation/projects": t("menu.projectManagement"),
+    "/ai-generation/testcases": t("menu.testCases"),
+    "/ai-generation/versions": t("menu.versionManagement"),
+    "/ai-generation/reviews": t("menu.reviewList"),
+    "/ai-generation/review-templates": t("menu.reviewTemplates"),
+    "/ai-generation/testsuites": t("menu.suiteManagement"),
+    "/ai-generation/executions": t("menu.executionRecords"),
+    "/ai-generation/reports": t("menu.testReport"),
 
     // 接口测试
-    '/api-testing/dashboard': t('menu.dashboard'),
-    '/api-testing/projects': t('menu.projectManagement'),
-    '/api-testing/interfaces': t('menu.interfaceManagement'),
-    '/api-testing/automation': t('menu.automationTesting'),
-    '/api-testing/history': t('menu.requestHistory'),
-    '/api-testing/environments': t('menu.environmentManagement'),
-    '/api-testing/reports': t('menu.testReport'),
-    '/api-testing/scheduled-tasks': t('menu.scheduledTasks'),
-    '/api-testing/notification-logs': t('menu.notificationList'),
+    "/api-testing/dashboard": t("menu.dashboard"),
+    "/api-testing/projects": t("menu.projectManagement"),
+    "/api-testing/interfaces": t("menu.interfaceManagement"),
+    "/api-testing/automation": t("menu.automationTesting"),
+    "/api-testing/history": t("menu.requestHistory"),
+    "/api-testing/environments": t("menu.environmentManagement"),
+    "/api-testing/reports": t("menu.testReport"),
+    "/api-testing/scheduled-tasks": t("menu.scheduledTasks"),
+    "/api-testing/notification-logs": t("menu.notificationList"),
 
     // UI自动化测试
-    '/ui-automation/dashboard': t('menu.dashboard'),
-    '/ui-automation/projects': t('menu.projectManagement'),
-    '/ui-automation/elements-enhanced': t('menu.elementManagement'),
-    '/ui-automation/test-cases': t('menu.caseManagement'),
-    '/ui-automation/scripts-enhanced': t('menu.scriptGeneration'),
-    '/ui-automation/scripts': t('menu.scriptList'),
-    '/ui-automation/suites': t('menu.suiteManagement'),
-    '/ui-automation/executions': t('menu.executionRecords'),
-    '/ui-automation/reports': t('menu.testReport'),
-    '/ui-automation/scheduled-tasks': t('menu.scheduledTasks'),
-    '/ui-automation/notification-logs': t('menu.notificationList'),
+    "/ui-automation/dashboard": t("menu.dashboard"),
+    "/ui-automation/projects": t("menu.projectManagement"),
+    "/ui-automation/elements-enhanced": t("menu.elementManagement"),
+    "/ui-automation/test-cases": t("menu.caseManagement"),
+    "/ui-automation/scripts-enhanced": t("menu.scriptGeneration"),
+    "/ui-automation/scripts": t("menu.scriptList"),
+    "/ui-automation/suites": t("menu.suiteManagement"),
+    "/ui-automation/executions": t("menu.executionRecords"),
+    "/ui-automation/reports": t("menu.testReport"),
+    "/ui-automation/scheduled-tasks": t("menu.scheduledTasks"),
+    "/ui-automation/notification-logs": t("menu.notificationList"),
 
     // APP自动化测试
-    '/app-automation/dashboard': 'Dashboard',
-    '/app-automation/projects': '项目管理',
-    '/app-automation/devices': '设备管理',
-    '/app-automation/packages': '包名管理',
-    '/app-automation/elements': '元素管理',
-    '/app-automation/scene-builder': '用例编排',
-    '/app-automation/test-cases': '测试用例',
-    '/app-automation/test-suites': '测试套件',
-    '/app-automation/scheduled-tasks': '定时任务',
-    '/app-automation/notification-logs': '通知列表',
-    '/app-automation/executions': '执行记录',
-    '/app-automation/reports': '测试报告',
+    "/app-automation/dashboard": "Dashboard",
+    "/app-automation/projects": "项目管理",
+    "/app-automation/devices": "设备管理",
+    "/app-automation/packages": "包名管理",
+    "/app-automation/elements": "元素管理",
+    "/app-automation/scene-builder": "用例编排",
+    "/app-automation/test-cases": "测试用例",
+    "/app-automation/test-suites": "测试套件",
+    "/app-automation/scheduled-tasks": "定时任务",
+    "/app-automation/notification-logs": "通知列表",
+    "/app-automation/executions": "执行记录",
+    "/app-automation/reports": "测试报告",
 
     // AI 智能模式
-    '/ai-intelligent-mode/testing': t('menu.aiIntelligentTesting'),
-    '/ai-intelligent-mode/cases': t('menu.aiCaseManagement'),
-    '/ai-intelligent-mode/execution-records': t('menu.aiExecutionRecords'),
-
+    "/ai-intelligent-mode/testing": t("menu.aiIntelligentTesting"),
+    "/ai-intelligent-mode/cases": t("menu.aiCaseManagement"),
+    "/ai-intelligent-mode/execution-records": t("menu.aiExecutionRecords"),
 
     // 配置中心
-    '/configuration/ai-model': t('menu.aiModelConfig'),
-    '/configuration/prompt-config': t('menu.promptConfig'),
-    '/configuration/generation-config': t('menu.generationConfig'),
-    '/configuration/ui-env': t('menu.uiEnvConfig'),
-    '/configuration/ai-mode': t('menu.aiModeConfig'),
-    '/configuration/scheduled-task': t('menu.scheduledTaskConfig'),
-    '/configuration/dify': t('menu.difyConfig'),
-    
-    '/profile': t('nav.profile')
-  }
-  return routeMap[route.path] || route.meta.title || ''
-})
+    "/configuration/ai-model": t("menu.aiModelConfig"),
+    "/configuration/prompt-config": t("menu.promptConfig"),
+    "/configuration/generation-config": t("menu.generationConfig"),
+    "/configuration/ui-env": t("menu.uiEnvConfig"),
+    "/configuration/ai-mode": t("menu.aiModeConfig"),
+    "/configuration/scheduled-task": t("menu.scheduledTaskConfig"),
+    "/configuration/dify": t("menu.difyConfig"),
 
-const handleCommand = (command) => {
-  if (command === 'logout') {
-    userStore.logout()
-    ElMessage.success('退出登录成功')
-    router.push('/login')
-  } else if (command === 'profile') {
-    router.push('/ai-generation/profile')
+    "/profile": t("nav.profile"),
+  };
+  return routeMap[route.path] || route.meta.title || "";
+});
+
+const handleCommand = async (command) => {
+  if (command === "logout") {
+    await userStore.logout();
+    ElMessage.success(
+      LOCAL_DEV_AUTH_ENABLED ? "本地会话已重置" : "退出登录成功",
+    );
+    router.push("/home");
+  } else if (command === "profile") {
+    router.push("/ai-generation/profile");
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -472,18 +524,28 @@ const handleCommand = (command) => {
   height: 60px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
   background-color: #001529;
   color: white;
   border-bottom: 1px solid #1f1f1f;
   flex-shrink: 0;
 
-		.logo-img {
-			width: 100%;
-			height: 100%;
-			object-fit: fill;
-		}
-	}
+  .logo-img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+}
 
 .el-aside {
   background-color: #001529;
@@ -499,7 +561,7 @@ const handleCommand = (command) => {
     overflow-y: auto;
     overflow-x: hidden;
     border-right: none;
-    
+
     &::-webkit-scrollbar {
       width: 0;
     }
@@ -515,12 +577,12 @@ const handleCommand = (command) => {
 
 .el-menu--collapse {
   width: 64px !important;
-  
+
   :deep(.el-sub-menu__title),
   :deep(.el-menu-item) {
     padding-left: 20px !important;
   }
-  
+
   :deep(.el-sub-menu__title span),
   :deep(.el-menu-item span) {
     display: none;
@@ -552,7 +614,7 @@ const handleCommand = (command) => {
   .header-left {
     flex: 1;
     overflow: hidden;
-    
+
     :deep(.el-breadcrumb) {
       font-size: 14px;
     }
@@ -573,58 +635,58 @@ const handleCommand = (command) => {
 }
 
 .header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.language-dropdown {
+  .language-selector {
     display: flex;
     align-items: center;
-    gap: 20px;
-  }
+    cursor: pointer;
+    color: #303133;
+    font-size: 14px;
+    outline: none;
 
-  .language-dropdown {
-    .language-selector {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      color: #303133;
-      font-size: 14px;
+    &:focus {
       outline: none;
+    }
 
-      &:focus {
-        outline: none;
-      }
+    .language-flag {
+      font-size: 18px;
+      margin-right: 5px;
+      line-height: 1;
+    }
 
-      .language-flag {
-        font-size: 18px;
-        margin-right: 5px;
-        line-height: 1;
-      }
+    span {
+      margin: 0 4px;
+    }
 
-      span {
-        margin: 0 4px;
-      }
-
-      &:hover {
-        color: #1890ff;
-      }
+    &:hover {
+      color: #1890ff;
     }
   }
+}
 
-  .dropdown-flag {
-    font-size: 16px;
-    margin-right: 5px;
-  }
+.dropdown-flag {
+  font-size: 16px;
+  margin-right: 5px;
+}
 
-  .user-dropdown {
-    .user-info {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      white-space: nowrap;
+.user-dropdown {
+  .user-info {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    white-space: nowrap;
 
-      .username {
-        margin: 0 8px;
-        color: #303133;
-      }
+    .username {
+      margin: 0 8px;
+      color: #303133;
     }
   }
+}
 
 .el-main {
   background-color: #f5f5f5;
@@ -638,7 +700,7 @@ const handleCommand = (command) => {
   .el-aside {
     width: 220px !important;
   }
-  
+
   .el-main {
     padding: 18px;
   }
@@ -648,7 +710,7 @@ const handleCommand = (command) => {
   .el-aside {
     width: 200px !important;
   }
-  
+
   .el-main {
     padding: 16px;
   }
@@ -665,7 +727,7 @@ const handleCommand = (command) => {
   .el-aside {
     width: 180px !important;
   }
-  
+
   .el-main {
     padding: 14px;
   }
@@ -682,7 +744,7 @@ const handleCommand = (command) => {
   .el-aside {
     width: 180px !important;
   }
-  
+
   .el-main {
     padding: 12px;
   }
@@ -690,7 +752,7 @@ const handleCommand = (command) => {
   .el-header {
     height: 56px !important;
   }
-  
+
   .el-menu {
     :deep(.el-sub-menu__title),
     :deep(.el-menu-item) {
@@ -703,19 +765,19 @@ const handleCommand = (command) => {
   .el-aside {
     width: 160px !important;
   }
-  
+
   .el-main {
     padding: 12px;
   }
 
   .el-header {
     height: 56px !important;
-    
+
     .header-content {
       padding: 0 15px;
     }
   }
-  
+
   .el-menu {
     :deep(.el-sub-menu__title),
     :deep(.el-menu-item) {
@@ -729,19 +791,19 @@ const handleCommand = (command) => {
   .el-aside {
     width: 140px !important;
   }
-  
+
   .el-main {
     padding: 10px;
   }
 
   .el-header {
     height: 52px !important;
-    
+
     .header-content {
       padding: 0 12px;
     }
   }
-  
+
   .el-menu {
     :deep(.el-sub-menu__title),
     :deep(.el-menu-item) {
@@ -749,7 +811,7 @@ const handleCommand = (command) => {
       padding-left: 12px !important;
     }
   }
-  
+
   .user-info .username {
     display: none;
   }
@@ -764,23 +826,23 @@ const handleCommand = (command) => {
     width: 240px !important;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
-    
+
     &.mobile-open {
       transform: translateX(0);
     }
   }
-  
+
   .el-main {
     padding: 8px;
   }
 
   .el-header {
     height: 50px !important;
-    
+
     .header-content {
       padding: 0 10px;
     }
-    
+
     .header-left {
       :deep(.el-breadcrumb__item) {
         &:not(:last-child) {
@@ -795,19 +857,19 @@ const handleCommand = (command) => {
   .el-aside {
     width: 220px !important;
   }
-  
+
   .el-main {
     padding: 6px;
   }
 
   .el-header {
     height: 48px !important;
-    
+
     .header-content {
       padding: 0 8px;
     }
   }
-  
+
   .user-info {
     .el-avatar {
       width: 28px !important;

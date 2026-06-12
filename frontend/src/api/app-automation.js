@@ -1,28 +1,32 @@
 /**
  * APP自动化测试 API
  */
-import request from '../utils/api'
+import request from "../utils/api";
 
 // ========== 项目管理 ==========
 
 export function getAppProjects(params) {
-  return request({ url: '/app-automation/projects/', method: 'get', params })
+  return request({ url: "/app-automation/projects/", method: "get", params });
 }
 
 export function getAppProject(id) {
-  return request({ url: `/app-automation/projects/${id}/`, method: 'get' })
+  return request({ url: `/app-automation/projects/${id}/`, method: "get" });
 }
 
 export function createAppProject(data) {
-  return request({ url: '/app-automation/projects/', method: 'post', data })
+  return request({ url: "/app-automation/projects/", method: "post", data });
 }
 
 export function updateAppProject(id, data) {
-  return request({ url: `/app-automation/projects/${id}/`, method: 'put', data })
+  return request({
+    url: `/app-automation/projects/${id}/`,
+    method: "put",
+    data,
+  });
 }
 
 export function deleteAppProject(id) {
-  return request({ url: `/app-automation/projects/${id}/`, method: 'delete' })
+  return request({ url: `/app-automation/projects/${id}/`, method: "delete" });
 }
 
 // ========== 配置管理 ==========
@@ -32,9 +36,9 @@ export function deleteAppProject(id) {
  */
 export function getAppConfig() {
   return request({
-    url: '/app-automation/config/current/',
-    method: 'get'
-  })
+    url: "/app-automation/config/current/",
+    method: "get",
+  });
 }
 
 /**
@@ -42,10 +46,10 @@ export function getAppConfig() {
  */
 export function updateAppConfig(data) {
   return request({
-    url: '/app-automation/config/save/',
-    method: 'post',
-    data
-  })
+    url: "/app-automation/config/save/",
+    method: "post",
+    data,
+  });
 }
 
 // ========== Dashboard ==========
@@ -55,9 +59,9 @@ export function updateAppConfig(data) {
  */
 export function getDashboardStatistics() {
   return request({
-    url: '/app-automation/dashboard/statistics/',
-    method: 'get'
-  })
+    url: "/app-automation/dashboard/statistics/",
+    method: "get",
+  });
 }
 
 // ========== 设备管理 ==========
@@ -67,10 +71,10 @@ export function getDashboardStatistics() {
  */
 export function getDeviceList(params) {
   return request({
-    url: '/app-automation/devices/',
-    method: 'get',
-    params
-  })
+    url: "/app-automation/devices/",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -79,9 +83,9 @@ export function getDeviceList(params) {
 export function captureDeviceScreenshot(id) {
   return request({
     url: `/app-automation/devices/${id}/screenshot/`,
-    method: 'post',
-    timeout: 15000 // 截图可能需要较长时间
-  })
+    method: "post",
+    timeout: 15000, // 截图可能需要较长时间
+  });
 }
 
 /**
@@ -90,8 +94,8 @@ export function captureDeviceScreenshot(id) {
 export function deleteDevice(id) {
   return request({
     url: `/app-automation/devices/${id}/`,
-    method: 'delete'
-  })
+    method: "delete",
+  });
 }
 
 /**
@@ -99,10 +103,10 @@ export function deleteDevice(id) {
  */
 export function discoverDevices(params) {
   return request({
-    url: '/app-automation/devices/discover/',
-    method: 'get',
-    params
-  })
+    url: "/app-automation/devices/discover/",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -111,8 +115,8 @@ export function discoverDevices(params) {
 export function lockDevice(id) {
   return request({
     url: `/app-automation/devices/${id}/lock/`,
-    method: 'post'
-  })
+    method: "post",
+  });
 }
 
 /**
@@ -121,16 +125,16 @@ export function lockDevice(id) {
 export function unlockDevice(id) {
   return request({
     url: `/app-automation/devices/${id}/unlock/`,
-    method: 'post'
-  })
+    method: "post",
+  });
 }
 
 // 断开远程设备连接
 export function disconnectDevice(id) {
   return request({
     url: `/app-automation/devices/${id}/disconnect/`,
-    method: 'post'
-  })
+    method: "post",
+  });
 }
 
 /**
@@ -138,12 +142,11 @@ export function disconnectDevice(id) {
  */
 export function connectDevice(data) {
   return request({
-    url: '/app-automation/devices/connect/',
-    method: 'post',
-    data
-  })
+    url: "/app-automation/devices/connect/",
+    method: "post",
+    data,
+  });
 }
-
 
 // ========== 元素管理 ==========
 
@@ -152,10 +155,10 @@ export function connectDevice(data) {
  */
 export function getAppElementList(params) {
   return request({
-    url: '/app-automation/elements/',
-    method: 'get',
-    params
-  })
+    url: "/app-automation/elements/",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -163,10 +166,10 @@ export function getAppElementList(params) {
  */
 export function createAppElement(data) {
   return request({
-    url: '/app-automation/elements/',
-    method: 'post',
-    data
-  })
+    url: "/app-automation/elements/",
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -175,9 +178,9 @@ export function createAppElement(data) {
 export function updateAppElement(id, data) {
   return request({
     url: `/app-automation/elements/${id}/`,
-    method: 'put',
-    data
-  })
+    method: "put",
+    data,
+  });
 }
 
 /**
@@ -186,8 +189,8 @@ export function updateAppElement(id, data) {
 export function deleteAppElement(id) {
   return request({
     url: `/app-automation/elements/${id}/`,
-    method: 'delete'
-  })
+    method: "delete",
+  });
 }
 
 /**
@@ -196,22 +199,26 @@ export function deleteAppElement(id) {
  * @param {string} category - 分类名称，默认 'common'
  * @param {number} elementId - 元素ID（编辑模式时传递，用于排除自身）
  */
-export function uploadAppElementImage(file, category = 'common', elementId = null) {
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('category', category)
+export function uploadAppElementImage(
+  file,
+  category = "common",
+  elementId = null,
+) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("category", category);
   if (elementId) {
-    formData.append('element_id', String(elementId))
+    formData.append("element_id", String(elementId));
   }
-  
+
   return request({
-    url: '/app-automation/elements/upload/',
-    method: 'post',
+    url: "/app-automation/elements/upload/",
+    method: "post",
     data: formData,
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
+      "Content-Type": "multipart/form-data",
+    },
+  });
 }
 
 /**
@@ -219,9 +226,9 @@ export function uploadAppElementImage(file, category = 'common', elementId = nul
  */
 export function getAppImageCategories() {
   return request({
-    url: '/app-automation/elements/image-categories/',
-    method: 'get'
-  })
+    url: "/app-automation/elements/image-categories/",
+    method: "get",
+  });
 }
 
 /**
@@ -230,10 +237,10 @@ export function getAppImageCategories() {
  */
 export function createAppImageCategory(name) {
   return request({
-    url: '/app-automation/elements/image-categories/create/',
-    method: 'post',
-    data: { name }
-  })
+    url: "/app-automation/elements/image-categories/create/",
+    method: "post",
+    data: { name },
+  });
 }
 
 /**
@@ -243,8 +250,8 @@ export function createAppImageCategory(name) {
 export function deleteAppImageCategory(name) {
   return request({
     url: `/app-automation/elements/image-categories/${name}/`,
-    method: 'delete'
-  })
+    method: "delete",
+  });
 }
 
 // ========== 应用包名管理 ==========
@@ -254,10 +261,10 @@ export function deleteAppImageCategory(name) {
  */
 export function getPackageList(params) {
   return request({
-    url: '/app-automation/packages/',
-    method: 'get',
-    params
-  })
+    url: "/app-automation/packages/",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -265,10 +272,10 @@ export function getPackageList(params) {
  */
 export function createPackage(data) {
   return request({
-    url: '/app-automation/packages/',
-    method: 'post',
-    data
-  })
+    url: "/app-automation/packages/",
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -277,9 +284,9 @@ export function createPackage(data) {
 export function updatePackage(id, data) {
   return request({
     url: `/app-automation/packages/${id}/`,
-    method: 'put',
-    data
-  })
+    method: "put",
+    data,
+  });
 }
 
 /**
@@ -288,8 +295,8 @@ export function updatePackage(id, data) {
 export function deletePackage(id) {
   return request({
     url: `/app-automation/packages/${id}/`,
-    method: 'delete'
-  })
+    method: "delete",
+  });
 }
 
 // ========== 测试用例管理 ==========
@@ -299,10 +306,10 @@ export function deletePackage(id) {
  */
 export function getTestCaseList(params) {
   return request({
-    url: '/app-automation/test-cases/',
-    method: 'get',
-    params
-  })
+    url: "/app-automation/test-cases/",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -311,8 +318,8 @@ export function getTestCaseList(params) {
 export function getTestCaseDetail(id) {
   return request({
     url: `/app-automation/test-cases/${id}/`,
-    method: 'get'
-  })
+    method: "get",
+  });
 }
 
 /**
@@ -320,10 +327,10 @@ export function getTestCaseDetail(id) {
  */
 export function createTestCase(data) {
   return request({
-    url: '/app-automation/test-cases/',
-    method: 'post',
-    data
-  })
+    url: "/app-automation/test-cases/",
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -332,9 +339,9 @@ export function createTestCase(data) {
 export function updateTestCase(id, data) {
   return request({
     url: `/app-automation/test-cases/${id}/`,
-    method: 'put',
-    data
-  })
+    method: "put",
+    data,
+  });
 }
 
 /**
@@ -343,8 +350,8 @@ export function updateTestCase(id, data) {
 export function deleteTestCase(id) {
   return request({
     url: `/app-automation/test-cases/${id}/`,
-    method: 'delete'
-  })
+    method: "delete",
+  });
 }
 
 /**
@@ -353,9 +360,9 @@ export function deleteTestCase(id) {
 export function executeTestCase(id, data) {
   return request({
     url: `/app-automation/test-cases/${id}/execute/`,
-    method: 'post',
-    data
-  })
+    method: "post",
+    data,
+  });
 }
 
 // ========== 执行记录管理 ==========
@@ -365,10 +372,10 @@ export function executeTestCase(id, data) {
  */
 export function getExecutionList(params) {
   return request({
-    url: '/app-automation/executions/',
-    method: 'get',
-    params
-  })
+    url: "/app-automation/executions/",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -377,8 +384,8 @@ export function getExecutionList(params) {
 export function getExecutionDetail(id) {
   return request({
     url: `/app-automation/executions/${id}/`,
-    method: 'get'
-  })
+    method: "get",
+  });
 }
 
 /**
@@ -386,9 +393,9 @@ export function getExecutionDetail(id) {
  */
 export function getWsStatus() {
   return request({
-    url: '/app-automation/executions/ws_status/',
-    method: 'get'
-  })
+    url: "/app-automation/executions/ws_status/",
+    method: "get",
+  });
 }
 
 /**
@@ -397,8 +404,8 @@ export function getWsStatus() {
 export function deleteExecution(id) {
   return request({
     url: `/app-automation/executions/${id}/`,
-    method: 'delete'
-  })
+    method: "delete",
+  });
 }
 
 /**
@@ -407,8 +414,8 @@ export function deleteExecution(id) {
 export function stopExecution(id) {
   return request({
     url: `/app-automation/executions/${id}/stop/`,
-    method: 'post'
-  })
+    method: "post",
+  });
 }
 
 // ========== 测试套件管理 ==========
@@ -418,10 +425,10 @@ export function stopExecution(id) {
  */
 export function getTestSuiteList(params) {
   return request({
-    url: '/app-automation/test-suites/',
-    method: 'get',
-    params
-  })
+    url: "/app-automation/test-suites/",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -430,8 +437,8 @@ export function getTestSuiteList(params) {
 export function getTestSuiteDetail(id) {
   return request({
     url: `/app-automation/test-suites/${id}/`,
-    method: 'get'
-  })
+    method: "get",
+  });
 }
 
 /**
@@ -439,10 +446,10 @@ export function getTestSuiteDetail(id) {
  */
 export function createTestSuite(data) {
   return request({
-    url: '/app-automation/test-suites/',
-    method: 'post',
-    data
-  })
+    url: "/app-automation/test-suites/",
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -451,9 +458,9 @@ export function createTestSuite(data) {
 export function updateTestSuite(id, data) {
   return request({
     url: `/app-automation/test-suites/${id}/`,
-    method: 'patch',
-    data
-  })
+    method: "patch",
+    data,
+  });
 }
 
 /**
@@ -462,8 +469,8 @@ export function updateTestSuite(id, data) {
 export function deleteTestSuite(id) {
   return request({
     url: `/app-automation/test-suites/${id}/`,
-    method: 'delete'
-  })
+    method: "delete",
+  });
 }
 
 /**
@@ -472,8 +479,8 @@ export function deleteTestSuite(id) {
 export function getTestSuiteTestCases(id) {
   return request({
     url: `/app-automation/test-suites/${id}/test_cases/`,
-    method: 'get'
-  })
+    method: "get",
+  });
 }
 
 /**
@@ -482,9 +489,9 @@ export function getTestSuiteTestCases(id) {
 export function addTestCaseToSuite(suiteId, data) {
   return request({
     url: `/app-automation/test-suites/${suiteId}/add_test_case/`,
-    method: 'post',
-    data
-  })
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -493,9 +500,9 @@ export function addTestCaseToSuite(suiteId, data) {
 export function addTestCasesToSuite(suiteId, data) {
   return request({
     url: `/app-automation/test-suites/${suiteId}/add_test_cases/`,
-    method: 'post',
-    data
-  })
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -504,9 +511,9 @@ export function addTestCasesToSuite(suiteId, data) {
 export function removeTestCaseFromSuite(suiteId, data) {
   return request({
     url: `/app-automation/test-suites/${suiteId}/remove_test_case/`,
-    method: 'post',
-    data
-  })
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -515,9 +522,9 @@ export function removeTestCaseFromSuite(suiteId, data) {
 export function updateSuiteTestCaseOrder(suiteId, data) {
   return request({
     url: `/app-automation/test-suites/${suiteId}/update_test_case_order/`,
-    method: 'post',
-    data
-  })
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -526,9 +533,9 @@ export function updateSuiteTestCaseOrder(suiteId, data) {
 export function runTestSuite(suiteId, data) {
   return request({
     url: `/app-automation/test-suites/${suiteId}/run/`,
-    method: 'post',
-    data
-  })
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -537,8 +544,8 @@ export function runTestSuite(suiteId, data) {
 export function getTestSuiteExecutions(suiteId) {
   return request({
     url: `/app-automation/test-suites/${suiteId}/executions/`,
-    method: 'get'
-  })
+    method: "get",
+  });
 }
 
 // ========== 组件库管理 ==========
@@ -548,10 +555,10 @@ export function getTestSuiteExecutions(suiteId) {
  */
 export function getComponents(params) {
   return request({
-    url: '/app-automation/components/',
-    method: 'get',
-    params
-  })
+    url: "/app-automation/components/",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -559,10 +566,10 @@ export function getComponents(params) {
  */
 export function getCustomComponents(params) {
   return request({
-    url: '/app-automation/custom-components/',
-    method: 'get',
-    params
-  })
+    url: "/app-automation/custom-components/",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -570,10 +577,10 @@ export function getCustomComponents(params) {
  */
 export function createCustomComponent(data) {
   return request({
-    url: '/app-automation/custom-components/',
-    method: 'post',
-    data
-  })
+    url: "/app-automation/custom-components/",
+    method: "post",
+    data,
+  });
 }
 
 /**
@@ -582,9 +589,9 @@ export function createCustomComponent(data) {
 export function updateCustomComponent(id, data) {
   return request({
     url: `/app-automation/custom-components/${id}/`,
-    method: 'put',
-    data
-  })
+    method: "put",
+    data,
+  });
 }
 
 /**
@@ -593,8 +600,8 @@ export function updateCustomComponent(id, data) {
 export function deleteCustomComponent(id) {
   return request({
     url: `/app-automation/custom-components/${id}/`,
-    method: 'delete'
-  })
+    method: "delete",
+  });
 }
 
 /**
@@ -602,13 +609,13 @@ export function deleteCustomComponent(id) {
  */
 export function importComponentPackage(data) {
   return request({
-    url: '/app-automation/component-packages/',
-    method: 'post',
+    url: "/app-automation/component-packages/",
+    method: "post",
     data,
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
+      "Content-Type": "multipart/form-data",
+    },
+  });
 }
 
 /**
@@ -617,11 +624,11 @@ export function importComponentPackage(data) {
  */
 export function exportComponentPackage(params) {
   return request({
-    url: '/app-automation/component-packages/export/',
-    method: 'get',
+    url: "/app-automation/component-packages/export/",
+    method: "get",
     params,
-    responseType: 'blob'
-  })
+    responseType: "blob",
+  });
 }
 
 // ==================== 定时任务管理 ====================
@@ -630,56 +637,83 @@ export function exportComponentPackage(params) {
  * 获取定时任务列表
  */
 export function getAppScheduledTasks(params) {
-  return request({ url: '/app-automation/scheduled-tasks/', method: 'get', params })
+  return request({
+    url: "/app-automation/scheduled-tasks/",
+    method: "get",
+    params,
+  });
 }
 
 /**
  * 获取定时任务详情
  */
 export function getAppScheduledTaskDetail(id) {
-  return request({ url: `/app-automation/scheduled-tasks/${id}/`, method: 'get' })
+  return request({
+    url: `/app-automation/scheduled-tasks/${id}/`,
+    method: "get",
+  });
 }
 
 /**
  * 创建定时任务
  */
 export function createAppScheduledTask(data) {
-  return request({ url: '/app-automation/scheduled-tasks/', method: 'post', data })
+  return request({
+    url: "/app-automation/scheduled-tasks/",
+    method: "post",
+    data,
+  });
 }
 
 /**
  * 更新定时任务
  */
 export function updateAppScheduledTask(id, data) {
-  return request({ url: `/app-automation/scheduled-tasks/${id}/`, method: 'patch', data })
+  return request({
+    url: `/app-automation/scheduled-tasks/${id}/`,
+    method: "patch",
+    data,
+  });
 }
 
 /**
  * 删除定时任务
  */
 export function deleteAppScheduledTask(id) {
-  return request({ url: `/app-automation/scheduled-tasks/${id}/`, method: 'delete' })
+  return request({
+    url: `/app-automation/scheduled-tasks/${id}/`,
+    method: "delete",
+  });
 }
 
 /**
  * 暂停定时任务
  */
 export function pauseAppScheduledTask(id) {
-  return request({ url: `/app-automation/scheduled-tasks/${id}/pause/`, method: 'post' })
+  return request({
+    url: `/app-automation/scheduled-tasks/${id}/pause/`,
+    method: "post",
+  });
 }
 
 /**
  * 恢复定时任务
  */
 export function resumeAppScheduledTask(id) {
-  return request({ url: `/app-automation/scheduled-tasks/${id}/resume/`, method: 'post' })
+  return request({
+    url: `/app-automation/scheduled-tasks/${id}/resume/`,
+    method: "post",
+  });
 }
 
 /**
  * 立即运行定时任务
  */
 export function runAppScheduledTask(id) {
-  return request({ url: `/app-automation/scheduled-tasks/${id}/run_now/`, method: 'post' })
+  return request({
+    url: `/app-automation/scheduled-tasks/${id}/run_now/`,
+    method: "post",
+  });
 }
 
 // ==================== 通知日志 ====================
@@ -688,12 +722,19 @@ export function runAppScheduledTask(id) {
  * 获取通知日志列表
  */
 export function getAppNotificationLogs(params) {
-  return request({ url: '/app-automation/notification-logs/', method: 'get', params })
+  return request({
+    url: "/app-automation/notification-logs/",
+    method: "get",
+    params,
+  });
 }
 
 /**
  * 重试发送通知
  */
 export function retryAppNotification(id) {
-  return request({ url: `/app-automation/notification-logs/${id}/retry/`, method: 'post' })
+  return request({
+    url: `/app-automation/notification-logs/${id}/retry/`,
+    method: "post",
+  });
 }

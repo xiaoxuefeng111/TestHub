@@ -11,28 +11,42 @@
   >
     <div v-if="loading" class="report-loading">
       <el-icon class="is-loading"><Loading /></el-icon>
-      <span>{{ $t('uiAutomation.ai.executionReport.generatingReport') }}</span>
+      <span>{{ $t("uiAutomation.ai.executionReport.generatingReport") }}</span>
     </div>
 
     <div v-else-if="reportData" class="report-container">
       <!-- 报告类型切换 -->
       <div class="report-type-tabs">
-        <el-radio-group v-model="currentReportType" @change="onReportTypeChange">
-          <el-radio-button value="summary">{{ $t('uiAutomation.ai.executionReport.summary') }}</el-radio-button>
-          <el-radio-button value="detailed">{{ $t('uiAutomation.ai.executionReport.detailed') }}</el-radio-button>
-          <el-radio-button value="performance">{{ $t('uiAutomation.ai.executionReport.performance') }}</el-radio-button>
+        <el-radio-group
+          v-model="currentReportType"
+          @change="onReportTypeChange"
+        >
+          <el-radio-button value="summary">{{
+            $t("uiAutomation.ai.executionReport.summary")
+          }}</el-radio-button>
+          <el-radio-button value="detailed">{{
+            $t("uiAutomation.ai.executionReport.detailed")
+          }}</el-radio-button>
+          <el-radio-button value="performance">{{
+            $t("uiAutomation.ai.executionReport.performance")
+          }}</el-radio-button>
         </el-radio-group>
-        <el-button v-if="reportData.gif_path" type="primary" size="small" @click="showGifDialog = true">
+        <el-button
+          v-if="reportData.gif_path"
+          type="primary"
+          size="small"
+          @click="showGifDialog = true"
+        >
           <el-icon><VideoPlay /></el-icon>
-          {{ $t('uiAutomation.ai.executionReport.viewGif') }}
+          {{ $t("uiAutomation.ai.executionReport.viewGif") }}
         </el-button>
         <el-button v-else type="info" size="small" disabled>
           <el-icon><VideoPlay /></el-icon>
-          {{ $t('uiAutomation.ai.executionReport.noGif') }}
+          {{ $t("uiAutomation.ai.executionReport.noGif") }}
         </el-button>
         <el-button type="success" size="small" @click="exportReport">
           <el-icon><Download /></el-icon>
-          {{ $t('uiAutomation.ai.executionReport.exportReport') }}
+          {{ $t("uiAutomation.ai.executionReport.exportReport") }}
         </el-button>
       </div>
 
@@ -40,58 +54,91 @@
       <div v-if="currentReportType === 'summary'" class="report-content">
         <!-- 概览卡片 -->
         <div class="report-section">
-          <h3 class="section-title">{{ $t('uiAutomation.ai.executionReport.overview') }}</h3>
+          <h3 class="section-title">
+            {{ $t("uiAutomation.ai.executionReport.overview") }}
+          </h3>
           <div class="overview-cards">
             <div class="overview-card">
-              <div class="card-label">{{ $t('uiAutomation.ai.executionReport.executionStatus') }}</div>
+              <div class="card-label">
+                {{ $t("uiAutomation.ai.executionReport.executionStatus") }}
+              </div>
               <el-tag :type="reportData.overview.status_color" size="large">
                 {{ reportData.overview.status }}
               </el-tag>
             </div>
             <div class="overview-card">
-              <div class="card-label">{{ $t('uiAutomation.ai.executionReport.executionDuration') }}</div>
-              <div class="card-value">{{ reportData.overview.duration_formatted }}</div>
+              <div class="card-label">
+                {{ $t("uiAutomation.ai.executionReport.executionDuration") }}
+              </div>
+              <div class="card-value">
+                {{ reportData.overview.duration_formatted }}
+              </div>
             </div>
             <div class="overview-card">
-              <div class="card-label">{{ $t('uiAutomation.ai.executionReport.completionRate') }}</div>
-              <div class="card-value">{{ reportData.overview.completion_rate }}%</div>
+              <div class="card-label">
+                {{ $t("uiAutomation.ai.executionReport.completionRate") }}
+              </div>
+              <div class="card-value">
+                {{ reportData.overview.completion_rate }}%
+              </div>
             </div>
             <div class="overview-card">
-              <div class="card-label">{{ $t('uiAutomation.ai.executionReport.executionSteps') }}</div>
-              <div class="card-value">{{ reportData.overview.total_steps }} {{ $t('uiAutomation.ai.executionReport.steps') }}</div>
+              <div class="card-label">
+                {{ $t("uiAutomation.ai.executionReport.executionSteps") }}
+              </div>
+              <div class="card-value">
+                {{ reportData.overview.total_steps }}
+                {{ $t("uiAutomation.ai.executionReport.steps") }}
+              </div>
             </div>
           </div>
         </div>
 
         <!-- 任务统计 -->
-        <div class="report-section" v-if="reportData.statistics">
-          <h3 class="section-title">{{ $t('uiAutomation.ai.executionReport.taskStatistics') }}</h3>
+        <div v-if="reportData.statistics" class="report-section">
+          <h3 class="section-title">
+            {{ $t("uiAutomation.ai.executionReport.taskStatistics") }}
+          </h3>
           <div class="statistics-container">
             <div class="chart-wrapper">
-              <div ref="pieChartRef" class="chart" style="height: 200px;"></div>
+              <div ref="pieChartRef" class="chart" style="height: 200px"></div>
             </div>
             <div class="stats-table">
               <table class="stats-table-content">
                 <tbody>
                   <tr>
-                    <td>{{ $t('uiAutomation.ai.executionReport.totalTasks') }}</td>
-                    <td class="stat-value">{{ reportData.statistics.total }}</td>
+                    <td>
+                      {{ $t("uiAutomation.ai.executionReport.totalTasks") }}
+                    </td>
+                    <td class="stat-value">
+                      {{ reportData.statistics.total }}
+                    </td>
                   </tr>
                   <tr class="success-row">
-                    <td>{{ $t('uiAutomation.ai.executionReport.completed') }}</td>
-                    <td class="stat-value">{{ reportData.statistics.completed }}</td>
+                    <td>
+                      {{ $t("uiAutomation.ai.executionReport.completed") }}
+                    </td>
+                    <td class="stat-value">
+                      {{ reportData.statistics.completed }}
+                    </td>
                   </tr>
                   <tr class="info-row">
-                    <td>{{ $t('uiAutomation.ai.executionReport.pending') }}</td>
-                    <td class="stat-value">{{ reportData.statistics.pending }}</td>
+                    <td>{{ $t("uiAutomation.ai.executionReport.pending") }}</td>
+                    <td class="stat-value">
+                      {{ reportData.statistics.pending }}
+                    </td>
                   </tr>
                   <tr class="danger-row">
-                    <td>{{ $t('uiAutomation.ai.executionReport.failed') }}</td>
-                    <td class="stat-value">{{ reportData.statistics.failed }}</td>
+                    <td>{{ $t("uiAutomation.ai.executionReport.failed") }}</td>
+                    <td class="stat-value">
+                      {{ reportData.statistics.failed }}
+                    </td>
                   </tr>
                   <tr class="warning-row">
-                    <td>{{ $t('uiAutomation.ai.executionReport.skipped') }}</td>
-                    <td class="stat-value">{{ reportData.statistics.skipped }}</td>
+                    <td>{{ $t("uiAutomation.ai.executionReport.skipped") }}</td>
+                    <td class="stat-value">
+                      {{ reportData.statistics.skipped }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -101,7 +148,9 @@
 
         <!-- 任务时间线 -->
         <div class="report-section">
-          <h3 class="section-title">{{ $t('uiAutomation.ai.executionReport.taskTimeline') }}</h3>
+          <h3 class="section-title">
+            {{ $t("uiAutomation.ai.executionReport.taskTimeline") }}
+          </h3>
           <div class="timeline-container">
             <el-timeline>
               <el-timeline-item
@@ -129,24 +178,46 @@
       <div v-else-if="currentReportType === 'detailed'" class="report-content">
         <!-- 步骤列表 -->
         <div class="report-section">
-          <h3 class="section-title">{{ $t('uiAutomation.ai.executionReport.stepDetails') }}</h3>
+          <h3 class="section-title">
+            {{ $t("uiAutomation.ai.executionReport.stepDetails") }}
+          </h3>
           <div class="steps-list">
-            <el-card v-for="step in reportData.detailed_steps" :key="step.step_number" class="step-card">
+            <el-card
+              v-for="step in reportData.detailed_steps"
+              :key="step.step_number"
+              class="step-card"
+            >
               <div class="step-header">
-                <span class="step-number">{{ $t('uiAutomation.ai.executionReport.step') }} {{ step.step_number }}</span>
+                <span class="step-number"
+                  >{{ $t("uiAutomation.ai.executionReport.step") }}
+                  {{ step.step_number }}</span
+                >
                 <el-tag :type="getStepStatusType(step.status)" size="small">
                   {{ step.status }}
                 </el-tag>
               </div>
               <div class="step-content">
                 <div class="step-action">
-                  <strong>{{ $t('uiAutomation.ai.executionReport.action') }}:</strong> {{ step.action || '-' }}
+                  <strong
+                    >{{ $t("uiAutomation.ai.executionReport.action") }}:</strong
+                  >
+                  {{ step.action || "-" }}
                 </div>
                 <div v-if="step.element" class="step-element">
-                  <strong>{{ $t('uiAutomation.ai.executionReport.element') }}:</strong> {{ step.element }}
+                  <strong
+                    >{{
+                      $t("uiAutomation.ai.executionReport.element")
+                    }}:</strong
+                  >
+                  {{ step.element }}
                 </div>
                 <div v-if="step.thinking" class="step-thinking">
-                  <strong>{{ $t('uiAutomation.ai.executionReport.thinking') }}:</strong> {{ step.thinking }}
+                  <strong
+                    >{{
+                      $t("uiAutomation.ai.executionReport.thinking")
+                    }}:</strong
+                  >
+                  {{ step.thinking }}
                 </div>
               </div>
             </el-card>
@@ -154,8 +225,13 @@
         </div>
 
         <!-- 错误信息 -->
-        <div v-if="reportData.errors && reportData.errors.length > 0" class="report-section">
-          <h3 class="section-title">{{ $t('uiAutomation.ai.executionReport.errorInfo') }}</h3>
+        <div
+          v-if="reportData.errors && reportData.errors.length > 0"
+          class="report-section"
+        >
+          <h3 class="section-title">
+            {{ $t("uiAutomation.ai.executionReport.errorInfo") }}
+          </h3>
           <div class="errors-list">
             <el-alert
               v-for="(error, index) in reportData.errors"
@@ -170,40 +246,83 @@
       </div>
 
       <!-- 性能分析报告 -->
-      <div v-else-if="currentReportType === 'performance'" class="report-content">
+      <div
+        v-else-if="currentReportType === 'performance'"
+        class="report-content"
+      >
         <!-- 性能指标 -->
-        <div class="report-section" v-if="reportData.metrics">
-          <h3 class="section-title">{{ $t('uiAutomation.ai.executionReport.performanceMetrics') }}</h3>
+        <div v-if="reportData.metrics" class="report-section">
+          <h3 class="section-title">
+            {{ $t("uiAutomation.ai.executionReport.performanceMetrics") }}
+          </h3>
           <div class="performance-metrics">
             <div class="metric-card">
-              <div class="metric-label">{{ $t('uiAutomation.ai.executionReport.avgStepDuration') }}</div>
-              <div class="metric-value">{{ reportData.metrics.avg_step_duration }} {{ $t('uiAutomation.ai.executionReport.seconds') }}</div>
+              <div class="metric-label">
+                {{ $t("uiAutomation.ai.executionReport.avgStepDuration") }}
+              </div>
+              <div class="metric-value">
+                {{ reportData.metrics.avg_step_duration }}
+                {{ $t("uiAutomation.ai.executionReport.seconds") }}
+              </div>
             </div>
             <div class="metric-card">
-              <div class="metric-label">{{ $t('uiAutomation.ai.executionReport.maxStepDuration') }}</div>
-              <div class="metric-value">{{ reportData.metrics.max_step_duration }} {{ $t('uiAutomation.ai.executionReport.seconds') }}</div>
+              <div class="metric-label">
+                {{ $t("uiAutomation.ai.executionReport.maxStepDuration") }}
+              </div>
+              <div class="metric-value">
+                {{ reportData.metrics.max_step_duration }}
+                {{ $t("uiAutomation.ai.executionReport.seconds") }}
+              </div>
             </div>
             <div class="metric-card">
-              <div class="metric-label">{{ $t('uiAutomation.ai.executionReport.minStepDuration') }}</div>
-              <div class="metric-value">{{ reportData.metrics.min_step_duration }} {{ $t('uiAutomation.ai.executionReport.seconds') }}</div>
+              <div class="metric-label">
+                {{ $t("uiAutomation.ai.executionReport.minStepDuration") }}
+              </div>
+              <div class="metric-value">
+                {{ reportData.metrics.min_step_duration }}
+                {{ $t("uiAutomation.ai.executionReport.seconds") }}
+              </div>
             </div>
           </div>
         </div>
 
         <!-- 操作分布 -->
-        <div class="report-section" v-if="reportData.action_distribution">
-          <h3 class="section-title">{{ $t('uiAutomation.ai.executionReport.actionDistribution') }}</h3>
-          <div ref="barChartRef" class="chart" style="height: 250px;"></div>
+        <div v-if="reportData.action_distribution" class="report-section">
+          <h3 class="section-title">
+            {{ $t("uiAutomation.ai.executionReport.actionDistribution") }}
+          </h3>
+          <div ref="barChartRef" class="chart" style="height: 250px"></div>
         </div>
 
         <!-- 性能瓶颈 -->
-        <div v-if="reportData.bottlenecks && reportData.bottlenecks.length > 0" class="report-section">
-          <h3 class="section-title">{{ $t('uiAutomation.ai.executionReport.performanceBottlenecks') }}</h3>
+        <div
+          v-if="reportData.bottlenecks && reportData.bottlenecks.length > 0"
+          class="report-section"
+        >
+          <h3 class="section-title">
+            {{ $t("uiAutomation.ai.executionReport.performanceBottlenecks") }}
+          </h3>
           <el-table :data="reportData.bottlenecks" stripe>
-            <el-table-column prop="step_number" :label="$t('uiAutomation.ai.executionReport.step')" width="80" />
-            <el-table-column prop="action" :label="$t('uiAutomation.ai.executionReport.action')" min-width="200" />
-            <el-table-column prop="duration" :label="$t('uiAutomation.ai.executionReport.durationSeconds')" width="100" />
-            <el-table-column prop="slower_than_avg_by" :label="$t('uiAutomation.ai.executionReport.slowerThanAvg')" width="100">
+            <el-table-column
+              prop="step_number"
+              :label="$t('uiAutomation.ai.executionReport.step')"
+              width="80"
+            />
+            <el-table-column
+              prop="action"
+              :label="$t('uiAutomation.ai.executionReport.action')"
+              min-width="200"
+            />
+            <el-table-column
+              prop="duration"
+              :label="$t('uiAutomation.ai.executionReport.durationSeconds')"
+              width="100"
+            />
+            <el-table-column
+              prop="slower_than_avg_by"
+              :label="$t('uiAutomation.ai.executionReport.slowerThanAvg')"
+              width="100"
+            >
               <template #default="{ row }">
                 {{ row.slower_than_avg_by }}%
               </template>
@@ -212,8 +331,15 @@
         </div>
 
         <!-- 优化建议 -->
-        <div v-if="reportData.recommendations && reportData.recommendations.length > 0" class="report-section">
-          <h3 class="section-title">{{ $t('uiAutomation.ai.executionReport.recommendations') }}</h3>
+        <div
+          v-if="
+            reportData.recommendations && reportData.recommendations.length > 0
+          "
+          class="report-section"
+        >
+          <h3 class="section-title">
+            {{ $t("uiAutomation.ai.executionReport.recommendations") }}
+          </h3>
           <div class="recommendations-list">
             <el-alert
               v-for="(rec, index) in reportData.recommendations"
@@ -229,17 +355,34 @@
     </div>
 
     <div v-else class="report-error">
-      <el-empty :description="$t('uiAutomation.ai.executionReport.noReportData')" />
+      <el-empty>
+        <template #description>
+          <div class="empty-state-description">
+            <div class="empty-state-title">{{ emptyStateTitle }}</div>
+            <div class="empty-state-text">{{ emptyStateDescription }}</div>
+          </div>
+        </template>
+        <el-button v-if="hasLoadError" type="primary" @click="retryLoadReport">
+          {{ $t("uiAutomation.ai.executionReport.retryLoad") }}
+        </el-button>
+      </el-empty>
     </div>
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="handleClose">{{ $t('uiAutomation.common.close') }}</el-button>
+        <el-button @click="handleClose">{{
+          $t("uiAutomation.common.close")
+        }}</el-button>
       </span>
     </template>
 
     <!-- GIF回放对话框 -->
-    <el-dialog v-model="showGifDialog" :title="$t('uiAutomation.ai.executionReport.gifPlayback')" width="800px" append-to-body>
+    <el-dialog
+      v-model="showGifDialog"
+      :title="$t('uiAutomation.ai.executionReport.gifPlayback')"
+      width="800px"
+      append-to-body
+    >
       <div v-if="reportData && reportData.gif_path" class="gif-container">
         <img :src="gifUrl" alt="Execution GIF" class="gif-image" />
       </div>
@@ -248,327 +391,452 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { Loading, VideoPlay, Download } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import * as echarts from 'echarts'
-import { getAIExecutionReport, exportAIExecutionReportPDF } from '@/api/ui_automation'
+import { ref, watch, nextTick, computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { Loading, VideoPlay, Download } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import * as echarts from "echarts";
+import {
+  getAIExecutionReport,
+  exportAIExecutionReportPDF,
+} from "@/api/ui_automation";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 const props = defineProps({
   modelValue: {
     type: Boolean,
-    default: false
+    default: false,
   },
   recordId: {
     type: [Number, String],
-    default: null
-  }
-})
+    default: null,
+  },
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
-const visible = ref(false)
-const loading = ref(false)
-const reportData = ref(null)
-const currentReportType = ref('summary')
-const showGifDialog = ref(false)
-const pieChartRef = ref(null)
-const barChartRef = ref(null)
-let pieChart = null
-let barChart = null
+const visible = ref(false);
+const loading = ref(false);
+const reportData = ref(null);
+const loadErrorMessage = ref("");
+const currentReportType = ref("summary");
+const showGifDialog = ref(false);
+const pieChartRef = ref(null);
+const barChartRef = ref(null);
+let pieChart = null;
+let barChart = null;
 
 // 报告类型显示名称
 const reportTypeDisplay = computed(() => {
   const map = {
-    'summary': t('uiAutomation.ai.executionReport.summary'),
-    'detailed': t('uiAutomation.ai.executionReport.detailed'),
-    'performance': t('uiAutomation.ai.executionReport.performance')
-  }
-  return map[currentReportType.value] || t('uiAutomation.ai.executionReport.summary')
-})
+    summary: t("uiAutomation.ai.executionReport.summary"),
+    detailed: t("uiAutomation.ai.executionReport.detailed"),
+    performance: t("uiAutomation.ai.executionReport.performance"),
+  };
+  return (
+    map[currentReportType.value] || t("uiAutomation.ai.executionReport.summary")
+  );
+});
 
 // GIF URL
 const gifUrl = computed(() => {
   if (reportData.value && reportData.value.gif_path) {
     // gif_path格式：media/ai_recording/xxx.gif
-    const path = reportData.value.gif_path
+    const path = reportData.value.gif_path;
     // 如果路径已经包含media/，直接使用；否则添加media/
-    if (path.startsWith('media/')) {
-      return `/${path}`
+    if (path.startsWith("media/")) {
+      return `/${path}`;
     } else {
-      return `/media/${path}`
+      return `/media/${path}`;
     }
   }
-  return ''
-})
+  return "";
+});
+
+const hasLoadError = computed(() => Boolean(loadErrorMessage.value));
+
+const emptyStateTitle = computed(() => {
+  return hasLoadError.value
+    ? t("uiAutomation.ai.executionReport.loadFailedTitle")
+    : t("uiAutomation.ai.executionReport.noReportDataTitle");
+});
+
+const emptyStateDescription = computed(() => {
+  return hasLoadError.value
+    ? loadErrorMessage.value
+    : t("uiAutomation.ai.executionReport.noReportData");
+});
+
+const disposeCharts = () => {
+  if (pieChart) {
+    pieChart.dispose();
+    pieChart = null;
+  }
+  if (barChart) {
+    barChart.dispose();
+    barChart = null;
+  }
+};
+
+const buildLoadErrorMessage = (error, backendMessage = "") => {
+  if (backendMessage) {
+    return t("uiAutomation.ai.executionReport.messages.loadFailedWithReason", {
+      reason: backendMessage,
+    });
+  }
+
+  const responseError =
+    error?.response?.data?.error || error?.response?.data?.detail;
+  if (responseError) {
+    return t("uiAutomation.ai.executionReport.messages.loadFailedWithReason", {
+      reason: responseError,
+    });
+  }
+
+  if (error?.response?.status >= 500) {
+    return t("uiAutomation.ai.executionReport.messages.serverError");
+  }
+
+  if (error?.code === "ERR_NETWORK" || !error?.response) {
+    return t("uiAutomation.ai.executionReport.messages.networkError");
+  }
+
+  return t("uiAutomation.ai.executionReport.messages.loadFailed");
+};
+
+const retryLoadReport = () => {
+  loadReport(currentReportType.value);
+};
 
 // 监听 modelValue 变化
-watch(() => props.modelValue, (newVal) => {
-  visible.value = newVal
-  if (newVal && props.recordId) {
-    currentReportType.value = 'summary'  // 确保设置为summary
-    loadReport('summary')
-  }
-})
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    visible.value = newVal;
+    if (newVal && props.recordId) {
+      currentReportType.value = "summary";
+      reportData.value = null;
+      loadErrorMessage.value = "";
+      loadReport("summary");
+    }
+  },
+);
 
 // 监听 visible 变化
 watch(visible, (newVal) => {
-  emit('update:modelValue', newVal)
+  emit("update:modelValue", newVal);
   if (!newVal) {
-    // 清理
-    if (pieChart) {
-      pieChart.dispose()
-      pieChart = null
-    }
-    if (barChart) {
-      barChart.dispose()
-      barChart = null
-    }
+    disposeCharts();
+    reportData.value = null;
+    loadErrorMessage.value = "";
+    showGifDialog.value = false;
   }
-})
+});
 
 // 加载报告数据
-const loadReport = async (reportType = 'summary') => {
-  if (!props.recordId) return
+const loadReport = async (reportType = "summary") => {
+  if (!props.recordId) {
+    loadErrorMessage.value = t(
+      "uiAutomation.ai.executionReport.messages.loadFailed",
+    );
+    return;
+  }
 
-  loading.value = true
+  loading.value = true;
+  reportData.value = null;
+  loadErrorMessage.value = "";
+  disposeCharts();
+
   try {
-    const response = await getAIExecutionReport(props.recordId, { report_type: reportType })
-    console.log('API Response:', response.data)
+    const response = await getAIExecutionReport(props.recordId, {
+      report_type: reportType,
+    });
+    console.log("API Response:", response.data);
     if (response.data.success) {
-      reportData.value = response.data.data
-      console.log('Report Data:', reportData.value)
-      await nextTick()
-      // 等待DOM更新后再初始化图表
+      reportData.value = response.data.data || null;
+      console.log("Report Data:", reportData.value);
+      await nextTick();
       setTimeout(() => {
-        if (reportType === 'summary') {
-          initPieChart()
-        } else if (reportType === 'performance') {
-          initBarChart()
+        if (reportType === "summary") {
+          initPieChart();
+        } else if (reportType === "performance") {
+          initBarChart();
         }
-      }, 100)
+      }, 100);
     } else {
-      ElMessage.error(response.data.error || t('uiAutomation.ai.executionReport.messages.loadFailed'))
+      const errorMessage = buildLoadErrorMessage(null, response.data.error);
+      loadErrorMessage.value = errorMessage;
+      ElMessage.error(errorMessage);
     }
   } catch (error) {
-    console.error('加载报告失败:', error)
-    ElMessage.error(t('uiAutomation.ai.executionReport.messages.loadFailed'))
+    console.error("加载报告失败:", error);
+    const errorMessage = buildLoadErrorMessage(error);
+    loadErrorMessage.value = errorMessage;
+    ElMessage.error(errorMessage);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 报告类型切换
 const onReportTypeChange = (value) => {
-  currentReportType.value = value
-  loadReport(value)
-}
+  currentReportType.value = value;
+  loadReport(value);
+};
 
 // 初始化饼图
 const initPieChart = () => {
-  if (!pieChartRef.value || !reportData.value) return
+  if (!pieChartRef.value || !reportData.value) return;
 
   // 确保统计数据存在
   if (!reportData.value.statistics) {
-    console.warn('统计数据不存在')
-    return
+    console.warn("统计数据不存在");
+    return;
   }
 
   if (pieChart) {
-    pieChart.dispose()
+    pieChart.dispose();
   }
 
-  pieChart = echarts.init(pieChartRef.value)
+  pieChart = echarts.init(pieChartRef.value);
 
-  const stats = reportData.value.statistics
+  const stats = reportData.value.statistics;
   const option = {
     tooltip: {
-      trigger: 'item',
-      formatter: '{b}: {c} ({d}%)'
+      trigger: "item",
+      formatter: "{b}: {c} ({d}%)",
     },
     legend: {
-      orient: 'vertical',
+      orient: "vertical",
       right: 10,
-      top: 'center'
+      top: "center",
     },
     series: [
       {
-        type: 'pie',
-        radius: ['40%', '70%'],
-        center: ['35%', '50%'],
+        type: "pie",
+        radius: ["40%", "70%"],
+        center: ["35%", "50%"],
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 10,
-          borderColor: '#fff',
-          borderWidth: 2
+          borderColor: "#fff",
+          borderWidth: 2,
         },
         label: {
           show: false,
-          position: 'center'
+          position: "center",
         },
         emphasis: {
           label: {
             show: true,
             fontSize: 16,
-            fontWeight: 'bold'
-          }
+            fontWeight: "bold",
+          },
         },
         labelLine: {
-          show: false
+          show: false,
         },
         data: [
-          { value: stats.completed || 0, name: t('uiAutomation.ai.executionReport.completed'), itemStyle: { color: '#67C23A' } },
-          { value: stats.pending || 0, name: t('uiAutomation.ai.executionReport.pending'), itemStyle: { color: '#909399' } },
-          { value: stats.failed || 0, name: t('uiAutomation.ai.executionReport.failed'), itemStyle: { color: '#F56C6C' } },
-          { value: stats.skipped || 0, name: t('uiAutomation.ai.executionReport.skipped'), itemStyle: { color: '#E6A23C' } }
-        ].filter(item => item.value > 0)
-      }
-    ]
-  }
+          {
+            value: stats.completed || 0,
+            name: t("uiAutomation.ai.executionReport.completed"),
+            itemStyle: { color: "#67C23A" },
+          },
+          {
+            value: stats.pending || 0,
+            name: t("uiAutomation.ai.executionReport.pending"),
+            itemStyle: { color: "#909399" },
+          },
+          {
+            value: stats.failed || 0,
+            name: t("uiAutomation.ai.executionReport.failed"),
+            itemStyle: { color: "#F56C6C" },
+          },
+          {
+            value: stats.skipped || 0,
+            name: t("uiAutomation.ai.executionReport.skipped"),
+            itemStyle: { color: "#E6A23C" },
+          },
+        ].filter((item) => item.value > 0),
+      },
+    ],
+  };
 
-  pieChart.setOption(option)
-}
+  pieChart.setOption(option);
+};
 
 // 初始化柱状图
 const initBarChart = () => {
-  if (!barChartRef.value || !reportData.value) return
+  if (!barChartRef.value || !reportData.value) return;
 
   // 确保性能数据存在
   if (!reportData.value.action_distribution) {
-    console.warn('操作分布数据不存在')
-    return
+    console.warn("操作分布数据不存在");
+    return;
   }
 
   if (barChart) {
-    barChart.dispose()
+    barChart.dispose();
   }
 
-  barChart = echarts.init(barChartRef.value)
+  barChart = echarts.init(barChartRef.value);
 
-  const distribution = reportData.value.action_distribution
+  const distribution = reportData.value.action_distribution;
   const data = [
-    { name: t('uiAutomation.ai.executionReport.actions.click'), value: distribution.click || 0 },
-    { name: t('uiAutomation.ai.executionReport.actions.input'), value: distribution.input || 0 },
-    { name: t('uiAutomation.ai.executionReport.actions.scroll'), value: distribution.scroll || 0 },
-    { name: t('uiAutomation.ai.executionReport.actions.wait'), value: distribution.wait || 0 },
-    { name: t('uiAutomation.ai.executionReport.actions.switchTab'), value: distribution.switch_tab || 0 },
-    { name: t('uiAutomation.ai.executionReport.actions.navigate'), value: distribution.navigate || 0 },
-    { name: t('uiAutomation.ai.executionReport.actions.openTab'), value: distribution.open_tab || 0 },
-    { name: t('uiAutomation.ai.executionReport.actions.done'), value: distribution.done || 0 },
-    { name: t('uiAutomation.ai.executionReport.actions.other'), value: distribution.other || 0 }
-  ].filter(item => item.value > 0)
+    {
+      name: t("uiAutomation.ai.executionReport.actions.click"),
+      value: distribution.click || 0,
+    },
+    {
+      name: t("uiAutomation.ai.executionReport.actions.input"),
+      value: distribution.input || 0,
+    },
+    {
+      name: t("uiAutomation.ai.executionReport.actions.scroll"),
+      value: distribution.scroll || 0,
+    },
+    {
+      name: t("uiAutomation.ai.executionReport.actions.wait"),
+      value: distribution.wait || 0,
+    },
+    {
+      name: t("uiAutomation.ai.executionReport.actions.switchTab"),
+      value: distribution.switch_tab || 0,
+    },
+    {
+      name: t("uiAutomation.ai.executionReport.actions.navigate"),
+      value: distribution.navigate || 0,
+    },
+    {
+      name: t("uiAutomation.ai.executionReport.actions.openTab"),
+      value: distribution.open_tab || 0,
+    },
+    {
+      name: t("uiAutomation.ai.executionReport.actions.done"),
+      value: distribution.done || 0,
+    },
+    {
+      name: t("uiAutomation.ai.executionReport.actions.other"),
+      value: distribution.other || 0,
+    },
+  ].filter((item) => item.value > 0);
 
   const option = {
     tooltip: {
-      trigger: 'axis',
+      trigger: "axis",
       axisPointer: {
-        type: 'shadow'
-      }
+        type: "shadow",
+      },
     },
     xAxis: {
-      type: 'category',
-      data: data.map(item => item.name)
+      type: "category",
+      data: data.map((item) => item.name),
     },
     yAxis: {
-      type: 'value'
+      type: "value",
     },
     series: [
       {
-        type: 'bar',
-        data: data.map(item => item.value),
+        type: "bar",
+        data: data.map((item) => item.value),
         itemStyle: {
-          color: '#409EFF'
-        }
-      }
-    ]
-  }
+          color: "#409EFF",
+        },
+      },
+    ],
+  };
 
-  barChart.setOption(option)
-}
+  barChart.setOption(option);
+};
 
 // 获取时间线类型
 const getTimelineType = (status) => {
   const typeMap = {
-    'completed': 'success',
-    'pending': 'info',
-    'failed': 'danger',
-    'skipped': 'warning'
-  }
-  return typeMap[status] || 'info'
-}
+    completed: "success",
+    pending: "info",
+    failed: "danger",
+    skipped: "warning",
+  };
+  return typeMap[status] || "info";
+};
 
 // 获取任务状态标签类型
 const getTaskStatusType = (status) => {
   const typeMap = {
-    'completed': 'success',
-    'pending': 'info',
-    'failed': 'danger',
-    'skipped': 'warning'
-  }
-  return typeMap[status] || 'info'
-}
+    completed: "success",
+    pending: "info",
+    failed: "danger",
+    skipped: "warning",
+  };
+  return typeMap[status] || "info";
+};
 
 // 获取步骤状态类型
 const getStepStatusType = (status) => {
   const typeMap = {
-    'completed': 'success',
-    'pending': 'info',
-    'failed': 'danger'
-  }
-  return typeMap[status] || 'info'
-}
+    completed: "success",
+    pending: "info",
+    failed: "danger",
+  };
+  return typeMap[status] || "info";
+};
 
 // 导出报告
 const exportReport = async () => {
   if (!props.recordId) {
-    ElMessage.error(t('uiAutomation.ai.executionReport.messages.missingRecordId'))
-    return
+    ElMessage.error(
+      t("uiAutomation.ai.executionReport.messages.missingRecordId"),
+    );
+    return;
   }
 
   try {
-    ElMessage.info(t('uiAutomation.ai.executionReport.messages.generatingPdf'))
+    ElMessage.info(t("uiAutomation.ai.executionReport.messages.generatingPdf"));
 
     const response = await exportAIExecutionReportPDF(props.recordId, {
-      report_type: currentReportType.value
-    })
+      report_type: currentReportType.value,
+    });
 
     // 创建下载链接
-    const blob = new Blob([response.data], { type: 'application/pdf' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
 
     // 从响应头获取文件名，如果没有则使用默认名称
-    const contentDisposition = response.headers['content-disposition']
-    let filename = 'AI_Report.pdf'
+    const contentDisposition = response.headers["content-disposition"];
+    let filename = "AI_Report.pdf";
 
     if (contentDisposition) {
-      const filenameMatch = contentDisposition.match(/filename="(.+)"/)
+      const filenameMatch = contentDisposition.match(/filename="(.+)"/);
       if (filenameMatch && filenameMatch[1]) {
-        filename = decodeURIComponent(filenameMatch[1])
+        filename = decodeURIComponent(filenameMatch[1]);
       }
     }
 
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
 
-    ElMessage.success(t('uiAutomation.ai.executionReport.messages.exportSuccess'))
+    ElMessage.success(
+      t("uiAutomation.ai.executionReport.messages.exportSuccess"),
+    );
   } catch (error) {
-    console.error('导出报告失败:', error)
-    ElMessage.error(error.response?.data?.error || t('uiAutomation.ai.executionReport.messages.exportFailed'))
+    console.error("导出报告失败:", error);
+    ElMessage.error(
+      error.response?.data?.error ||
+        t("uiAutomation.ai.executionReport.messages.exportFailed"),
+    );
   }
-}
+};
 
 // 关闭对话框
 const handleClose = () => {
-  visible.value = false
-}
+  visible.value = false;
+};
 </script>
 
 <style scoped>
@@ -599,7 +867,7 @@ const handleClose = () => {
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #E4E7ED;
+  border-bottom: 1px solid #e4e7ed;
 }
 
 .report-content {
@@ -616,7 +884,7 @@ const handleClose = () => {
   color: #303133;
   margin-bottom: 16px;
   padding-bottom: 8px;
-  border-bottom: 2px solid #E4E7ED;
+  border-bottom: 2px solid #e4e7ed;
 }
 
 .overview-cards {
@@ -626,7 +894,7 @@ const handleClose = () => {
 }
 
 .overview-card {
-  background: #F5F7FA;
+  background: #f5f7fa;
   border-radius: 8px;
   padding: 16px;
   text-align: center;
@@ -671,7 +939,7 @@ const handleClose = () => {
 
 .stats-table-content td {
   padding: 10px 16px;
-  border-bottom: 1px solid #E4E7ED;
+  border-bottom: 1px solid #e4e7ed;
 }
 
 .stats-table-content tr:last-child td {
@@ -685,19 +953,19 @@ const handleClose = () => {
 }
 
 .success-row {
-  background-color: #F0F9FF;
+  background-color: #f0f9ff;
 }
 
 .info-row {
-  background-color: #F5F7FA;
+  background-color: #f5f7fa;
 }
 
 .danger-row {
-  background-color: #FEF0F0;
+  background-color: #fef0f0;
 }
 
 .warning-row {
-  background-color: #FDF6EC;
+  background-color: #fdf6ec;
 }
 
 .timeline-container {
@@ -724,7 +992,7 @@ const handleClose = () => {
 }
 
 .step-card {
-  border-left: 3px solid #409EFF;
+  border-left: 3px solid #409eff;
 }
 
 .step-header {
@@ -736,7 +1004,7 @@ const handleClose = () => {
 
 .step-number {
   font-weight: 600;
-  color: #409EFF;
+  color: #409eff;
 }
 
 .step-content > div {
@@ -756,7 +1024,7 @@ const handleClose = () => {
 }
 
 .metric-card {
-  background: #F5F7FA;
+  background: #f5f7fa;
   border-radius: 8px;
   padding: 20px;
   text-align: center;
@@ -771,7 +1039,7 @@ const handleClose = () => {
 .metric-value {
   font-size: 24px;
   font-weight: 600;
-  color: #409EFF;
+  color: #409eff;
 }
 
 .gif-container {
@@ -789,22 +1057,41 @@ const handleClose = () => {
   text-align: center;
 }
 
+.empty-state-description {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.empty-state-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.empty-state-text {
+  max-width: 520px;
+  line-height: 1.6;
+  color: #909399;
+}
+
 /* 自定义滚动条 */
 .report-container::-webkit-scrollbar {
   width: 6px;
 }
 
 .report-container::-webkit-scrollbar-track {
-  background: #F5F7FA;
+  background: #f5f7fa;
   border-radius: 3px;
 }
 
 .report-container::-webkit-scrollbar-thumb {
-  background: #DCDFE6;
+  background: #dcdfe6;
   border-radius: 3px;
 }
 
 .report-container::-webkit-scrollbar-thumb:hover {
-  background: #C0C4CC;
+  background: #c0c4cc;
 }
 </style>

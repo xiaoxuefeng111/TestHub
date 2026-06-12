@@ -1,20 +1,20 @@
-import elementZhCn from 'element-plus/es/locale/lang/zh-cn'
-import common from './common.js'
-import navModule from './nav.js'
-import auth from './auth.js'
-import projectModule from './project.js'
-import testcaseModule from './testcase.js'
-import execution from './execution.js'
-import report from './report.js'
-import reviewModule from './review.js'
-import version from './version.js'
-import requirementModule from './requirement.js'
-import apiTestingModule from './api-testing.js'
-import uiAutomationModule from './ui-automation.js'
-import configurationModule from './configuration.js'
-import assistantModule from './assistant.js'
-import dataFactoryModule from './data-factory.js'
-import notificationModule from './notification.js'
+import elementZhCn from "element-plus/es/locale/lang/zh-cn";
+import common from "./common.js";
+import navModule from "./nav.js";
+import auth from "./auth.js";
+import projectModule from "./project.js";
+import testcaseModule from "./testcase.js";
+import execution from "./execution.js";
+import report from "./report.js";
+import reviewModule from "./review.js";
+import version from "./version.js";
+import requirementModule from "./requirement.js";
+import apiTestingModule from "./api-testing.js";
+import uiAutomationModule from "./ui-automation.js";
+import configurationModule from "./configuration.js";
+import assistantModule from "./assistant.js";
+import dataFactoryModule from "./data-factory.js";
+import notificationModule from "./notification.js";
 
 export default {
   // 模块化导出
@@ -71,5 +71,5 @@ export default {
   notification: notificationModule,
 
   // Element Plus 语言包
-  ...elementZhCn
-}
+  ...elementZhCn,
+};

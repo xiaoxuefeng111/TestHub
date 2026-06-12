@@ -1,6 +1,7 @@
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from django.conf import settings
 from django.contrib.auth import login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -16,6 +17,9 @@ from .sms import send_register_verify_code, validate_verify_code
 from .redis_client import get_redis
 import re
 import uuid
+
+DEV_LOGIN_USERNAME = 'local-dev'
+DEV_LOGIN_EMAIL = 'local-dev@example.invalid'
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
@@ -67,6 +71,55 @@ def login_view(request):
         'refresh': refresh_token,     # JWT refresh token
         'message': '登录成功'
     })
+
+def _get_or_create_dev_login_user():
+    password_holder = User(username=DEV_LOGIN_USERNAME)
+    password_holder.set_unusable_password()
+    user, created = User.objects.get_or_create(
+        username=DEV_LOGIN_USERNAME,
+        defaults={
+            'email': DEV_LOGIN_EMAIL,
+            'first_name': 'Local',
+            'last_name': 'Dev',
+            'department': 'Local Development',
+            'position': 'Developer',
+            'is_active': True,
+            'password': password_holder.password,
+        },
+    )
+    return user, created
+
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+@csrf_exempt
+def dev_login_view(request):
+    if not settings.DEBUG:
+        return Response(
+            {'detail': '开发登录接口仅在 DEBUG 模式下可用。'},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    if not getattr(settings, 'DEV_LOGIN_ENABLED', False):
+        return Response(
+            {'detail': '开发登录接口未启用，请设置 DEV_LOGIN_ENABLED=true 后重试。'},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    user, _ = _get_or_create_dev_login_user()
+    if not user.is_active:
+        return Response(
+            {'detail': f'开发用户 {DEV_LOGIN_USERNAME} 已被禁用，请在本地数据库启用或删除后重试。'},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    refresh = RefreshToken.for_user(user)
+    return Response({
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+        'user': UserSerializer(user).data,
+    })
+
 
 @api_view(['POST'])
 @csrf_exempt

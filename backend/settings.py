@@ -52,6 +52,7 @@ REGISTRATION_STATS_VISIBLE_USERNAMES = config(
 )
 APP_USE_HTTPS = config('APP_USE_HTTPS', default=not DEBUG, cast=bool)
 TRUST_PROXY_SSL_HEADER = config('TRUST_PROXY_SSL_HEADER', default=APP_USE_HTTPS, cast=bool)
+DEV_LOGIN_ENABLED = config('DEV_LOGIN_ENABLED', default=False, cast=bool)
 
 LOCAL_APPS = [
     'apps.users',
@@ -109,20 +110,30 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 ASGI_APPLICATION = 'backend.asgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME', default='testhub'),
-        'USER': config('DB_USER', default='root'),
-        'PASSWORD': config('DB_PASSWORD', default=''),  # 移除硬编码默认密码
-        'HOST': config('DB_HOST', default='127.0.0.1'),
-        'PORT': config('DB_PORT', default='3306'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+USE_SQLITE = config('USE_SQLITE', default=False, cast=bool)
+
+if USE_SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config('DB_NAME', default='tongdaxin_test_platform'),
+            'USER': config('DB_USER', default='root'),
+            'PASSWORD': config('DB_PASSWORD', default=''),  # 移除硬编码默认密码
+            'HOST': config('DB_HOST', default='127.0.0.1'),
+            'PORT': config('DB_PORT', default='3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -294,8 +305,8 @@ CSRF_TRUSTED_ORIGINS = config(
 
 # Spectacular Settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'TestHub API',
-    'DESCRIPTION': 'Test Case Management Platform API',
+    'TITLE': '通达信测试平台 API',
+    'DESCRIPTION': 'Tongdaxin Testing Platform API',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
@@ -438,7 +449,7 @@ SIMPLEUI_LOGIN_PARTICLES = True
 # 设置simpleui 点击首页图标跳转的地址
 SIMPLEUI_INDEX = 'http://localhost:3000'
 # 自定义后台的Logo
-SIMPLEUI_LOGO = 'https://static.djangoproject.com/img/favicon.6dbf28c0650e.ico'
+SIMPLEUI_LOGO = '/static/branding/tdx-logo.png'
 # 是否显示首页信息
 SIMPLEUI_HOME_INFO = False
 # 是否显示快捷入口

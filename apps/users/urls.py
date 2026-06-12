@@ -7,6 +7,7 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
     path('test-register/', test_views.test_register, name='test-register'),  # 测试注册接口
     path('login/', views.login_view, name='login'),
+    path('dev-login/', views.dev_login_view, name='dev_login'),
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
     path('users/', views.UserListView.as_view(), name='user-list'),

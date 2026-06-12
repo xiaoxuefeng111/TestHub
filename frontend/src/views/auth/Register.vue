@@ -2,8 +2,8 @@
   <div class="register-container">
     <div class="register-form">
       <div class="form-header">
-        <h2>{{ $t('auth.registerTitle') }}</h2>
-        <p>{{ $t('auth.registerSubtitle') }}</p>
+        <h2>{{ $t("auth.registerTitle") }}</h2>
+        <p>{{ $t("auth.registerSubtitle") }}</p>
       </div>
 
       <el-form
@@ -48,8 +48,8 @@
               :src="captchaImage"
               alt="验证码"
               class="captcha-img"
-              @click="refreshCaptcha"
               title="点击刷新验证码"
+              @click="refreshCaptcha"
             />
           </el-col>
         </el-row>
@@ -64,12 +64,14 @@
           >
             <template #append>
               <el-button
-                :disabled="smsCountdown > 0 || !form.phone || !form.captcha_code"
+                :disabled="
+                  smsCountdown > 0 || !form.phone || !form.captcha_code
+                "
                 :loading="sendingSms"
-                @click="sendVerifyCode"
                 style="min-width: 110px"
+                @click="sendVerifyCode"
               >
-                {{ smsCountdown > 0 ? `${smsCountdown}s后重试` : '发送验证码' }}
+                {{ smsCountdown > 0 ? `${smsCountdown}s后重试` : "发送验证码" }}
               </el-button>
             </template>
           </el-input>
@@ -154,15 +156,15 @@
             type="primary"
             size="large"
             :loading="loading"
-            @click="handleRegister"
             style="width: 100%"
+            @click="handleRegister"
           >
-            {{ $t('auth.register') }}
+            {{ $t("auth.register") }}
           </el-button>
         </el-form-item>
 
         <div class="form-footer">
-          <router-link to="/login">{{ $t('auth.hasAccount') }}</router-link>
+          <router-link to="/login">{{ $t("auth.hasAccount") }}</router-link>
         </div>
       </el-form>
     </div>
@@ -170,161 +172,190 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
-import { User, Lock, Message, Phone } from '@element-plus/icons-vue'
-import { useUserStore } from '@/stores/user'
-import api from '@/utils/api'
+import { ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import { User, Lock, Message, Phone } from "@element-plus/icons-vue";
+import { useUserStore } from "@/stores/user";
+import api from "@/utils/api";
 
-const router = useRouter()
-const userStore = useUserStore()
-const { t } = useI18n()
-const formRef = ref()
-const loading = ref(false)
-const sendingSms = ref(false)
-const smsCountdown = ref(0)
-const captchaImage = ref('')
-const captchaToken = ref('')
-let countdownTimer = null
+const router = useRouter();
+const userStore = useUserStore();
+const { t } = useI18n();
+const formRef = ref();
+const loading = ref(false);
+const sendingSms = ref(false);
+const smsCountdown = ref(0);
+const captchaImage = ref("");
+const captchaToken = ref("");
+let countdownTimer = null;
 
 const form = reactive({
-  username: '',
-  phone: '',
-  captcha_code: '',
-  verify_code: '',
-  verify_code_token: '',
-  email: '',
-  first_name: '',
-  last_name: '',
-  password: '',
-  password_confirm: '',
-  department: '',
-  position: ''
-})
+  username: "",
+  phone: "",
+  captcha_code: "",
+  verify_code: "",
+  verify_code_token: "",
+  email: "",
+  first_name: "",
+  last_name: "",
+  password: "",
+  password_confirm: "",
+  department: "",
+  position: "",
+});
 
 const validatePhone = (rule, value, callback) => {
   if (!value) {
-    callback(new Error('请输入手机号'))
+    callback(new Error("请输入手机号"));
   } else if (!/^1[3-9]\d{9}$/.test(value)) {
-    callback(new Error('手机号格式不正确'))
+    callback(new Error("手机号格式不正确"));
   } else {
-    callback()
+    callback();
   }
-}
+};
 
 const rules = {
   username: [
-    { required: true, message: computed(() => t('auth.usernameRequired')), trigger: 'blur' },
-    { min: 3, max: 20, message: computed(() => t('auth.usernameLength')), trigger: 'blur' }
+    {
+      required: true,
+      message: computed(() => t("auth.usernameRequired")),
+      trigger: "blur",
+    },
+    {
+      min: 3,
+      max: 20,
+      message: computed(() => t("auth.usernameLength")),
+      trigger: "blur",
+    },
   ],
-  phone: [
-    { required: true, validator: validatePhone, trigger: 'blur' }
-  ],
+  phone: [{ required: true, validator: validatePhone, trigger: "blur" }],
   captcha_code: [
-    { required: true, message: '请输入图形验证码', trigger: 'blur' }
+    { required: true, message: "请输入图形验证码", trigger: "blur" },
   ],
   verify_code: [
-    { required: true, message: '请输入短信验证码', trigger: 'blur' }
+    { required: true, message: "请输入短信验证码", trigger: "blur" },
   ],
   email: [
-    { required: true, message: computed(() => t('auth.emailRequired')), trigger: 'blur' },
-    { type: 'email', message: computed(() => t('auth.emailFormat')), trigger: 'blur' }
+    {
+      required: true,
+      message: computed(() => t("auth.emailRequired")),
+      trigger: "blur",
+    },
+    {
+      type: "email",
+      message: computed(() => t("auth.emailFormat")),
+      trigger: "blur",
+    },
   ],
   password: [
-    { required: true, message: computed(() => t('auth.passwordRequired')), trigger: 'blur' },
-    { min: 6, message: computed(() => t('auth.passwordLength')), trigger: 'blur' }
+    {
+      required: true,
+      message: computed(() => t("auth.passwordRequired")),
+      trigger: "blur",
+    },
+    {
+      min: 6,
+      message: computed(() => t("auth.passwordLength")),
+      trigger: "blur",
+    },
   ],
   password_confirm: [
-    { required: true, message: computed(() => t('auth.confirmPasswordRequired')), trigger: 'blur' },
+    {
+      required: true,
+      message: computed(() => t("auth.confirmPasswordRequired")),
+      trigger: "blur",
+    },
     {
       validator: (rule, value, callback) => {
         if (value !== form.password) {
-          callback(new Error(t('auth.passwordMismatch')))
+          callback(new Error(t("auth.passwordMismatch")));
         } else {
-          callback()
+          callback();
         }
       },
-      trigger: 'blur'
-    }
-  ]
-}
+      trigger: "blur",
+    },
+  ],
+};
 
 // 获取图形验证码
 const refreshCaptcha = async () => {
   try {
-    const response = await api.get('/auth/captcha/')
-    captchaImage.value = response.data.image
-    captchaToken.value = response.data.token
-    form.captcha_code = ''
+    const response = await api.get("/auth/captcha/");
+    captchaImage.value = response.data.image;
+    captchaToken.value = response.data.token;
+    form.captcha_code = "";
   } catch (error) {
-    ElMessage.error('获取验证码失败，请刷新重试')
+    ElMessage.error("获取验证码失败，请刷新重试");
   }
-}
+};
 
 // 发送短信验证码
 const sendVerifyCode = async () => {
   if (!form.phone) {
-    ElMessage.warning('请先输入手机号')
-    return
+    ElMessage.warning("请先输入手机号");
+    return;
   }
   if (!form.captcha_code) {
-    ElMessage.warning('请先输入图形验证码')
-    return
+    ElMessage.warning("请先输入图形验证码");
+    return;
   }
 
-  sendingSms.value = true
+  sendingSms.value = true;
   try {
-    const response = await api.post('/auth/send-register-code/', {
+    const response = await api.post("/auth/send-register-code/", {
       phone: form.phone,
       captcha_token: captchaToken.value,
       captcha_code: form.captcha_code,
-      mode: 'register'
-    })
-    ElMessage.success('验证码已发送')
-    form.verify_code_token = response.data.verify_code_token
+      mode: "register",
+    });
+    ElMessage.success("验证码已发送");
+    form.verify_code_token = response.data.verify_code_token;
     // 开始 60 秒倒计时
-    smsCountdown.value = 60
+    smsCountdown.value = 60;
     countdownTimer = setInterval(() => {
-      smsCountdown.value--
+      smsCountdown.value--;
       if (smsCountdown.value <= 0) {
-        clearInterval(countdownTimer)
-        countdownTimer = null
+        clearInterval(countdownTimer);
+        countdownTimer = null;
       }
-    }, 1000)
+    }, 1000);
   } catch (error) {
-    const errMsg = error.response?.data?.error || '验证码发送失败'
-    ElMessage.error(errMsg)
+    const errMsg = error.response?.data?.error || "验证码发送失败";
+    ElMessage.error(errMsg);
     // 刷新图形验证码
-    refreshCaptcha()
+    refreshCaptcha();
   } finally {
-    sendingSms.value = false
+    sendingSms.value = false;
   }
-}
+};
 
 const handleRegister = async () => {
-  if (!formRef.value) return
+  if (!formRef.value) return;
 
   await formRef.value.validate(async (valid) => {
     if (valid) {
-      loading.value = true
+      loading.value = true;
       try {
-        await userStore.register(form)
-        ElMessage.success(t('auth.registerSuccess'))
-        router.replace('/home')
+        await userStore.register(form);
+        ElMessage.success(t("auth.registerSuccess"));
+        router.replace("/home");
       } catch (error) {
-        ElMessage.error(error.response?.data?.error || t('auth.registerFailed'))
-        refreshCaptcha()
+        ElMessage.error(
+          error.response?.data?.error || t("auth.registerFailed"),
+        );
+        refreshCaptcha();
       } finally {
-        loading.value = false
+        loading.value = false;
       }
     }
-  })
-}
+  });
+};
 
 // 页面加载时获取图形验证码
-refreshCaptcha()
+refreshCaptcha();
 </script>
 
 <style lang="scss" scoped>

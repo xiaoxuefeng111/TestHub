@@ -1,30 +1,51 @@
 <template>
   <div class="report-view">
     <div class="header">
-      <h3>{{ $t('uiAutomation.report.title') }}</h3>
+      <h3>{{ $t("uiAutomation.report.title") }}</h3>
       <div class="actions">
-        <el-select v-model="selectedProject" :placeholder="$t('uiAutomation.common.selectProject')" style="width: 200px; margin-right: 15px" @change="onProjectChange">
-          <el-option v-for="project in projects" :key="project.id" :label="project.name" :value="project.id" />
+        <el-select
+          v-model="selectedProject"
+          :placeholder="$t('uiAutomation.common.selectProject')"
+          style="width: 200px; margin-right: 15px"
+          @change="onProjectChange"
+        >
+          <el-option
+            v-for="project in projects"
+            :key="project.id"
+            :label="project.name"
+            :value="project.id"
+          />
         </el-select>
         <el-button type="primary" @click="refreshReports">
           <el-icon><Refresh /></el-icon>
-          {{ $t('uiAutomation.report.refreshReport') }}
+          {{ $t("uiAutomation.report.refreshReport") }}
         </el-button>
       </div>
     </div>
 
     <div class="content">
-      <el-table :data="reports" v-loading="loading" style="width: 100%">
+      <el-table v-loading="loading" :data="reports" style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="test_suite_name" :label="$t('uiAutomation.report.testSuite')" min-width="200" />
-        <el-table-column prop="status" :label="$t('uiAutomation.common.status')" width="120">
+        <el-table-column
+          prop="test_suite_name"
+          :label="$t('uiAutomation.report.testSuite')"
+          min-width="200"
+        />
+        <el-table-column
+          prop="status"
+          :label="$t('uiAutomation.common.status')"
+          width="120"
+        >
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.status)">
               {{ getStatusText(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('uiAutomation.report.testEngine')" width="120">
+        <el-table-column
+          :label="$t('uiAutomation.report.testEngine')"
+          width="120"
+        >
           <template #default="{ row }">
             <el-tag size="small">{{ getEngineText(row.engine) }}</el-tag>
           </template>
@@ -34,18 +55,37 @@
             {{ getBrowserText(row.browser) }}
           </template>
         </el-table-column>
-        <el-table-column prop="total_cases" :label="$t('uiAutomation.report.totalCases')" width="100" />
-        <el-table-column prop="passed_cases" :label="$t('uiAutomation.report.passedCases')" width="100">
+        <el-table-column
+          prop="total_cases"
+          :label="$t('uiAutomation.report.totalCases')"
+          width="100"
+        />
+        <el-table-column
+          prop="passed_cases"
+          :label="$t('uiAutomation.report.passedCases')"
+          width="100"
+        >
           <template #default="{ row }">
-            <span style="color: #67c23a; font-weight: bold;">{{ row.passed_cases }}</span>
+            <span style="color: #67c23a; font-weight: bold">{{
+              row.passed_cases
+            }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="failed_cases" :label="$t('uiAutomation.report.failedCases')" width="100">
+        <el-table-column
+          prop="failed_cases"
+          :label="$t('uiAutomation.report.failedCases')"
+          width="100"
+        >
           <template #default="{ row }">
-            <span style="color: #f56c6c; font-weight: bold;">{{ row.failed_cases }}</span>
+            <span style="color: #f56c6c; font-weight: bold">{{
+              row.failed_cases
+            }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('uiAutomation.report.passRate')" width="100">
+        <el-table-column
+          :label="$t('uiAutomation.report.passRate')"
+          width="100"
+        >
           <template #default="{ row }">
             <el-progress
               :percentage="row.pass_rate"
@@ -54,26 +94,51 @@
             />
           </template>
         </el-table-column>
-        <el-table-column :label="$t('uiAutomation.report.duration')" width="120">
+        <el-table-column
+          :label="$t('uiAutomation.report.duration')"
+          width="120"
+        >
           <template #default="{ row }">
             {{ formatDuration(row.duration) }}
           </template>
         </el-table-column>
-        <el-table-column prop="executed_by_name" :label="$t('uiAutomation.report.executor')" width="120" />
-        <el-table-column prop="created_at" :label="$t('uiAutomation.report.executionTime')" width="180">
+        <el-table-column
+          prop="executed_by_name"
+          :label="$t('uiAutomation.report.executor')"
+          width="120"
+        />
+        <el-table-column
+          prop="created_at"
+          :label="$t('uiAutomation.report.executionTime')"
+          width="180"
+        >
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
-        <el-table-column :label="$t('uiAutomation.common.operation')" width="200" fixed="right">
+        <el-table-column
+          :label="$t('uiAutomation.common.operation')"
+          width="200"
+          fixed="right"
+        >
           <template #default="{ row }">
-            <el-button link type="primary" size="small" @click="viewReportDetail(row)">
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click="viewReportDetail(row)"
+            >
               <el-icon><Document /></el-icon>
-              {{ $t('uiAutomation.report.viewDetail') }}
+              {{ $t("uiAutomation.report.viewDetail") }}
             </el-button>
-            <el-button link type="danger" size="small" @click="deleteReport(row)">
+            <el-button
+              link
+              type="danger"
+              size="small"
+              @click="deleteReport(row)"
+            >
               <el-icon><Delete /></el-icon>
-              {{ $t('uiAutomation.common.delete') }}
+              {{ $t("uiAutomation.common.delete") }}
             </el-button>
           </template>
         </el-table-column>
@@ -101,53 +166,89 @@
     >
       <div v-if="currentReport" class="report-detail">
         <el-descriptions :column="2" border>
-          <el-descriptions-item :label="$t('uiAutomation.report.reportId')">{{ currentReport.id }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('uiAutomation.report.testSuite')">{{ currentReport.test_suite_name }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('uiAutomation.report.executionStatus')">
+          <el-descriptions-item :label="$t('uiAutomation.report.reportId')">{{
+            currentReport.id
+          }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('uiAutomation.report.testSuite')">{{
+            currentReport.test_suite_name
+          }}</el-descriptions-item>
+          <el-descriptions-item
+            :label="$t('uiAutomation.report.executionStatus')"
+          >
             <el-tag :type="getStatusType(currentReport.status)">
               {{ getStatusText(currentReport.status) }}
             </el-tag>
           </el-descriptions-item>
-          <el-descriptions-item :label="$t('uiAutomation.report.executor')">{{ currentReport.executed_by_name }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('uiAutomation.report.testEngine')">{{ getEngineText(currentReport.engine) }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('uiAutomation.report.browser')">{{ getBrowserText(currentReport.browser) }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('uiAutomation.report.executionMode')">{{ currentReport.headless ? $t('uiAutomation.report.headlessMode') : $t('uiAutomation.report.headedMode') }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('uiAutomation.report.duration')">{{ formatDuration(currentReport.duration) }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('uiAutomation.report.startTime')">{{ formatDate(currentReport.started_at) }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('uiAutomation.report.endTime')">{{ formatDate(currentReport.finished_at) }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('uiAutomation.report.executor')">{{
+            currentReport.executed_by_name
+          }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('uiAutomation.report.testEngine')">{{
+            getEngineText(currentReport.engine)
+          }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('uiAutomation.report.browser')">{{
+            getBrowserText(currentReport.browser)
+          }}</el-descriptions-item>
+          <el-descriptions-item
+            :label="$t('uiAutomation.report.executionMode')"
+            >{{
+              currentReport.headless
+                ? $t("uiAutomation.report.headlessMode")
+                : $t("uiAutomation.report.headedMode")
+            }}</el-descriptions-item
+          >
+          <el-descriptions-item :label="$t('uiAutomation.report.duration')">{{
+            formatDuration(currentReport.duration)
+          }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('uiAutomation.report.startTime')">{{
+            formatDate(currentReport.started_at)
+          }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('uiAutomation.report.endTime')">{{
+            formatDate(currentReport.finished_at)
+          }}</el-descriptions-item>
         </el-descriptions>
 
         <div class="statistics-section">
-          <h4>{{ $t('uiAutomation.report.testStatistics') }}</h4>
+          <h4>{{ $t("uiAutomation.report.testStatistics") }}</h4>
           <el-row :gutter="20">
             <el-col :span="6">
               <div class="stat-card">
-                <div class="stat-label">{{ $t('uiAutomation.report.totalCases') }}</div>
+                <div class="stat-label">
+                  {{ $t("uiAutomation.report.totalCases") }}
+                </div>
                 <div class="stat-value">{{ currentReport.total_cases }}</div>
               </div>
             </el-col>
             <el-col :span="6">
               <div class="stat-card success">
-                <div class="stat-label">{{ $t('uiAutomation.report.passedCases') }}</div>
+                <div class="stat-label">
+                  {{ $t("uiAutomation.report.passedCases") }}
+                </div>
                 <div class="stat-value">{{ currentReport.passed_cases }}</div>
               </div>
             </el-col>
             <el-col :span="6">
               <div class="stat-card danger">
-                <div class="stat-label">{{ $t('uiAutomation.report.failedCases') }}</div>
+                <div class="stat-label">
+                  {{ $t("uiAutomation.report.failedCases") }}
+                </div>
                 <div class="stat-value">{{ currentReport.failed_cases }}</div>
               </div>
             </el-col>
             <el-col :span="6">
               <div class="stat-card warning">
-                <div class="stat-label">{{ $t('uiAutomation.report.skippedCases') }}</div>
+                <div class="stat-label">
+                  {{ $t("uiAutomation.report.skippedCases") }}
+                </div>
                 <div class="stat-value">{{ currentReport.skipped_cases }}</div>
               </div>
             </el-col>
           </el-row>
 
           <div class="pass-rate-chart">
-            <h5>{{ $t('uiAutomation.report.passRate') }}: {{ currentReport.pass_rate }}%</h5>
+            <h5>
+              {{ $t("uiAutomation.report.passRate") }}:
+              {{ currentReport.pass_rate }}%
+            </h5>
             <el-progress
               :percentage="currentReport.pass_rate"
               :color="getProgressColor(currentReport.pass_rate)"
@@ -157,42 +258,62 @@
         </div>
 
         <div class="result-section">
-          <h4>{{ $t('uiAutomation.report.executionResultDetail') }}</h4>
+          <h4>{{ $t("uiAutomation.report.executionResultDetail") }}</h4>
           <el-table
             :data="getCaseExecutionList(currentReport)"
             border
-            style="margin-top: 15px;"
+            style="margin-top: 15px"
           >
-            <el-table-column type="index" :label="$t('uiAutomation.report.sequence')" width="60" />
-            <el-table-column prop="test_case_name" :label="$t('uiAutomation.report.testCase')" min-width="200" />
-            <el-table-column :label="$t('uiAutomation.report.executionStatus')" width="100" align="center">
+            <el-table-column
+              type="index"
+              :label="$t('uiAutomation.report.sequence')"
+              width="60"
+            />
+            <el-table-column
+              prop="test_case_name"
+              :label="$t('uiAutomation.report.testCase')"
+              min-width="200"
+            />
+            <el-table-column
+              :label="$t('uiAutomation.report.executionStatus')"
+              width="100"
+              align="center"
+            >
               <template #default="{ row }">
                 <el-tag :type="row.status === 'passed' ? 'success' : 'danger'">
-                  {{ row.status === 'passed' ? $t('uiAutomation.report.casePassed') : $t('uiAutomation.report.caseFailed') }}
+                  {{
+                    row.status === "passed"
+                      ? $t("uiAutomation.report.casePassed")
+                      : $t("uiAutomation.report.caseFailed")
+                  }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column :label="$t('uiAutomation.report.stepCount')" width="100" align="center">
+            <el-table-column
+              :label="$t('uiAutomation.report.stepCount')"
+              width="100"
+              align="center"
+            >
               <template #default="{ row }">
                 {{ row.steps ? row.steps.length : 0 }}
               </template>
             </el-table-column>
-            <el-table-column :label="$t('uiAutomation.common.operation')" width="120" align="center">
+            <el-table-column
+              :label="$t('uiAutomation.common.operation')"
+              width="120"
+              align="center"
+            >
               <template #default="{ row }">
-                <el-button
-                  type="primary"
-                  link
-                  @click="viewCaseDetail(row)"
-                >
-                  {{ $t('uiAutomation.report.viewDetail') }}
+                <el-button type="primary" link @click="viewCaseDetail(row)">
+                  {{ $t("uiAutomation.report.viewDetail") }}
                 </el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
 
-        <div class="error-section" v-if="currentReport.error_message">
-          <h4>{{ $t('uiAutomation.report.errorInfo') }}</h4>
+        <div v-if="currentReport.error_message" class="error-section">
+          <h4>{{ $t("uiAutomation.report.errorInfo") }}</h4>
           <div class="errors-container">
             <div class="error-item">
               <div class="error-content">
@@ -203,7 +324,9 @@
         </div>
       </div>
       <template #footer>
-        <el-button @click="showDetailDialog = false">{{ $t('uiAutomation.common.close') }}</el-button>
+        <el-button @click="showDetailDialog = false">{{
+          $t("uiAutomation.common.close")
+        }}</el-button>
       </template>
     </el-dialog>
 
@@ -217,14 +340,23 @@
       <div v-if="currentCase" class="case-detail">
         <!-- 用例执行成功 - 只显示执行日志 -->
         <div v-if="currentCase.status === 'passed'">
-          <h4>{{ $t('uiAutomation.report.executionLogs') }}</h4>
+          <h4>{{ $t("uiAutomation.report.executionLogs") }}</h4>
           <div class="log-container">
-            <div v-for="(step, index) in currentCase.steps" :key="index" class="log-item">
+            <div
+              v-for="(step, index) in currentCase.steps"
+              :key="index"
+              class="log-item"
+            >
               <div class="log-header">
-                <el-tag :type="step.success ? 'success' : 'danger'" size="small">
-                  {{ $t('uiAutomation.report.step') }} {{ step.step_number }}
+                <el-tag
+                  :type="step.success ? 'success' : 'danger'"
+                  size="small"
+                >
+                  {{ $t("uiAutomation.report.step") }} {{ step.step_number }}
                 </el-tag>
-                <span class="log-action">{{ getActionText(step.action_type) }}</span>
+                <span class="log-action">{{
+                  getActionText(step.action_type)
+                }}</span>
                 <span class="log-desc">{{ step.description }}</span>
               </div>
               <div v-if="step.error" class="log-error">
@@ -239,14 +371,27 @@
         <div v-else>
           <el-tabs v-model="activeTab" type="border-card">
             <!-- 执行日志 Tab -->
-            <el-tab-pane :label="$t('uiAutomation.report.executionLogs')" name="logs">
+            <el-tab-pane
+              :label="$t('uiAutomation.report.executionLogs')"
+              name="logs"
+            >
               <div class="log-container">
-                <div v-for="(step, index) in currentCase.steps" :key="index" class="log-item">
+                <div
+                  v-for="(step, index) in currentCase.steps"
+                  :key="index"
+                  class="log-item"
+                >
                   <div class="log-header">
-                    <el-tag :type="step.success ? 'success' : 'danger'" size="small">
-                      {{ $t('uiAutomation.report.step') }} {{ step.step_number }}
+                    <el-tag
+                      :type="step.success ? 'success' : 'danger'"
+                      size="small"
+                    >
+                      {{ $t("uiAutomation.report.step") }}
+                      {{ step.step_number }}
                     </el-tag>
-                    <span class="log-action">{{ getActionText(step.action_type) }}</span>
+                    <span class="log-action">{{
+                      getActionText(step.action_type)
+                    }}</span>
                     <span class="log-desc">{{ step.description }}</span>
                   </div>
                   <div v-if="step.error" class="log-error">
@@ -258,261 +403,301 @@
             </el-tab-pane>
 
             <!-- 失败截图 Tab -->
-            <el-tab-pane :label="$t('uiAutomation.report.failedScreenshots')" name="screenshots">
-              <div v-if="currentCase.screenshots && currentCase.screenshots.length > 0" class="screenshot-container">
-                <div v-for="(screenshot, index) in currentCase.screenshots" :key="index" class="screenshot-item">
-                  <h5>{{ screenshot.description || `${$t('uiAutomation.report.screenshot')} ${index + 1}` }}</h5>
-                  <img :src="screenshot.url" :alt="screenshot.description" class="screenshot-img" />
+            <el-tab-pane
+              :label="$t('uiAutomation.report.failedScreenshots')"
+              name="screenshots"
+            >
+              <div
+                v-if="
+                  currentCase.screenshots && currentCase.screenshots.length > 0
+                "
+                class="screenshot-container"
+              >
+                <div
+                  v-for="(screenshot, index) in currentCase.screenshots"
+                  :key="index"
+                  class="screenshot-item"
+                >
+                  <h5>
+                    {{
+                      screenshot.description ||
+                      `${$t("uiAutomation.report.screenshot")} ${index + 1}`
+                    }}
+                  </h5>
+                  <img
+                    :src="screenshot.url"
+                    :alt="screenshot.description"
+                    class="screenshot-img"
+                  />
                   <p class="screenshot-time">{{ screenshot.timestamp }}</p>
                 </div>
               </div>
-              <el-empty v-else :description="$t('uiAutomation.report.noScreenshots')" />
+              <el-empty
+                v-else
+                :description="$t('uiAutomation.report.noScreenshots')"
+              />
             </el-tab-pane>
 
             <!-- 错误信息 Tab -->
-            <el-tab-pane :label="$t('uiAutomation.report.errorInfo')" name="error">
+            <el-tab-pane
+              :label="$t('uiAutomation.report.errorInfo')"
+              name="error"
+            >
               <div class="errors-container">
                 <div v-if="currentCase.error" class="error-item">
                   <div class="error-content">
                     <pre class="error-text">{{ currentCase.error }}</pre>
                   </div>
                 </div>
-                <el-empty v-else :description="$t('uiAutomation.report.noError')" />
+                <el-empty
+                  v-else
+                  :description="$t('uiAutomation.report.noError')"
+                />
               </div>
             </el-tab-pane>
           </el-tabs>
         </div>
       </div>
       <template #footer>
-        <el-button @click="showCaseDetailDialog = false">{{ $t('uiAutomation.common.close') }}</el-button>
+        <el-button @click="showCaseDetailDialog = false">{{
+          $t("uiAutomation.common.close")
+        }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Refresh, Document, Delete, WarningFilled } from '@element-plus/icons-vue'
+import { ref, reactive, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { ElMessage, ElMessageBox } from "element-plus";
+import {
+  Refresh,
+  Document,
+  Delete,
+  WarningFilled,
+} from "@element-plus/icons-vue";
 import {
   getUiProjects,
   getTestExecutions,
-  deleteTestExecution
-} from '@/api/ui_automation'
+  deleteTestExecution,
+} from "@/api/ui_automation";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const reports = ref([])
-const projects = ref([])
-const selectedProject = ref('')
-const loading = ref(false)
-const total = ref(0)
+const reports = ref([]);
+const projects = ref([]);
+const selectedProject = ref("");
+const loading = ref(false);
+const total = ref(0);
 const pagination = reactive({
   currentPage: 1,
-  pageSize: 20
-})
+  pageSize: 20,
+});
 
 // 详情对话框
-const showDetailDialog = ref(false)
-const currentReport = ref(null)
+const showDetailDialog = ref(false);
+const currentReport = ref(null);
 
 // 用例详情对话框
-const showCaseDetailDialog = ref(false)
-const currentCase = ref(null)
-const activeTab = ref('logs')
+const showCaseDetailDialog = ref(false);
+const currentCase = ref(null);
+const activeTab = ref("logs");
 
 // 加载项目列表
 const loadProjects = async () => {
   try {
-    const response = await getUiProjects({ page_size: 100 })
-    projects.value = response.data.results || response.data
+    const response = await getUiProjects({ page_size: 100 });
+    projects.value = response.data.results || response.data;
   } catch (error) {
-    console.error('Failed to load projects:', error)
-    ElMessage.error(t('uiAutomation.report.messages.loadProjectsFailed'))
+    console.error("Failed to load projects:", error);
+    ElMessage.error(t("uiAutomation.report.messages.loadProjectsFailed"));
   }
-}
+};
 
 // 加载报告列表
 const loadReports = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const params = {
       page: pagination.currentPage,
-      page_size: pagination.pageSize
-    }
+      page_size: pagination.pageSize,
+    };
 
     if (selectedProject.value) {
-      params.project = selectedProject.value
+      params.project = selectedProject.value;
     }
 
-    const response = await getTestExecutions(params)
+    const response = await getTestExecutions(params);
 
     if (response.data.results) {
-      reports.value = response.data.results
-      total.value = response.data.count || 0
+      reports.value = response.data.results;
+      total.value = response.data.count || 0;
     } else {
-      reports.value = response.data
-      total.value = response.data.length
+      reports.value = response.data;
+      total.value = response.data.length;
     }
   } catch (error) {
-    console.error('Failed to load test reports:', error)
-    ElMessage.error(t('uiAutomation.report.messages.loadFailed'))
+    console.error("Failed to load test reports:", error);
+    ElMessage.error(t("uiAutomation.report.messages.loadFailed"));
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 项目切换
 const onProjectChange = async () => {
-  pagination.currentPage = 1
-  await loadReports()
-}
+  pagination.currentPage = 1;
+  await loadReports();
+};
 
 // 刷新报告
 const refreshReports = async () => {
-  await loadReports()
-  ElMessage.success(t('uiAutomation.report.messages.refreshed'))
-}
+  await loadReports();
+  ElMessage.success(t("uiAutomation.report.messages.refreshed"));
+};
 
 // 分页处理
 const handleSizeChange = async () => {
-  pagination.currentPage = 1
-  await loadReports()
-}
+  pagination.currentPage = 1;
+  await loadReports();
+};
 
 const handleCurrentChange = async () => {
-  await loadReports()
-}
+  await loadReports();
+};
 
 // 查看报告详情
 const viewReportDetail = (report) => {
-  currentReport.value = report
-  showDetailDialog.value = true
-}
+  currentReport.value = report;
+  showDetailDialog.value = true;
+};
 
 // 获取用例执行列表
 const getCaseExecutionList = (report) => {
   if (!report || !report.result_data || !report.result_data.test_cases) {
-    return []
+    return [];
   }
-  return report.result_data.test_cases
-}
+  return report.result_data.test_cases;
+};
 
 // 查看用例详情
 const viewCaseDetail = (caseData) => {
-  currentCase.value = caseData
-  activeTab.value = 'logs'
-  showCaseDetailDialog.value = true
-}
+  currentCase.value = caseData;
+  activeTab.value = "logs";
+  showCaseDetailDialog.value = true;
+};
 
 // 获取操作类型文本
 const getActionText = (actionType) => {
   const actionMap = {
-    'click': t('uiAutomation.actionTypes.click'),
-    'fill': t('uiAutomation.actionTypes.fill'),
-    'getText': t('uiAutomation.actionTypes.getText'),
-    'waitFor': t('uiAutomation.actionTypes.waitFor'),
-    'hover': t('uiAutomation.actionTypes.hover'),
-    'scroll': t('uiAutomation.actionTypes.scroll'),
-    'screenshot': t('uiAutomation.actionTypes.screenshot'),
-    'assert': t('uiAutomation.actionTypes.assert'),
-    'wait': t('uiAutomation.actionTypes.wait')
-  }
-  return actionMap[actionType] || actionType
-}
+    click: t("uiAutomation.actionTypes.click"),
+    fill: t("uiAutomation.actionTypes.fill"),
+    getText: t("uiAutomation.actionTypes.getText"),
+    waitFor: t("uiAutomation.actionTypes.waitFor"),
+    hover: t("uiAutomation.actionTypes.hover"),
+    scroll: t("uiAutomation.actionTypes.scroll"),
+    screenshot: t("uiAutomation.actionTypes.screenshot"),
+    assert: t("uiAutomation.actionTypes.assert"),
+    wait: t("uiAutomation.actionTypes.wait"),
+  };
+  return actionMap[actionType] || actionType;
+};
 
 // 删除报告
 const deleteReport = async (report) => {
   try {
     await ElMessageBox.confirm(
-      t('uiAutomation.report.messages.deleteConfirm', { name: report.test_suite_name }),
-      t('uiAutomation.report.messages.confirmDelete'),
+      t("uiAutomation.report.messages.deleteConfirm", {
+        name: report.test_suite_name,
+      }),
+      t("uiAutomation.report.messages.confirmDelete"),
       {
-        confirmButtonText: t('uiAutomation.common.confirm'),
-        cancelButtonText: t('uiAutomation.common.cancel'),
-        type: 'warning'
-      }
-    )
+        confirmButtonText: t("uiAutomation.common.confirm"),
+        cancelButtonText: t("uiAutomation.common.cancel"),
+        type: "warning",
+      },
+    );
 
-    await deleteTestExecution(report.id)
-    ElMessage.success(t('uiAutomation.report.messages.deleteSuccess'))
-    await loadReports()
+    await deleteTestExecution(report.id);
+    ElMessage.success(t("uiAutomation.report.messages.deleteSuccess"));
+    await loadReports();
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('Failed to delete report:', error)
-      ElMessage.error(t('uiAutomation.report.messages.deleteFailed'))
+    if (error !== "cancel") {
+      console.error("Failed to delete report:", error);
+      ElMessage.error(t("uiAutomation.report.messages.deleteFailed"));
     }
   }
-}
+};
 
 // 辅助方法
 const getStatusType = (status) => {
   const typeMap = {
-    'PENDING': 'info',
-    'RUNNING': 'warning',
-    'SUCCESS': 'success',
-    'FAILED': 'danger',
-    'ABORTED': 'info'
-  }
-  return typeMap[status] || 'info'
-}
+    PENDING: "info",
+    RUNNING: "warning",
+    SUCCESS: "success",
+    FAILED: "danger",
+    ABORTED: "info",
+  };
+  return typeMap[status] || "info";
+};
 
 const getStatusText = (status) => {
   const textMap = {
-    'PENDING': t('uiAutomation.report.statusPending'),
-    'RUNNING': t('uiAutomation.report.statusRunning'),
-    'SUCCESS': t('uiAutomation.report.statusSuccess'),
-    'FAILED': t('uiAutomation.report.statusFailed'),
-    'ABORTED': t('uiAutomation.report.statusAborted')
-  }
-  return textMap[status] || status
-}
+    PENDING: t("uiAutomation.report.statusPending"),
+    RUNNING: t("uiAutomation.report.statusRunning"),
+    SUCCESS: t("uiAutomation.report.statusSuccess"),
+    FAILED: t("uiAutomation.report.statusFailed"),
+    ABORTED: t("uiAutomation.report.statusAborted"),
+  };
+  return textMap[status] || status;
+};
 
 const getEngineText = (engine) => {
   const engineMap = {
-    'playwright': 'Playwright',
-    'selenium': 'Selenium'
-  }
-  return engineMap[engine] || engine || 'Playwright'
-}
+    playwright: "Playwright",
+    selenium: "Selenium",
+  };
+  return engineMap[engine] || engine || "Playwright";
+};
 
 const getBrowserText = (browser) => {
   const browserMap = {
-    'chrome': 'Chrome',
-    'firefox': 'Firefox',
-    'safari': 'Safari',
-    'edge': 'Edge'
-  }
-  return browserMap[browser] || browser || 'Chrome'
-}
+    chrome: "Chrome",
+    firefox: "Firefox",
+    safari: "Safari",
+    edge: "Edge",
+  };
+  return browserMap[browser] || browser || "Chrome";
+};
 
 const getProgressColor = (percentage) => {
-  if (percentage >= 80) return '#67c23a'
-  if (percentage >= 60) return '#e6a23c'
-  return '#f56c6c'
-}
+  if (percentage >= 80) return "#67c23a";
+  if (percentage >= 60) return "#e6a23c";
+  return "#f56c6c";
+};
 
 const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  return new Date(dateString).toLocaleString()
-}
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleString();
+};
 
 const formatDuration = (seconds) => {
-  if (!seconds) return `0${t('uiAutomation.report.seconds')}`
-  if (seconds < 60) return `${seconds.toFixed(1)}${t('uiAutomation.report.seconds')}`
-  const minutes = Math.floor(seconds / 60)
-  const secs = (seconds % 60).toFixed(0)
-  return `${minutes}${t('uiAutomation.report.minutes')}${secs}${t('uiAutomation.report.seconds')}`
-}
+  if (!seconds) return `0${t("uiAutomation.report.seconds")}`;
+  if (seconds < 60)
+    return `${seconds.toFixed(1)}${t("uiAutomation.report.seconds")}`;
+  const minutes = Math.floor(seconds / 60);
+  const secs = (seconds % 60).toFixed(0);
+  return `${minutes}${t("uiAutomation.report.minutes")}${secs}${t("uiAutomation.report.seconds")}`;
+};
 
 onMounted(async () => {
-  await loadProjects()
+  await loadProjects();
   if (projects.value.length > 0) {
-    selectedProject.value = projects.value[0].id
+    selectedProject.value = projects.value[0].id;
   }
-  await loadReports()
-})
+  await loadReports();
+});
 </script>
 
 <style scoped lang="scss">
@@ -628,7 +813,7 @@ onMounted(async () => {
       border-radius: 4px;
       max-height: 400px;
       overflow: auto;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
       font-size: 12px;
       line-height: 1.5;
     }
@@ -674,7 +859,7 @@ onMounted(async () => {
   background: #2d2d2d;
   color: #ff6b6b;
   border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-size: 13px;
   line-height: 1.6;
   white-space: pre-wrap;

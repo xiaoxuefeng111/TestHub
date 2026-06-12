@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { trackPageView } from '@/utils/tracker'
 
+const LOCAL_DEV_AUTH_ENABLED = import.meta.env.VITE_LOCAL_DEV_AUTH === 'true'
+
 // 静态导入常用组件来避免动态导入问题
 import Login from '@/views/auth/Login.vue'
 import Register from '@/views/auth/Register.vue'
@@ -43,20 +45,15 @@ const routes = [
     {
         path: '/home',
         name: 'Home',
-        component: Home,
-        meta: { requiresAuth: true }
+        component: Home
     },
     {
         path: '/login',
-        name: 'Login',
-        component: Login,
-        meta: { requiresGuest: true }
+        redirect: '/home'
     },
     {
         path: '/register',
-        name: 'Register',
-        component: Register,
-        meta: { requiresGuest: true }
+        redirect: '/home'
     },
     {
         path: '/ai-generation/assistant',
@@ -508,8 +505,12 @@ router.beforeEach(async (to, _from, next) => {
         }
     }
 
-    // 有 token 但没有用户信息时，初始化认证
-    if (!userStore.user && userStore.accessToken) {
+    // 仅在受保护页面初始化认证，避免公开首页主动触发本地开发登录
+    if (
+        to.meta.requiresAuth &&
+        ((LOCAL_DEV_AUTH_ENABLED && !userStore.isAuthenticated) ||
+            (!userStore.user && userStore.accessToken))
+    ) {
         try {
             await userStore.initAuth()
         } catch (error) {
@@ -518,7 +519,7 @@ router.beforeEach(async (to, _from, next) => {
     }
 
     if (to.meta.requiresAuth && !userStore.isAuthenticated) {
-        next('/login')
+        next('/home')
     } else if (to.meta.requiresGuest && userStore.isAuthenticated) {
         next('/home')
     } else {

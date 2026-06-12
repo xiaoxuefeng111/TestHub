@@ -4,33 +4,61 @@
       <div class="header-actions">
         <!-- PC：语言、用户分开 -->
         <div class="header-actions-pc">
-          <el-dropdown @command="handleLanguageChange" class="language-dropdown">
+          <el-dropdown
+            class="language-dropdown"
+            @command="handleLanguageChange"
+          >
             <span class="el-dropdown-link">
-              <span class="language-icon">{{ currentLanguage === 'zh-cn' ? '🇨🇳' : '🇺🇸' }}</span>
-              <span class="language-text">{{ $t('home.language.current') }}</span>
+              <span class="language-icon">{{
+                currentLanguage === "zh-cn" ? "🇨🇳" : "🇺🇸"
+              }}</span>
+              <span class="language-text">{{
+                $t("home.language.current")
+              }}</span>
               <el-icon class="el-icon--right"><arrow-down /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="zh-cn" :disabled="currentLanguage === 'zh-cn'">
-                  <span class="dropdown-flag">🇨🇳</span> {{ $t('home.language.zhCN') }}
+                <el-dropdown-item
+                  command="zh-cn"
+                  :disabled="currentLanguage === 'zh-cn'"
+                >
+                  <span class="dropdown-flag">🇨🇳</span>
+                  {{ $t("home.language.zhCN") }}
                 </el-dropdown-item>
-                <el-dropdown-item command="en" :disabled="currentLanguage === 'en'">
-                  <span class="dropdown-flag">🇺🇸</span> {{ $t('home.language.en') }}
+                <el-dropdown-item
+                  command="en"
+                  :disabled="currentLanguage === 'en'"
+                >
+                  <span class="dropdown-flag">🇺🇸</span>
+                  {{ $t("home.language.en") }}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
 
+          <el-button
+            class="self-check-button"
+            type="primary"
+            plain
+            @click="handleSelfCheck"
+          >
+            {{ $t("home.selfCheck") }}
+          </el-button>
+
           <el-dropdown @command="handleCommand">
             <span class="el-dropdown-link">
               <el-avatar :size="32" :icon="UserFilled" />
-              <span class="username">{{ userStore.user?.username || $t('home.user') }}</span>
+              <span class="username">{{
+                userStore.user?.username || $t("home.user")
+              }}</span>
               <el-icon class="el-icon--right"><arrow-down /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="logout">{{ $t('home.logout') }}</el-dropdown-item>
+                <el-dropdown-item command="logout">{{
+                  logoutLabel
+                }}</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -42,20 +70,33 @@
             <span class="user-menu-trigger">
               <span class="avatar-wrap">
                 <el-avatar :size="28" :icon="UserFilled" />
-                <span class="lang-badge">{{ currentLanguage === 'zh-cn' ? '🇨🇳' : '🇺🇸' }}</span>
+                <span class="lang-badge">{{
+                  currentLanguage === "zh-cn" ? "🇨🇳" : "🇺🇸"
+                }}</span>
               </span>
               <el-icon class="trigger-arrow"><ArrowDown /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="zh-cn" :disabled="currentLanguage === 'zh-cn'">
-                  <span class="dropdown-flag">🇨🇳</span> {{ $t('home.language.zhCN') }}
+                <el-dropdown-item
+                  command="zh-cn"
+                  :disabled="currentLanguage === 'zh-cn'"
+                >
+                  <span class="dropdown-flag">🇨🇳</span>
+                  {{ $t("home.language.zhCN") }}
                 </el-dropdown-item>
-                <el-dropdown-item command="en" :disabled="currentLanguage === 'en'">
-                  <span class="dropdown-flag">🇺🇸</span> {{ $t('home.language.en') }}
+                <el-dropdown-item
+                  command="en"
+                  :disabled="currentLanguage === 'en'"
+                >
+                  <span class="dropdown-flag">🇺🇸</span>
+                  {{ $t("home.language.en") }}
+                </el-dropdown-item>
+                <el-dropdown-item command="self-check" divided>
+                  {{ $t("home.selfCheck") }}
                 </el-dropdown-item>
                 <el-dropdown-item command="logout" divided>
-                  {{ $t('home.logout') }}
+                  {{ logoutLabel }}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -63,48 +104,73 @@
         </div>
       </div>
 
-      <h1 class="main-title">{{ $t('home.title') }}</h1>
-      <p class="subtitle">{{ $t('home.subtitle') }}</p>
+      <h1 class="main-title">{{ $t("home.title") }}</h1>
+      <p class="subtitle">{{ $t("home.subtitle") }}</p>
 
       <div class="cards-container">
         <!-- AI用例生成 -->
-        <div class="nav-card" @click="handleNavigate('ai')" role="button" tabindex="0">
+        <div
+          class="nav-card"
+          role="button"
+          tabindex="0"
+          @click="handleNavigate('ai')"
+        >
           <div class="card-icon ai-icon">
             <el-icon><MagicStick /></el-icon>
           </div>
-          <h3>{{ $t('home.aiCaseGeneration') }}</h3>
-          <p>{{ $t('home.aiCaseGenerationDesc') }}</p>
+          <h3>{{ $t("home.aiCaseGeneration") }}</h3>
+          <p>{{ $t("home.aiCaseGenerationDesc") }}</p>
         </div>
 
         <!-- 接口测试 -->
-        <div class="nav-card" @click="handleNavigate('api')" role="button" tabindex="0">
+        <div
+          class="nav-card"
+          role="button"
+          tabindex="0"
+          @click="handleNavigate('api')"
+        >
           <div class="card-icon api-icon">
             <el-icon><Link /></el-icon>
           </div>
-          <h3>{{ $t('home.apiTesting') }}</h3>
-          <p>{{ $t('home.apiTestingDesc') }}</p>
+          <h3>{{ $t("home.apiTesting") }}</h3>
+          <p>{{ $t("home.apiTestingDesc") }}</p>
         </div>
 
         <!-- UI自动化测试 -->
-        <div class="nav-card" @click="handleNavigate('ui')" role="button" tabindex="0">
+        <div
+          class="nav-card"
+          role="button"
+          tabindex="0"
+          @click="handleNavigate('ui')"
+        >
           <div class="card-icon ui-icon">
             <el-icon><Monitor /></el-icon>
           </div>
-          <h3>{{ $t('home.uiAutomation') }}</h3>
-          <p>{{ $t('home.uiAutomationDesc') }}</p>
+          <h3>{{ $t("home.uiAutomation") }}</h3>
+          <p>{{ $t("home.uiAutomationDesc") }}</p>
         </div>
 
         <!-- 数据工厂 -->
-        <div class="nav-card" @click="handleNavigate('data')" role="button" tabindex="0">
+        <div
+          class="nav-card"
+          role="button"
+          tabindex="0"
+          @click="handleNavigate('data')"
+        >
           <div class="card-icon data-icon">
             <el-icon><DataLine /></el-icon>
           </div>
-          <h3>{{ $t('home.dataFactory') }}</h3>
-          <p>{{ $t('home.dataFactoryDesc') }}</p>
+          <h3>{{ $t("home.dataFactory") }}</h3>
+          <p>{{ $t("home.dataFactoryDesc") }}</p>
         </div>
 
         <!-- APP自动化测试 -->
-        <div class="nav-card" @click="handleNavigate('app')" role="button" tabindex="0">
+        <div
+          class="nav-card"
+          role="button"
+          tabindex="0"
+          @click="handleNavigate('app')"
+        >
           <div class="card-icon app-icon">
             <el-icon><Cellphone /></el-icon>
           </div>
@@ -113,28 +179,43 @@
         </div>
 
         <!-- AI 智能模式 -->
-        <div class="nav-card" @click="handleNavigate('ai-intelligent')" role="button" tabindex="0">
+        <div
+          class="nav-card"
+          role="button"
+          tabindex="0"
+          @click="handleNavigate('ai-intelligent')"
+        >
           <div class="card-icon ai-intelligent-icon">
             <el-icon><Cpu /></el-icon>
           </div>
-          <h3>{{ $t('home.aiIntelligentMode') }}</h3>
-          <p>{{ $t('home.aiIntelligentModeDesc') }}</p>
+          <h3>{{ $t("home.aiIntelligentMode") }}</h3>
+          <p>{{ $t("home.aiIntelligentModeDesc") }}</p>
         </div>
         <!-- AI评测师 -->
-        <div class="nav-card" @click="handleNavigate('assistant')" role="button" tabindex="0">
+        <div
+          class="nav-card"
+          role="button"
+          tabindex="0"
+          @click="handleNavigate('assistant')"
+        >
           <div class="card-icon assistant-icon">
             <el-icon><ChatDotRound /></el-icon>
           </div>
-          <h3>{{ $t('home.aiEvaluator') }}</h3>
-          <p>{{ $t('home.aiEvaluatorDesc') }}</p>
+          <h3>{{ $t("home.aiEvaluator") }}</h3>
+          <p>{{ $t("home.aiEvaluatorDesc") }}</p>
         </div>
         <!-- 配置中心 -->
-        <div class="nav-card" @click="handleNavigate('config')" role="button" tabindex="0">
+        <div
+          class="nav-card"
+          role="button"
+          tabindex="0"
+          @click="handleNavigate('config')"
+        >
           <div class="card-icon config-icon">
             <el-icon><Setting /></el-icon>
           </div>
-          <h3>{{ $t('home.configCenter') }}</h3>
-          <p>{{ $t('home.configCenterDesc') }}</p>
+          <h3>{{ $t("home.configCenter") }}</h3>
+          <p>{{ $t("home.configCenterDesc") }}</p>
         </div>
       </div>
     </div>
@@ -152,11 +233,54 @@
         <div class="dialog-icon-wrap">
           <el-icon><Monitor /></el-icon>
         </div>
-        <p class="dialog-desc">{{ $t('home.mobileTipDesc') }}</p>
+        <p class="dialog-desc">{{ $t("home.mobileTipDesc") }}</p>
       </div>
       <template #footer>
-        <el-button type="primary" class="dialog-confirm-btn" @click="mobileDialogVisible = false">
-          {{ $t('home.mobileTipOk') }}
+        <el-button
+          type="primary"
+          class="dialog-confirm-btn"
+          @click="mobileDialogVisible = false"
+        >
+          {{ $t("home.mobileTipOk") }}
+        </el-button>
+      </template>
+    </el-dialog>
+
+    <el-dialog
+      v-model="selfCheckDialogVisible"
+      class="self-check-dialog"
+      :title="$t('home.selfCheckTitle')"
+      width="520px"
+      align-center
+      append-to-body
+    >
+      <div class="self-check-dialog-body">
+        <div class="self-check-status" :class="selfCheckState">
+          <el-icon class="self-check-status-icon">
+            <Loading v-if="selfCheckState === 'checking'" />
+            <CircleCheck v-else-if="selfCheckState === 'success'" />
+            <CircleClose v-else />
+          </el-icon>
+          <div>
+            <div class="self-check-status-title">{{ selfCheckStatusText }}</div>
+            <div class="self-check-status-desc">{{ selfCheckStatusDetail }}</div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="selfCheckDialogVisible = false">
+          {{ $t("home.selfCheckClose") }}
+        </el-button>
+        <el-button
+          type="primary"
+          :loading="selfCheckState === 'checking'"
+          @click="handleSelfCheck"
+        >
+          {{
+            selfCheckState === "checking"
+              ? $t("home.selfCheckChecking")
+              : $t("home.selfCheckRetry")
+          }}
         </el-button>
       </template>
     </el-dialog>
@@ -164,121 +288,210 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useUserStore } from '@/stores/user'
-import { useAppStore } from '@/stores/app'
-import { track } from '@/utils/tracker'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { MagicStick, Link, Monitor, DataLine, Cpu, Setting, ChatDotRound, UserFilled, ArrowDown, Cellphone } from '@element-plus/icons-vue'
+import { computed, ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useUserStore } from "@/stores/user";
+import { useAppStore } from "@/stores/app";
+import { track } from "@/utils/tracker";
+import axios from "axios";
+import { ElMessage, ElMessageBox } from "element-plus";
+import {
+  MagicStick,
+  Link,
+  Monitor,
+  DataLine,
+  Cpu,
+  Setting,
+  ChatDotRound,
+  UserFilled,
+  ArrowDown,
+  Cellphone,
+  Loading,
+  CircleCheck,
+  CircleClose,
+} from "@element-plus/icons-vue";
 
-const router = useRouter()
-const { t } = useI18n()
-const userStore = useUserStore()
-const appStore = useAppStore()
+const router = useRouter();
+const { t } = useI18n();
+const userStore = useUserStore();
+const appStore = useAppStore();
+const LOCAL_DEV_AUTH_ENABLED = import.meta.env.DEV;
+const selfCheckDialogVisible = ref(false);
+const selfCheckState = ref("idle");
+const selfCheckStatusDetail = ref("");
+
+const logoutLabel = computed(() => {
+  return LOCAL_DEV_AUTH_ENABLED ? "重置本地会话" : t("home.logout");
+});
+
+const logoutConfirmText = computed(() => {
+  return LOCAL_DEV_AUTH_ENABLED
+    ? "确定要重置本地会话吗？"
+    : t("home.logoutConfirm");
+});
+
+const logoutSuccessText = computed(() => {
+  return LOCAL_DEV_AUTH_ENABLED ? "本地会话已重置" : t("home.logoutSuccess");
+});
 
 // 当前语言
-const currentLanguage = computed(() => appStore.language)
-const isMobile = ref(false)
-const mobileTipDismissed = ref(false)
-const MOBILE_BREAKPOINT = 768
-const MOBILE_TIP_STORAGE_KEY = 'testhub_home_mobile_tip_seen'
+const currentLanguage = computed(() => appStore.language);
+const isMobile = ref(false);
+const mobileTipDismissed = ref(false);
+const MOBILE_BREAKPOINT = 768;
+const MOBILE_TIP_STORAGE_KEY = "tdx_home_mobile_tip_seen";
+const LEGACY_MOBILE_TIP_STORAGE_KEY = "testhub_home_mobile_tip_seen";
 
 const dismissMobileTip = () => {
-  mobileTipDismissed.value = true
+  mobileTipDismissed.value = true;
   try {
-    localStorage.setItem(MOBILE_TIP_STORAGE_KEY, '1')
+    localStorage.setItem(MOBILE_TIP_STORAGE_KEY, "1");
   } catch {
     // ignore quota / private mode
   }
-}
+};
 
 const mobileDialogVisible = computed({
   get: () => isMobile.value && !mobileTipDismissed.value,
   set: (val) => {
-    if (!val) dismissMobileTip()
-  }
-})
+    if (!val) dismissMobileTip();
+  },
+});
 
 const updateMobileTip = () => {
-  isMobile.value = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches
-}
+  isMobile.value = window.matchMedia(
+    `(max-width: ${MOBILE_BREAKPOINT}px)`,
+  ).matches;
+};
 
 onMounted(() => {
   try {
-    if (localStorage.getItem(MOBILE_TIP_STORAGE_KEY) === '1') {
-      mobileTipDismissed.value = true
+    const dismissedFlag =
+      localStorage.getItem(MOBILE_TIP_STORAGE_KEY) ??
+      localStorage.getItem(LEGACY_MOBILE_TIP_STORAGE_KEY);
+    if (dismissedFlag === "1") {
+      mobileTipDismissed.value = true;
+      localStorage.setItem(MOBILE_TIP_STORAGE_KEY, "1");
     }
   } catch {
     // ignore
   }
-  updateMobileTip()
-  window.addEventListener('resize', updateMobileTip)
-})
+  updateMobileTip();
+  window.addEventListener("resize", updateMobileTip);
+});
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateMobileTip)
-})
+  window.removeEventListener("resize", updateMobileTip);
+});
 
 const handleLanguageChange = (lang) => {
-  appStore.setLanguage(lang)
-}
+  appStore.setLanguage(lang);
+};
+
+const selfCheckStatusText = computed(() => {
+  if (selfCheckState.value === "checking") {
+    return t("home.selfCheckChecking");
+  }
+  if (selfCheckState.value === "success") {
+    return t("home.selfCheckSuccess");
+  }
+  if (selfCheckState.value === "failed") {
+    return t("home.selfCheckFailed");
+  }
+  return t("home.selfCheckTitle");
+});
 
 const handleCommand = (command) => {
-  if (command === 'logout') {
-    handleLogout()
+  if (command === "logout") {
+    handleLogout();
+    return;
   }
-}
+  if (command === "self-check") {
+    handleSelfCheck();
+  }
+};
 
 const handleHeaderCommand = (command) => {
-  if (command === 'logout') {
-    handleLogout()
-    return
+  if (command === "logout") {
+    handleLogout();
+    return;
   }
-  if (command === 'zh-cn' || command === 'en') {
-    appStore.setLanguage(command)
+  if (command === "self-check") {
+    handleSelfCheck();
+    return;
   }
-}
+  if (command === "zh-cn" || command === "en") {
+    appStore.setLanguage(command);
+  }
+};
 
 const handleLogout = () => {
-  ElMessageBox.confirm(t('home.logoutConfirm'), t('common.tips'), {
-    confirmButtonText: t('common.confirm'),
-    cancelButtonText: t('common.cancel'),
-    type: 'warning'
-  }).then(() => {
-    userStore.logout()
-    router.push('/login')
-    ElMessage.success(t('home.logoutSuccess'))
-  }).catch(() => {})
-}
+  ElMessageBox.confirm(logoutConfirmText.value, t("common.tips"), {
+    confirmButtonText: t("common.confirm"),
+    cancelButtonText: t("common.cancel"),
+    type: "warning",
+  })
+    .then(async () => {
+      await userStore.logout();
+      router.push("/home");
+      ElMessage.success(logoutSuccessText.value);
+    })
+    .catch(() => {});
+};
+
+const handleSelfCheck = async () => {
+  selfCheckDialogVisible.value = true;
+  selfCheckState.value = "checking";
+  selfCheckStatusDetail.value = t("home.selfCheckCheckingDetail");
+
+  try {
+    const response = await axios.post("/api/auth/dev-login/", {}, { timeout: 8000 });
+    const payload = response?.data || {};
+
+    if (payload.access && payload.refresh && payload.user) {
+      selfCheckState.value = "success";
+      selfCheckStatusDetail.value = t("home.selfCheckDetailSuccess");
+      return;
+    }
+
+    selfCheckState.value = "failed";
+    selfCheckStatusDetail.value = t("home.selfCheckInvalidResponse");
+  } catch (error) {
+    selfCheckState.value = "failed";
+    selfCheckStatusDetail.value =
+      error?.response?.status >= 500
+        ? t("home.selfCheckFailed")
+        : t("home.selfCheckNetworkError");
+  }
+};
 
 const handleNavigate = (type) => {
   const routes = {
-    'ai': '/ai-generation/requirement-analysis',
-    'api': '/api-testing/dashboard',
-    'ui': '/ui-automation/dashboard',
-    'app': '/app-automation/dashboard',
-    'ai-intelligent': '/ai-intelligent-mode/testing',
-    'assistant': '/ai-generation/assistant',
-    'config': '/configuration/ai-model',
-    'data': '/data-factory'
-  }
+    ai: "/ai-generation/requirement-analysis",
+    api: "/api-testing/dashboard",
+    ui: "/ui-automation/dashboard",
+    app: "/app-automation/dashboard",
+    "ai-intelligent": "/ai-intelligent-mode/testing",
+    assistant: "/ai-generation/assistant",
+    config: "/configuration/ai-model",
+    data: "/data-factory",
+  };
 
   if (routes[type]) {
-    track('module_card_click', {
-      event_type: 'click',
-      module: 'home',
-      page_path: '/home',
+    track("module_card_click", {
+      event_type: "click",
+      module: "home",
+      page_path: "/home",
       target_path: routes[type],
       metadata: {
-        card_type: type
-      }
-    })
-    const routeData = router.resolve({ path: routes[type] })
-    window.open(routeData.href, '_blank')
+        card_type: type,
+      },
+    });
+    const routeData = router.resolve({ path: routes[type] });
+    window.open(routeData.href, "_blank");
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -363,6 +576,12 @@ const handleNavigate = (type) => {
   }
 }
 
+.self-check-button {
+  height: 32px;
+  border-radius: 16px;
+  margin-right: -8px;
+}
+
 .header-actions-mobile {
   display: none;
 }
@@ -380,7 +599,9 @@ const handleNavigate = (type) => {
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: 0 2px 8px rgba(31, 45, 61, 0.06);
-  transition: color 0.3s, background 0.3s;
+  transition:
+    color 0.3s,
+    background 0.3s;
   outline: none;
 
   &:focus {
@@ -707,7 +928,7 @@ const handleNavigate = (type) => {
 
     &::before,
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       border-radius: 50%;
       pointer-events: none;
@@ -719,7 +940,11 @@ const handleNavigate = (type) => {
       height: 260px;
       top: -70px;
       right: -50px;
-      background: radial-gradient(circle, rgba(64, 158, 255, 0.14) 0%, transparent 68%);
+      background: radial-gradient(
+        circle,
+        rgba(64, 158, 255, 0.14) 0%,
+        transparent 68%
+      );
     }
 
     &::after {
@@ -727,7 +952,11 @@ const handleNavigate = (type) => {
       height: 220px;
       bottom: 8%;
       left: -70px;
-      background: radial-gradient(circle, rgba(99, 126, 234, 0.1) 0%, transparent 70%);
+      background: radial-gradient(
+        circle,
+        rgba(99, 126, 234, 0.1) 0%,
+        transparent 70%
+      );
     }
   }
 
@@ -749,6 +978,10 @@ const handleNavigate = (type) => {
   .header-actions-mobile {
     display: flex;
     justify-content: flex-end;
+  }
+
+  .self-check-button {
+    margin-right: 0;
   }
 
   .main-title {
@@ -940,6 +1173,58 @@ const handleNavigate = (type) => {
     font-size: 14px;
     color: #606266;
     line-height: 1.6;
+  }
+}
+
+.self-check-dialog.el-dialog {
+  max-width: 520px;
+  border-radius: 16px;
+
+  .el-dialog__body {
+    padding-top: 10px;
+  }
+}
+
+.self-check-dialog-body {
+  .self-check-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #f5f7fa;
+
+    &.checking {
+      background: #ecf5ff;
+      color: #409eff;
+    }
+
+    &.success {
+      background: #f0f9eb;
+      color: #67c23a;
+    }
+
+    &.failed {
+      background: #fef0f0;
+      color: #f56c6c;
+    }
+  }
+
+  .self-check-status-icon {
+    flex-shrink: 0;
+    font-size: 26px;
+  }
+
+  .self-check-status-title {
+    margin-bottom: 4px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .self-check-status-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #606266;
   }
 }
 </style>

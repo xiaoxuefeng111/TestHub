@@ -61,6 +61,9 @@
                 :value="device.id" 
               />
             </el-select>
+            <div v-if="selectedDeviceWarningText" class="device-status-warning">
+              {{ selectedDeviceWarningText }}
+            </div>
           </el-form-item>
 
           <el-form-item>
@@ -368,6 +371,74 @@ const canSave = computed(() => {
   return false
 })
 
+const selectedDeviceInfo = computed(() => {
+  return devices.value.find(device => device.id === selectedDevice.value) || null
+})
+
+const selectedDeviceWarningText = computed(() => {
+  const status = selectedDeviceInfo.value?.status
+  if (status === 'offline') {
+    return '当前设备状态为离线，请先恢复连接后再试'
+  }
+  if (status === 'locked') {
+    return '当前设备已被锁定，请先解锁或释放后再试'
+  }
+  return ''
+})
+
+const extractErrorMessage = (payload: any): string => {
+  if (!payload) return ''
+  if (typeof payload === 'string') return payload.trim()
+
+  if (Array.isArray(payload)) {
+    const firstMessage = payload.find(item => typeof item === 'string' && item.trim())
+    return firstMessage ? firstMessage.trim() : ''
+  }
+
+  const directMessage = [payload.message, payload.msg, payload.detail, payload.error]
+    .find(value => typeof value === 'string' && value.trim())
+  if (directMessage) {
+    return directMessage.trim()
+  }
+
+  if (payload.data && payload.data !== payload) {
+    const nestedMessage = extractErrorMessage(payload.data)
+    if (nestedMessage) {
+      return nestedMessage
+    }
+  }
+
+  for (const value of Object.values(payload)) {
+    const message = extractErrorMessage(value)
+    if (message) {
+      return message
+    }
+  }
+
+  return ''
+}
+
+const getRequestErrorMessage = (error: any, fallback = '操作失败') => {
+  const responseMessage = extractErrorMessage(error?.response?.data)
+  if (responseMessage) {
+    return responseMessage
+  }
+
+  if (fallback && fallback !== '操作失败' && fallback !== '截图失败') {
+    return fallback
+  }
+
+  if (error?.request) {
+    return '未收到服务端响应，请检查网络或稍后重试'
+  }
+
+  if (typeof error?.message === 'string' && error.message.trim()) {
+    return error.message.trim()
+  }
+
+  return fallback
+}
+
 // 加载设备列表
 const loadDevices = async () => {
   devicesLoading.value = true
@@ -390,6 +461,8 @@ const captureScreen = async () => {
   }
 
   capturing.value = true
+  const fallbackMessage = selectedDeviceWarningText.value || '截图失败'
+
   try {
     const { data } = await captureDeviceScreenshot(selectedDevice.value)
     
@@ -400,11 +473,11 @@ const captureScreen = async () => {
       }
       ElMessage.success('截图成功')
     } else {
-      ElMessage.error(data.message || '截图失败')
+      ElMessage.error(extractErrorMessage(data) || fallbackMessage)
     }
   } catch (error) {
     console.error('截图失败:', error)
-    ElMessage.error('截图失败')
+    ElMessage.error(getRequestErrorMessage(error, fallbackMessage))
   } finally {
     capturing.value = false
   }
@@ -987,6 +1060,13 @@ watch(() => props.modelValue, (val) => {
   flex-shrink: 0;
   overflow-y: auto;
   padding-right: 10px;
+}
+
+.device-status-warning {
+  margin-top: 6px;
+  color: #e6a23c;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .empty-state {

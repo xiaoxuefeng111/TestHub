@@ -82,7 +82,7 @@ python manage.py collectstatic --noinput
 
 ```ini
 [Unit]
-Description=TestHub ASGI (Daphne)
+Description=通达信测试平台 ASGI (Daphne)
 After=network.target
 
 [Service]
@@ -103,7 +103,7 @@ WantedBy=multi-user.target
 
 ```ini
 [Unit]
-Description=TestHub Celery Worker
+Description=通达信测试平台 Celery Worker
 After=network.target
 
 [Service]
@@ -251,7 +251,7 @@ python "$APP_DIR/manage.py" collectstatic --noinput
 echo "=== 5) systemd 服务 ==="
 cat > /etc/systemd/system/testhub-asgi.service <<EOF
 [Unit]
-Description=TestHub ASGI (Daphne)
+Description=通达信测试平台 ASGI (Daphne)
 After=network.target
 
 [Service]
@@ -269,7 +269,7 @@ EOF
 
 cat > /etc/systemd/system/testhub-celery.service <<EOF
 [Unit]
-Description=TestHub Celery Worker
+Description=通达信测试平台 Celery Worker
 After=network.target
 
 [Service]

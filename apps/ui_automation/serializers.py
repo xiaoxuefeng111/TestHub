@@ -817,17 +817,22 @@ class AIExecutionRecordSerializer(serializers.ModelSerializer):
     project = UiProjectSerializer(read_only=True)
     ai_case = AICaseSerializer(read_only=True)
     executed_by = UserSerializer(read_only=True)
-    project_id = serializers.IntegerField(write_only=True)
+    project_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     ai_case_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     project_name = serializers.CharField(source='project.name', read_only=True)
     ai_case_name = serializers.CharField(source='ai_case.name', read_only=True)
     executed_by_name = serializers.CharField(source='executed_by.username', read_only=True)
+    app_device_name = serializers.CharField(source='app_device.name', read_only=True)
+    app_device_serial = serializers.CharField(source='app_device.device_id', read_only=True)
+    app_package_name = serializers.CharField(source='app_package.name', read_only=True)
+    app_package_identifier = serializers.CharField(source='app_package.package_name', read_only=True)
 
     class Meta:
         model = AIExecutionRecord
         fields = [
             'id', 'project', 'project_id', 'project_name', 'ai_case', 'ai_case_id', 'ai_case_name', 'case_name',
-            'task_description',
+            'task_description', 'app_device', 'app_device_name', 'app_device_serial',
+            'app_package', 'app_package_name', 'app_package_identifier',
             'execution_mode', 'status', 'start_time', 'end_time', 'duration',
             'logs', 'steps_completed', 'planned_tasks', 'executed_by', 'executed_by_name',
             'gif_path', 'screenshots_sequence'

@@ -7,9 +7,12 @@ from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import FileResponse
 from django.conf import settings
+from django.db import connection
+from django.db.models import Q
 from pathlib import Path
 from .test_case_views import AppPagination
 import hashlib
+import json
 import re
 import logging
 
@@ -17,6 +20,40 @@ from ..models import AppElement
 from ..serializers import AppElementSerializer
 
 logger = logging.getLogger(__name__)
+
+
+def _tag_matches(tags, expected_tag):
+    if isinstance(tags, list):
+        return expected_tag in tags
+    return tags == expected_tag
+
+
+def _search_queryset_by_name_or_tag(queryset, search):
+    if not search:
+        return queryset
+
+    if 'mysql' in connection.vendor:
+        search_json = json.dumps(search)
+        return queryset.extra(
+            where=["name LIKE %s OR JSON_CONTAINS(tags, %s)"],
+            params=[f'%{search}%', search_json]
+        )
+
+    if connection.vendor == 'sqlite':
+        matching_ids = [
+            element.pk
+            for element in queryset.only('id', 'tags')
+            if _tag_matches(element.tags, search)
+        ]
+        name_query = Q(name__icontains=search)
+        if not matching_ids:
+            return queryset.filter(name_query)
+        return queryset.filter(name_query | Q(pk__in=matching_ids))
+
+    return queryset.filter(
+        Q(name__icontains=search) |
+        Q(tags__contains=[search])
+    )
 
 
 class AppElementViewSet(viewsets.ModelViewSet):
@@ -70,25 +107,7 @@ class AppElementViewSet(viewsets.ModelViewSet):
         # 获取搜索关键词
         search = self.request.query_params.get('search', '').strip()
         if search:
-            from django.db.models import Q
-            from django.db import connection
-            import json
-            
-            if 'mysql' in connection.vendor:
-                # MySQL: 使用 JSON_CONTAINS 查询
-                search_json = json.dumps(search)  # "登录" → '"登录"'
-                
-                # 不使用表名前缀，让 Django 自动处理
-                queryset = queryset.extra(
-                    where=["name LIKE %s OR JSON_CONTAINS(tags, %s)"],
-                    params=[f'%{search}%', search_json]
-                )
-            else:
-                # PostgreSQL: 使用 @> 运算符
-                queryset = queryset.filter(
-                    Q(name__icontains=search) | 
-                    Q(tags__contains=[search])
-                )
+            queryset = _search_queryset_by_name_or_tag(queryset, search)
         
         return queryset
     

@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
     <div class="page-header">
-      <h1 class="page-title">{{ $t('testSuite.title') }}</h1>
+      <h1 class="page-title">{{ $t("testSuite.title") }}</h1>
       <el-button type="primary">
         <el-icon><Plus /></el-icon>
-        {{ $t('testSuite.newSuite') }}
+        {{ $t("testSuite.newSuite") }}
       </el-button>
     </div>
 

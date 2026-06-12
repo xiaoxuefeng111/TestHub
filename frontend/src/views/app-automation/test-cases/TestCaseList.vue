@@ -53,7 +53,9 @@
                   :key="device.id"
                   :label="`${device.name} (${device.device_id})`"
                   :value="device.id"
-                  :disabled="device.status !== 'available' && device.status !== 'online'"
+                  :disabled="
+                    device.status !== 'available' && device.status !== 'online'
+                  "
                 />
               </el-select>
             </el-form-item>
@@ -89,7 +91,9 @@
                   <el-icon><Search /></el-icon>
                 </template>
                 <template #append>
-                  <el-button :icon="Search" @click="loadTestCases">搜索</el-button>
+                  <el-button :icon="Search" @click="loadTestCases"
+                    >搜索</el-button
+                  >
                 </template>
               </el-input>
             </el-form-item>
@@ -100,13 +104,13 @@
 
     <!-- 批量操作栏 -->
     <div v-if="selectedCases.length > 0" class="batch-bar">
-      <span>已选择 <strong>{{ selectedCases.length }}</strong> 个用例</span>
+      <span
+        >已选择 <strong>{{ selectedCases.length }}</strong> 个用例</span
+      >
       <el-button type="success" size="small" @click="batchRun">
         批量执行
       </el-button>
-      <el-button size="small" @click="clearSelection">
-        取消选择
-      </el-button>
+      <el-button size="small" @click="clearSelection"> 取消选择 </el-button>
     </div>
 
     <!-- 测试用例列表 -->
@@ -122,7 +126,7 @@
       <el-table-column prop="name" label="用例名称" min-width="200" />
       <el-table-column label="场景描述" min-width="250">
         <template #default="{ row }">
-          {{ row.description || '-' }}
+          {{ row.description || "-" }}
         </template>
       </el-table-column>
       <el-table-column prop="updated_at" label="更新时间" width="180">
@@ -184,7 +188,10 @@
         <el-table-column prop="user_name" label="测试人员" width="120" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="getDisplayStatus(row.status, row.result).type" size="small">
+            <el-tag
+              :type="getDisplayStatus(row.status, row.result).type"
+              size="small"
+            >
               {{ getDisplayStatus(row.status, row.result).text }}
             </el-tag>
           </template>
@@ -210,7 +217,7 @@
         </el-table-column>
         <el-table-column prop="finished_at" label="结束时间" width="180">
           <template #default="{ row }">
-            {{ row.finished_at ? formatDateTime(row.finished_at) : '-' }}
+            {{ row.finished_at ? formatDateTime(row.finished_at) : "-" }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150">
@@ -241,10 +248,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Refresh, Search } from '@element-plus/icons-vue'
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useRouter } from "vue-router";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Refresh, Search } from "@element-plus/icons-vue";
 import {
   getTestCaseList,
   deleteTestCase as apiDeleteTestCase,
@@ -254,317 +261,331 @@ import {
   stopExecution as apiStopExecution,
   getPackageList,
   getAppProjects,
-  getWsStatus
-} from '@/api/app-automation'
-import { getDeviceList } from '@/api/app-automation'
-import { getExecutionStatusType, getExecutionStatusText, getDisplayStatus, formatDateTime } from '@/utils/app-automation-helpers'
+  getWsStatus,
+} from "@/api/app-automation";
+import { getDeviceList } from "@/api/app-automation";
+import {
+  getExecutionStatusType,
+  getExecutionStatusText,
+  getDisplayStatus,
+  formatDateTime,
+} from "@/utils/app-automation-helpers";
 
-const router = useRouter()
+const router = useRouter();
 
 // 响应式数据
-const loading = ref(false)
-const devicesLoading = ref(false)
-const executionsLoading = ref(false)
-const availableDevices = ref([])
-const appPackages = ref([])
-const searchQuery = ref('')
+const loading = ref(false);
+const devicesLoading = ref(false);
+const executionsLoading = ref(false);
+const availableDevices = ref([]);
+const appPackages = ref([]);
+const searchQuery = ref("");
 
-const projectList = ref([])
+const projectList = ref([]);
 const form = ref({
   projectId: null,
   deviceId: null,
-  packageId: null
-})
+  packageId: null,
+});
 
 // 用例列表数据
-const testCases = ref([])
-const caseCurrentPage = ref(1)
-const casePageSize = ref(20)
-const caseTotal = ref(0)
+const testCases = ref([]);
+const caseCurrentPage = ref(1);
+const casePageSize = ref(20);
+const caseTotal = ref(0);
 
 // 批量选择
-const tableRef = ref(null)
-const selectedCases = ref([])
+const tableRef = ref(null);
+const selectedCases = ref([]);
 
 // 执行记录数据
 const executionData = ref({
   count: 0,
-  results: []
-})
-const websockets = ref({})
-const lastStatusMessages = ref({})
+  results: [],
+});
+const websockets = ref({});
+const lastStatusMessages = ref({});
 
 // 定时刷新执行记录
-let refreshTimer = null
+let refreshTimer = null;
 
 // 加载项目列表
 const loadProjectList = async () => {
   try {
-    const res = await getAppProjects({ page_size: 100 })
-    projectList.value = res.data.results || res.data || []
-  } catch { /* ignore */ }
-}
+    const res = await getAppProjects({ page_size: 100 });
+    projectList.value = res.data.results || res.data || [];
+  } catch {
+    /* ignore */
+  }
+};
 
 // 加载设备列表
 const loadDevices = async () => {
-  devicesLoading.value = true
+  devicesLoading.value = true;
   try {
-    const res = await getDeviceList({ page_size: 100 })
-    const data = res.data
+    const res = await getDeviceList({ page_size: 100 });
+    const data = res.data;
     if (data.success !== undefined) {
-      availableDevices.value = data.data?.results || data.data || []
+      availableDevices.value = data.data?.results || data.data || [];
     } else {
-      availableDevices.value = data.results || data || []
+      availableDevices.value = data.results || data || [];
     }
   } catch (error) {
-    console.error('加载设备失败:', error)
-    availableDevices.value = []
+    console.error("加载设备失败:", error);
+    availableDevices.value = [];
   } finally {
-    devicesLoading.value = false
+    devicesLoading.value = false;
   }
-}
+};
 
 const loadPackages = async () => {
   try {
-    const res = await getPackageList({ page_size: 200 })
-    const data = res.data
+    const res = await getPackageList({ page_size: 200 });
+    const data = res.data;
     if (data.success !== undefined) {
-      appPackages.value = data.data?.results || data.data || []
+      appPackages.value = data.data?.results || data.data || [];
     } else {
-      appPackages.value = data.results || data || []
+      appPackages.value = data.results || data || [];
     }
   } catch (error) {
-    console.error('加载应用包名失败:', error)
-    appPackages.value = []
+    console.error("加载应用包名失败:", error);
+    appPackages.value = [];
   }
-}
+};
 
 // 加载测试用例列表
 const loadTestCases = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const params = {
       page: caseCurrentPage.value,
       page_size: casePageSize.value,
-      search: searchQuery.value
-    }
-    if (form.value.projectId) params.project = form.value.projectId
-    const res = await getTestCaseList(params)
-    const data = res.data
-    
+      search: searchQuery.value,
+    };
+    if (form.value.projectId) params.project = form.value.projectId;
+    const res = await getTestCaseList(params);
+    const data = res.data;
+
     if (data.success !== undefined) {
-      testCases.value = data.data?.results || data.data || []
-      caseTotal.value = data.data?.count || 0
+      testCases.value = data.data?.results || data.data || [];
+      caseTotal.value = data.data?.count || 0;
     } else {
-      testCases.value = data.results || data || []
-      caseTotal.value = data.count || 0
+      testCases.value = data.results || data || [];
+      caseTotal.value = data.count || 0;
     }
   } catch (error) {
-    console.error('加载测试用例失败:', error)
-    testCases.value = []
-    caseTotal.value = 0
+    console.error("加载测试用例失败:", error);
+    testCases.value = [];
+    caseTotal.value = 0;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 加载执行记录
 const loadExecutions = async () => {
-  executionsLoading.value = true
+  executionsLoading.value = true;
   try {
     const params = {
       page: 1,
       page_size: 5,
-      ordering: '-start_time'
-    }
-    const res = await getExecutionList(params)
-    const data = res.data
-    
+      ordering: "-start_time",
+    };
+    const res = await getExecutionList(params);
+    const data = res.data;
+
     if (data.success !== undefined) {
       executionData.value = {
         count: data.data?.count || 0,
-        results: data.data?.results || data.data || []
-      }
+        results: data.data?.results || data.data || [],
+      };
     } else {
       executionData.value = {
         count: data.count || 0,
-        results: data.results || data || []
-      }
+        results: data.results || data || [],
+      };
     }
 
-    executionData.value.results.forEach(execution => {
-      if ((execution.status === 'pending' || execution.status === 'running') && execution.id) {
-        trackExecution(execution.id)
+    executionData.value.results.forEach((execution) => {
+      if (
+        (execution.status === "pending" || execution.status === "running") &&
+        execution.id
+      ) {
+        trackExecution(execution.id);
       }
-    })
+    });
   } catch (error) {
-    console.error('加载执行记录失败:', error)
-    executionData.value = { count: 0, results: [] }
+    console.error("加载执行记录失败:", error);
+    executionData.value = { count: 0, results: [] };
   } finally {
-    executionsLoading.value = false
+    executionsLoading.value = false;
   }
-}
+};
 
 // 刷新执行记录
 const refreshExecutions = () => {
-  loadExecutions()
-}
+  loadExecutions();
+};
 
 const viewAllExecutions = () => {
-  router.push({ path: '/app-automation/executions' })
-}
+  router.push({ path: "/app-automation/executions" });
+};
 
 const viewReport = (execution) => {
   if (!execution.report_path) {
-    ElMessage.info('报告路径不存在')
-    return
+    ElMessage.info("报告路径不存在");
+    return;
   }
-  const reportUrl = `/api/app-automation/executions/${execution.id}/report/`
-  window.open(reportUrl, '_blank')
-}
+  const reportUrl = `/api/app-automation/executions/${execution.id}/report/`;
+  window.open(reportUrl, "_blank");
+};
 
 // 停止测试
 const stopTest = async (execution) => {
   try {
-    await ElMessageBox.confirm(
-      '确定要停止这个测试吗？',
-      '确认停止',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm("确定要停止这个测试吗？", "确认停止", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
 
-    const res = await apiStopExecution(execution.id)
+    const res = await apiStopExecution(execution.id);
     if (res.data.success) {
-      ElMessage.success('已停止执行')
-      loadExecutions()
+      ElMessage.success("已停止执行");
+      loadExecutions();
     } else {
-      ElMessage.error(res.data.message || '停止失败')
+      ElMessage.error(res.data.message || "停止失败");
     }
   } catch (error) {
     // 用户取消
   }
-}
+};
 
 // 运行测试用例
 const runCase = async (testCase) => {
   if (!form.value.deviceId) {
-    ElMessage.warning('请先选择设备')
-    return
+    ElMessage.warning("请先选择设备");
+    return;
   }
 
   try {
     const params = {
-      device_id: availableDevices.value.find(d => d.id === form.value.deviceId)?.device_id
-    }
+      device_id: availableDevices.value.find(
+        (d) => d.id === form.value.deviceId,
+      )?.device_id,
+    };
 
     if (form.value.packageId) {
-      const selected = appPackages.value.find(pkg => pkg.id === form.value.packageId)
+      const selected = appPackages.value.find(
+        (pkg) => pkg.id === form.value.packageId,
+      );
       if (selected) {
-        params.package_name = selected.package_name
+        params.package_name = selected.package_name;
       }
     }
-    
-    const res = await apiExecuteTestCase(testCase.id, params)
-    const data = res.data
-    
+
+    const res = await apiExecuteTestCase(testCase.id, params);
+    const data = res.data;
+
     if (data.success || data.execution_id) {
-      ElMessage.success('测试已提交执行')
-      const executionId = data.execution?.id || data.execution_id
+      ElMessage.success("测试已提交执行");
+      const executionId = data.execution?.id || data.execution_id;
       if (executionId) {
-        trackExecution(executionId)
-        checkExecutionStatus(executionId)
+        trackExecution(executionId);
+        checkExecutionStatus(executionId);
       }
       // 刷新执行记录
       setTimeout(() => {
-        loadExecutions()
-      }, 1000)
+        loadExecutions();
+      }, 1000);
     } else {
-      ElMessage.error('执行失败: ' + (data.message || '未知错误'))
+      ElMessage.error("执行失败: " + (data.message || "未知错误"));
     }
   } catch (error) {
-    ElMessage.error('执行失败: ' + (error.message || '未知错误'))
+    ElMessage.error("执行失败: " + (error.message || "未知错误"));
   }
-}
+};
 
 const checkExecutionStatus = (executionId) => {
   setTimeout(async () => {
     try {
-      const res = await getExecutionDetail(executionId)
-      const data = res.data
-      const status = data.status || data.data?.status
-      if (status === 'pending') {
-        ElMessage.warning('任务未开始，请确认 Celery worker/Redis 已启动')
+      const res = await getExecutionDetail(executionId);
+      const data = res.data;
+      const status = data.status || data.data?.status;
+      if (status === "pending") {
+        ElMessage.warning("任务未开始，请确认 Celery worker/Redis 已启动");
       }
     } catch (error) {
-      console.error('检查执行状态失败:', error)
+      console.error("检查执行状态失败:", error);
     }
-  }, 3000)
-}
+  }, 3000);
+};
 
 // 编辑测试用例
 const editCase = (testCase) => {
   router.push({
-    path: '/app-automation/scene-builder',
-    query: { case_id: testCase.id }
-  })
-}
+    path: "/app-automation/scene-builder",
+    query: { case_id: testCase.id },
+  });
+};
 
 // 删除测试用例
 const deleteCase = async (testCase) => {
   try {
     await ElMessageBox.confirm(
       `确定要删除测试用例 "${testCase.name}" 吗？`,
-      '确认删除',
+      "确认删除",
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      },
+    );
 
-    await apiDeleteTestCase(testCase.id)
-    ElMessage.success('删除成功')
-    loadTestCases()
+    await apiDeleteTestCase(testCase.id);
+    ElMessage.success("删除成功");
+    loadTestCases();
   } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('删除失败: ' + (error.message || '未知错误'))
+    if (error !== "cancel") {
+      ElMessage.error("删除失败: " + (error.message || "未知错误"));
     }
   }
-}
+};
 
 // 查看测试报告
 
 const updateExecutionData = (updates) => {
   if (!updates || !updates.execution_id) {
-    return
+    return;
   }
-  const target = executionData.value.results.find(item => item.id === updates.execution_id)
+  const target = executionData.value.results.find(
+    (item) => item.id === updates.execution_id,
+  );
   if (!target) {
-    loadExecutions()
-    return
+    loadExecutions();
+    return;
   }
-  if (updates.status) target.status = updates.status
-  if (updates.result !== undefined) target.result = updates.result
-  if (updates.progress !== null && updates.progress !== undefined) target.progress = updates.progress
-  if (updates.report_path !== undefined) target.report_path = updates.report_path
-  if (updates.finished_at) target.finished_at = updates.finished_at
-}
+  if (updates.status) target.status = updates.status;
+  if (updates.result !== undefined) target.result = updates.result;
+  if (updates.progress !== null && updates.progress !== undefined)
+    target.progress = updates.progress;
+  if (updates.report_path !== undefined)
+    target.report_path = updates.report_path;
+  if (updates.finished_at) target.finished_at = updates.finished_at;
+};
 
 // ===== 执行状态推送：WebSocket 模式 / 轮询模式（由 ws_status 接口决定） =====
-const wsDisabled = ref(false)
-const pollingTimers = ref({})
-const wsRetryCount = ref({})  // WebSocket 重试计数
-const WS_MAX_RETRY = 3       // 最大重试次数
+const wsDisabled = ref(false);
+const pollingTimers = ref({});
+const wsRetryCount = ref({}); // WebSocket 重试计数
+const WS_MAX_RETRY = 3; // 最大重试次数
 
 // --- 轮询模式：每 3 秒查一次执行状态 ---
 const startPolling = (executionId) => {
-  if (pollingTimers.value[executionId]) return
+  if (pollingTimers.value[executionId]) return;
   pollingTimers.value[executionId] = setInterval(async () => {
     try {
-      const res = await getExecutionDetail(executionId)
+      const res = await getExecutionDetail(executionId);
       if (res.data) {
         updateExecutionData({
           execution_id: res.data.id,
@@ -573,190 +594,204 @@ const startPolling = (executionId) => {
           progress: res.data.progress,
           report_path: res.data.report_path,
           finished_at: res.data.finished_at,
-        })
-        if (['completed', 'error', 'stopped'].includes(res.data.status)) {
-          stopPolling(executionId)
-          if (res.data.result === 'passed') ElMessage.success('测试执行通过')
-          else if (res.data.result === 'failed') ElMessage.error('测试用例失败')
-          else if (res.data.status === 'error') ElMessage.error('执行异常')
+        });
+        if (["completed", "error", "stopped"].includes(res.data.status)) {
+          stopPolling(executionId);
+          if (res.data.result === "passed") ElMessage.success("测试执行通过");
+          else if (res.data.result === "failed")
+            ElMessage.error("测试用例失败");
+          else if (res.data.status === "error") ElMessage.error("执行异常");
         }
       }
     } catch (e) {
-      console.error('轮询执行状态失败:', e)
+      console.error("轮询执行状态失败:", e);
     }
-  }, 3000)
-}
+  }, 3000);
+};
 
 const stopPolling = (executionId) => {
   if (pollingTimers.value[executionId]) {
-    clearInterval(pollingTimers.value[executionId])
-    delete pollingTimers.value[executionId]
+    clearInterval(pollingTimers.value[executionId]);
+    delete pollingTimers.value[executionId];
   }
-}
+};
 
 const stopAllPolling = () => {
-  Object.keys(pollingTimers.value).forEach(id => stopPolling(id))
-}
+  Object.keys(pollingTimers.value).forEach((id) => stopPolling(id));
+};
 
 // --- WebSocket 模式：实时推送 ---
 const connectWebSocket = (executionId) => {
-  if (websockets.value[executionId]) return
+  if (websockets.value[executionId]) return;
 
-  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
-  const wsUrl = `${protocol}://${window.location.host}/ws/app-automation/executions/${executionId}/`
+  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+  const wsUrl = `${protocol}://${window.location.host}/ws/app-automation/executions/${executionId}/`;
 
-  const ws = new WebSocket(wsUrl)
-  websockets.value[executionId] = ws
+  const ws = new WebSocket(wsUrl);
+  websockets.value[executionId] = ws;
 
   ws.onopen = () => {
-    wsRetryCount.value[executionId] = 0
-  }
+    wsRetryCount.value[executionId] = 0;
+  };
 
   ws.onmessage = (event) => {
     try {
-      const data = JSON.parse(event.data)
-      updateExecutionData(data)
-      if (data.status && lastStatusMessages.value[executionId] !== data.status) {
-        lastStatusMessages.value[executionId] = data.status
-        if (data.result === 'passed') ElMessage.success('测试执行通过')
-        else if (data.result === 'failed') ElMessage.error('测试用例失败')
-        else if (data.status === 'error') ElMessage.error('执行异常')
+      const data = JSON.parse(event.data);
+      updateExecutionData(data);
+      if (
+        data.status &&
+        lastStatusMessages.value[executionId] !== data.status
+      ) {
+        lastStatusMessages.value[executionId] = data.status;
+        if (data.result === "passed") ElMessage.success("测试执行通过");
+        else if (data.result === "failed") ElMessage.error("测试用例失败");
+        else if (data.status === "error") ElMessage.error("执行异常");
       }
-      if (['completed', 'error', 'stopped'].includes(data.status)) {
-        closeWebSocket(executionId)
+      if (["completed", "error", "stopped"].includes(data.status)) {
+        closeWebSocket(executionId);
       }
     } catch (error) {
-      console.error('处理 WebSocket 消息失败:', error)
+      console.error("处理 WebSocket 消息失败:", error);
     }
-  }
+  };
 
   ws.onclose = () => {
-    delete websockets.value[executionId]
-  }
+    delete websockets.value[executionId];
+  };
 
   ws.onerror = () => {
-    closeWebSocket(executionId)
-    const retries = (wsRetryCount.value[executionId] || 0) + 1
-    wsRetryCount.value[executionId] = retries
+    closeWebSocket(executionId);
+    const retries = (wsRetryCount.value[executionId] || 0) + 1;
+    wsRetryCount.value[executionId] = retries;
     if (retries <= WS_MAX_RETRY) {
-      console.warn(`WebSocket 连接异常 (${retries}/${WS_MAX_RETRY})，${retries}秒后重试`)
+      console.warn(
+        `WebSocket 连接异常 (${retries}/${WS_MAX_RETRY})，${retries}秒后重试`,
+      );
       setTimeout(() => {
-        const target = executionData.value.results.find(e => e.id === executionId)
-        if (target && ['pending', 'running'].includes(target.status)) {
-          connectWebSocket(executionId)
+        const target = executionData.value.results.find(
+          (e) => e.id === executionId,
+        );
+        if (target && ["pending", "running"].includes(target.status)) {
+          connectWebSocket(executionId);
         }
-      }, retries * 1000)
+      }, retries * 1000);
     } else {
-      console.warn(`WebSocket 重试超限，execution_id=${executionId} 切换为轮询`)
-      delete wsRetryCount.value[executionId]
-      startPolling(executionId)
+      console.warn(
+        `WebSocket 重试超限，execution_id=${executionId} 切换为轮询`,
+      );
+      delete wsRetryCount.value[executionId];
+      startPolling(executionId);
     }
-  }
-}
+  };
+};
 
 // --- 统一入口：根据模式选择推送方式 ---
 const trackExecution = (executionId) => {
   if (wsDisabled.value) {
-    startPolling(executionId)
+    startPolling(executionId);
   } else {
-    connectWebSocket(executionId)
+    connectWebSocket(executionId);
   }
-}
+};
 
 const closeWebSocket = (executionId) => {
-  const ws = websockets.value[executionId]
+  const ws = websockets.value[executionId];
   if (ws) {
-    ws.close()
-    delete websockets.value[executionId]
+    ws.close();
+    delete websockets.value[executionId];
   }
-}
+};
 
 const closeAllWebSockets = () => {
-  Object.keys(websockets.value).forEach(id => closeWebSocket(id))
-}
+  Object.keys(websockets.value).forEach((id) => closeWebSocket(id));
+};
 
 // 批量选择与执行
 const handleSelectionChange = (selection) => {
-  selectedCases.value = selection
-}
+  selectedCases.value = selection;
+};
 
 const clearSelection = () => {
-  tableRef.value?.clearSelection()
-  selectedCases.value = []
-}
+  tableRef.value?.clearSelection();
+  selectedCases.value = [];
+};
 
 const batchRun = async () => {
   if (!form.value.deviceId) {
-    ElMessage.warning('请先选择设备')
-    return
+    ElMessage.warning("请先选择设备");
+    return;
   }
   if (selectedCases.value.length === 0) {
-    ElMessage.warning('请至少选择一个用例')
-    return
+    ElMessage.warning("请至少选择一个用例");
+    return;
   }
 
   try {
     await ElMessageBox.confirm(
       `确定要批量执行选中的 ${selectedCases.value.length} 个用例吗？`,
-      '确认批量执行',
-      { confirmButtonText: '执行', cancelButtonText: '取消', type: 'info' }
-    )
+      "确认批量执行",
+      { confirmButtonText: "执行", cancelButtonText: "取消", type: "info" },
+    );
 
-    const deviceIdStr = availableDevices.value.find(d => d.id === form.value.deviceId)?.device_id
-    let packageName = null
+    const deviceIdStr = availableDevices.value.find(
+      (d) => d.id === form.value.deviceId,
+    )?.device_id;
+    let packageName = null;
     if (form.value.packageId) {
-      const selected = appPackages.value.find(pkg => pkg.id === form.value.packageId)
-      if (selected) packageName = selected.package_name
+      const selected = appPackages.value.find(
+        (pkg) => pkg.id === form.value.packageId,
+      );
+      if (selected) packageName = selected.package_name;
     }
 
     // 逐个提交执行
-    let submitted = 0
+    let submitted = 0;
     for (const tc of selectedCases.value) {
       try {
-        const params = { device_id: deviceIdStr }
-        if (packageName) params.package_name = packageName
-        await apiExecuteTestCase(tc.id, params)
-        submitted++
+        const params = { device_id: deviceIdStr };
+        if (packageName) params.package_name = packageName;
+        await apiExecuteTestCase(tc.id, params);
+        submitted++;
       } catch (error) {
-        console.error(`执行用例 ${tc.name} 失败:`, error)
+        console.error(`执行用例 ${tc.name} 失败:`, error);
       }
     }
 
-    ElMessage.success(`已提交 ${submitted} 个用例执行`)
-    clearSelection()
-    setTimeout(() => loadExecutions(), 1500)
+    ElMessage.success(`已提交 ${submitted} 个用例执行`);
+    clearSelection();
+    setTimeout(() => loadExecutions(), 1500);
   } catch (error) {
     // 用户取消
   }
-}
+};
 
 // 分页处理
 const handleCaseSizeChange = () => {
-  caseCurrentPage.value = 1  // 切换每页条数时回到第1页
-  loadTestCases()
-}
+  caseCurrentPage.value = 1; // 切换每页条数时回到第1页
+  loadTestCases();
+};
 
 const handleCasePageChange = () => {
-  loadTestCases()
-}
-
+  loadTestCases();
+};
 
 // 计算执行进度
 const calculateProgress = (execution) => {
-  if (execution.status === 'completed') return 100
-  if (execution.status === 'error' || execution.status === 'stopped') return execution.progress || 0
-  if (execution.status === 'running') return execution.progress || 0
-  return 0
-}
+  if (execution.status === "completed") return 100;
+  if (execution.status === "error" || execution.status === "stopped")
+    return execution.progress || 0;
+  if (execution.status === "running") return execution.progress || 0;
+  return 0;
+};
 
 // 获取进度条状态（基于测试结果）
 const getProgressStatus = (row) => {
-  if (row.status === 'completed') {
-    return row.result === 'failed' ? 'exception' : 'success'
+  if (row.status === "completed") {
+    return row.result === "failed" ? "exception" : "success";
   }
-  if (row.status === 'error') return 'exception'
-  return undefined
-}
+  if (row.status === "error") return "exception";
+  return undefined;
+};
 
 // formatDateTime 已从 app-automation-helpers 导入
 
@@ -764,41 +799,43 @@ const getProgressStatus = (row) => {
 onMounted(async () => {
   // 先检测 WebSocket 是否可用
   try {
-    const res = await getWsStatus()
-    wsDisabled.value = !(res.data?.websocket)
+    const res = await getWsStatus();
+    wsDisabled.value = !res.data?.websocket;
   } catch {
-    wsDisabled.value = true
+    wsDisabled.value = true;
   }
   if (wsDisabled.value) {
-    console.info('WebSocket 不可用，将使用轮询模式')
+    console.info("WebSocket 不可用，将使用轮询模式");
   }
 
-  loadProjectList()
-  loadDevices()
-  loadPackages()
-  loadTestCases()
-  loadExecutions()
-  
+  loadProjectList();
+  loadDevices();
+  loadPackages();
+  loadTestCases();
+  loadExecutions();
+
   // WebSocket 模式下，每10秒刷新执行列表（补充 WS 推送）
   // 轮询模式下不需要（trackExecution 已有 3 秒轮询）
   if (!wsDisabled.value) {
     refreshTimer = setInterval(() => {
-      const hasRunning = executionData.value.results.some(e => e.status === 'running')
+      const hasRunning = executionData.value.results.some(
+        (e) => e.status === "running",
+      );
       if (hasRunning) {
-        loadExecutions()
+        loadExecutions();
       }
-    }, 10000)
+    }, 10000);
   }
-})
+});
 
 // 组件卸载
 onBeforeUnmount(() => {
   if (refreshTimer) {
-    clearInterval(refreshTimer)
+    clearInterval(refreshTimer);
   }
-  closeAllWebSockets()
-  stopAllPolling()
-})
+  closeAllWebSockets();
+  stopAllPolling();
+});
 </script>
 
 <style scoped lang="scss">

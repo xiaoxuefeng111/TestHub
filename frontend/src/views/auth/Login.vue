@@ -7,21 +7,24 @@
         <div class="brand-header">
           <div class="logo-wrapper">
             <div class="logo-icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <img :src="brandLogo" :alt="BRAND_NAME" />
             </div>
-            <h1 class="brand-title">TestHub</h1>
+            <h1 class="brand-title">{{ BRAND_NAME }}</h1>
           </div>
-          <p class="brand-subtitle">AI-Powered Testing Platform</p>
+          <p class="brand-subtitle">{{ BRAND_SUBTITLE }}</p>
         </div>
 
         <!-- 特性展示 -->
         <div class="features-grid">
-          <div class="feature-card" v-for="(feature, index) in features" :key="index">
-            <div class="feature-icon" :style="{ backgroundColor: feature.color }">
+          <div
+            v-for="(feature, index) in features"
+            :key="index"
+            class="feature-card"
+          >
+            <div
+              class="feature-icon"
+              :style="{ backgroundColor: feature.color }"
+            >
               <component :is="feature.icon" />
             </div>
             <div class="feature-content">
@@ -34,36 +37,108 @@
         <!-- AI能力展示 -->
         <div class="ai-capabilities">
           <div class="capability-badge">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M13 2L3 14H12L11 22L21 10H12L13 2Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
-            <span>{{ $t('auth.aiCaseGeneration') }}</span>
+            <span>{{ $t("auth.aiCaseGeneration") }}</span>
           </div>
           <div class="capability-badge">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-              <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M12 6V12L16 14"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
-            <span>{{ $t('auth.aiIntelligentTesting') }}</span>
+            <span>{{ $t("auth.aiIntelligentTesting") }}</span>
           </div>
           <div class="capability-badge">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-              <path d="M3 9H21" stroke="currentColor" stroke-width="2"/>
-              <path d="M9 21V9" stroke="currentColor" stroke-width="2"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path d="M3 9H21" stroke="currentColor" stroke-width="2" />
+              <path d="M9 21V9" stroke="currentColor" stroke-width="2" />
             </svg>
-            <span>{{ $t('auth.automatedExecution') }}</span>
+            <span>{{ $t("auth.automatedExecution") }}</span>
           </div>
           <div class="capability-badge">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-              <path d="M12 6V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M12 12L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M12 12L8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M12 12L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M12 12L8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M12 6V12"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M12 12L16 8"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M12 12L8 8"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M12 12L16 16"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M12 12L8 16"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
-            <span>{{ $t('auth.scheduledTasks') }}</span>
+            <span>{{ $t("auth.scheduledTasks") }}</span>
           </div>
         </div>
       </div>
@@ -72,18 +147,34 @@
       <div class="floating-shapes">
         <!-- 语言切换 -->
         <div class="language-switcher">
-          <el-dropdown @command="handleLanguageChange" class="language-dropdown">
+          <el-dropdown
+            class="language-dropdown"
+            @command="handleLanguageChange"
+          >
             <span class="el-dropdown-link">
-              <span class="language-icon">{{ currentLanguage === 'zh-cn' ? '🇨🇳' : '🇺🇸' }}</span>
-              <span class="language-text">{{ currentLanguage === 'zh-cn' ? $t('auth.languageZhCN') : $t('auth.languageEn') }}</span>
+              <span class="language-icon">{{
+                currentLanguage === "zh-cn" ? "🇨🇳" : "🇺🇸"
+              }}</span>
+              <span class="language-text">{{
+                currentLanguage === "zh-cn"
+                  ? $t("auth.languageZhCN")
+                  : $t("auth.languageEn")
+              }}</span>
               <el-icon class="el-icon--right"><ArrowDown /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="zh-cn" :disabled="currentLanguage === 'zh-cn'">
-                  <span class="dropdown-flag">🇨🇳</span> {{ $t('auth.languageZhCN') }}
+                <el-dropdown-item
+                  command="zh-cn"
+                  :disabled="currentLanguage === 'zh-cn'"
+                >
+                  <span class="dropdown-flag">🇨🇳</span>
+                  {{ $t("auth.languageZhCN") }}
                 </el-dropdown-item>
-                <el-dropdown-item command="en" :disabled="currentLanguage === 'en'">
+                <el-dropdown-item
+                  command="en"
+                  :disabled="currentLanguage === 'en'"
+                >
                   <span class="dropdown-flag">🇺🇸</span> English
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -101,8 +192,8 @@
     <div class="login-section">
       <div class="login-form-wrapper">
         <div class="form-header">
-          <h2>{{ $t('auth.welcomeBack') }}</h2>
-          <p>{{ $t('auth.loginSubtitle') }}</p>
+          <h2>{{ $t("auth.welcomeBack") }}</h2>
+          <p>{{ $t("auth.loginSubtitle") }}</p>
         </div>
 
         <!-- 登录模式切换 -->
@@ -119,7 +210,10 @@
             type="button"
             class="mode-tab"
             :class="{ active: loginMode === 'sms' }"
-            @click="loginMode = 'sms'; refreshCaptcha()"
+            @click="
+              loginMode = 'sms';
+              refreshCaptcha();
+            "
           >
             短信登录
           </button>
@@ -129,8 +223,8 @@
           ref="formRef"
           :model="form"
           :rules="rules"
-          @submit.prevent="handleLogin"
           class="login-form"
+          @submit.prevent="handleLogin"
         >
           <!-- 密码登录 -->
           <template v-if="loginMode === 'password'">
@@ -185,8 +279,8 @@
                   :src="captchaImage"
                   alt="验证码"
                   class="captcha-img"
-                  @click="refreshCaptcha"
                   title="点击刷新验证码"
+                  @click="refreshCaptcha"
                 />
               </el-col>
             </el-row>
@@ -201,12 +295,16 @@
               >
                 <template #append>
                   <el-button
-                    :disabled="smsCountdown > 0 || !form.phone || !form.captcha_code"
+                    :disabled="
+                      smsCountdown > 0 || !form.phone || !form.captcha_code
+                    "
                     :loading="sendingSms"
-                    @click="sendVerifyCode"
                     style="min-width: 110px"
+                    @click="sendVerifyCode"
                   >
-                    {{ smsCountdown > 0 ? `${smsCountdown}s后重试` : '发送验证码' }}
+                    {{
+                      smsCountdown > 0 ? `${smsCountdown}s后重试` : "发送验证码"
+                    }}
                   </el-button>
                 </template>
               </el-input>
@@ -218,24 +316,24 @@
               type="primary"
               size="large"
               :loading="loading"
-              @click="handleLogin"
               class="login-button"
+              @click="handleLogin"
             >
-              <span v-if="!loading">{{ $t('auth.login') }}</span>
-              <span v-else>{{ $t('auth.loggingIn') }}</span>
+              <span v-if="!loading">{{ $t("auth.login") }}</span>
+              <span v-else>{{ $t("auth.loggingIn") }}</span>
             </el-button>
           </el-form-item>
 
           <div class="form-footer">
             <router-link to="/register" class="register-link">
-              {{ $t('auth.noAccount') }}<span>{{ $t('auth.signUpNow') }}</span>
+              {{ $t("auth.noAccount") }}<span>{{ $t("auth.signUpNow") }}</span>
             </router-link>
           </div>
         </el-form>
 
         <!-- 底部信息 -->
         <div class="bottom-info">
-          <p>{{ $t('auth.copyright') }}</p>
+          <p>{{ $t("auth.copyright") }}</p>
         </div>
       </div>
     </div>
@@ -243,207 +341,229 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
-import { User, Lock, Phone, Document, MagicStick, Connection, TrendCharts, ArrowDown } from '@element-plus/icons-vue'
-import { useUserStore } from '@/stores/user'
-import { useAppStore } from '@/stores/app'
-import api from '@/utils/api'
+import { ref, reactive, computed, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import {
+  User,
+  Lock,
+  Phone,
+  Document,
+  MagicStick,
+  Connection,
+  TrendCharts,
+  ArrowDown,
+} from "@element-plus/icons-vue";
+import { useUserStore } from "@/stores/user";
+import { useAppStore } from "@/stores/app";
+import brandLogo from "@/assets/images/tdx-logo.png";
+import api from "@/utils/api";
 
-const router = useRouter()
-const userStore = useUserStore()
-const appStore = useAppStore()
-const { t } = useI18n()
+const router = useRouter();
+const userStore = useUserStore();
+const appStore = useAppStore();
+const { t } = useI18n();
+const BRAND_NAME = "通达信测试平台";
+const BRAND_SUBTITLE = "AI 一体化测试平台";
 
 // 当前语言
-const currentLanguage = computed(() => appStore.language)
+const currentLanguage = computed(() => appStore.language);
 
 // 语言切换（无刷新）
 const handleLanguageChange = (lang) => {
-  appStore.setLanguage(lang)
-}
-const formRef = ref()
-const loading = ref(false)
-const loginMode = ref('password')
+  appStore.setLanguage(lang);
+};
+const formRef = ref();
+const loading = ref(false);
+const loginMode = ref("password");
 
 // 图形验证码相关
-const captchaImage = ref('')
-const captchaToken = ref('')
+const captchaImage = ref("");
+const captchaToken = ref("");
 
 // 短信验证码相关
-const sendingSms = ref(false)
-const smsCountdown = ref(0)
-let countdownTimer = null
+const sendingSms = ref(false);
+const smsCountdown = ref(0);
+let countdownTimer = null;
 
 const form = reactive({
-  username: '',
-  password: '',
-  phone: '',
-  captcha_code: '',
-  verify_code: '',
-  verify_code_token: ''
-})
+  username: "",
+  password: "",
+  phone: "",
+  captcha_code: "",
+  verify_code: "",
+  verify_code_token: "",
+});
 
 const validatePhone = (rule, value, callback) => {
   if (!value) {
-    callback(new Error('请输入手机号'))
+    callback(new Error("请输入手机号"));
   } else if (!/^1[3-9]\d{9}$/.test(value)) {
-    callback(new Error('手机号格式不正确'))
+    callback(new Error("手机号格式不正确"));
   } else {
-    callback()
+    callback();
   }
-}
+};
 
 const rules = {
   username: [
-    { required: true, message: computed(() => t('auth.usernameRequired')), trigger: 'blur' }
+    {
+      required: true,
+      message: computed(() => t("auth.usernameRequired")),
+      trigger: "blur",
+    },
   ],
   password: [
-    { required: true, message: computed(() => t('auth.passwordRequired')), trigger: 'blur' },
-    { min: 6, message: computed(() => t('auth.passwordLength')), trigger: 'blur' }
+    {
+      required: true,
+      message: computed(() => t("auth.passwordRequired")),
+      trigger: "blur",
+    },
+    {
+      min: 6,
+      message: computed(() => t("auth.passwordLength")),
+      trigger: "blur",
+    },
   ],
-  phone: [
-    { required: true, validator: validatePhone, trigger: 'blur' }
-  ],
+  phone: [{ required: true, validator: validatePhone, trigger: "blur" }],
   captcha_code: [
-    { required: true, message: '请输入图形验证码', trigger: 'blur' }
+    { required: true, message: "请输入图形验证码", trigger: "blur" },
   ],
   verify_code: [
-    { required: true, message: '请输入短信验证码', trigger: 'blur' }
-  ]
-}
+    { required: true, message: "请输入短信验证码", trigger: "blur" },
+  ],
+};
 
 // 特性数据
 const features = computed(() => [
   {
     icon: Document,
-    title: t('auth.aiCaseGeneration'),
-    description: t('auth.aiCaseGenerationDesc'),
-    color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    title: t("auth.aiCaseGeneration"),
+    description: t("auth.aiCaseGenerationDesc"),
+    color: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
   },
   {
     icon: MagicStick,
-    title: t('auth.aiIntelligentTesting'),
-    description: t('auth.aiIntelligentTestingDesc'),
-    color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+    title: t("auth.aiIntelligentTesting"),
+    description: t("auth.aiIntelligentTestingDesc"),
+    color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
   },
   {
     icon: Connection,
-    title: t('auth.multiTypeTesting'),
-    description: t('auth.multiTypeTestingDesc'),
-    color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+    title: t("auth.multiTypeTesting"),
+    description: t("auth.multiTypeTestingDesc"),
+    color: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
   },
   {
     icon: TrendCharts,
-    title: t('auth.dataAnalysis'),
-    description: t('auth.dataAnalysisDesc'),
-    color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
-  }
-])
+    title: t("auth.dataAnalysis"),
+    description: t("auth.dataAnalysisDesc"),
+    color: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+  },
+]);
 
 // 获取图形验证码
 const refreshCaptcha = async () => {
   try {
-    const response = await api.get('/auth/captcha/')
-    captchaImage.value = response.data.image
-    captchaToken.value = response.data.token
-    form.captcha_code = ''
+    const response = await api.get("/auth/captcha/");
+    captchaImage.value = response.data.image;
+    captchaToken.value = response.data.token;
+    form.captcha_code = "";
   } catch (error) {
     // 静默失败
   }
-}
+};
 
 // 发送短信验证码
 const sendVerifyCode = async () => {
   if (!form.phone) {
-    ElMessage.warning('请先输入手机号')
-    return
+    ElMessage.warning("请先输入手机号");
+    return;
   }
   if (!form.captcha_code) {
-    ElMessage.warning('请先输入图形验证码')
-    return
+    ElMessage.warning("请先输入图形验证码");
+    return;
   }
 
-  sendingSms.value = true
+  sendingSms.value = true;
   try {
-    const response = await api.post('/auth/send-register-code/', {
+    const response = await api.post("/auth/send-register-code/", {
       phone: form.phone,
       captcha_token: captchaToken.value,
       captcha_code: form.captcha_code,
-      mode: 'login'
-    })
-    form.verify_code_token = response.data.verify_code_token
-    ElMessage.success('验证码已发送')
+      mode: "login",
+    });
+    form.verify_code_token = response.data.verify_code_token;
+    ElMessage.success("验证码已发送");
     // 开始 60 秒倒计时
-    smsCountdown.value = 60
+    smsCountdown.value = 60;
     countdownTimer = setInterval(() => {
-      smsCountdown.value--
+      smsCountdown.value--;
       if (smsCountdown.value <= 0) {
-        clearInterval(countdownTimer)
-        countdownTimer = null
+        clearInterval(countdownTimer);
+        countdownTimer = null;
       }
-    }, 1000)
+    }, 1000);
   } catch (error) {
-    const errMsg = error.response?.data?.error || '验证码发送失败'
-    ElMessage.error(errMsg)
-    refreshCaptcha()
+    const errMsg = error.response?.data?.error || "验证码发送失败";
+    ElMessage.error(errMsg);
+    refreshCaptcha();
   } finally {
-    sendingSms.value = false
+    sendingSms.value = false;
   }
-}
+};
 
 const handleLogin = async () => {
-  if (!formRef.value) return
+  if (!formRef.value) return;
 
   // 短信模式：校验手机号、图形验证码、短信验证码
-  if (loginMode.value === 'sms') {
+  if (loginMode.value === "sms") {
     await formRef.value.validate(async (valid) => {
       if (valid) {
-        loading.value = true
+        loading.value = true;
         try {
           await userStore.smsLogin({
             phone: form.phone,
             verify_code: form.verify_code,
-            verify_code_token: form.verify_code_token
-          })
-          ElMessage.success(t('auth.loginSuccess'))
-          await router.replace('/home')
+            verify_code_token: form.verify_code_token,
+          });
+          ElMessage.success(t("auth.loginSuccess"));
+          await router.replace("/home");
         } catch (error) {
-          ElMessage.error(error.response?.data?.error || t('auth.loginFailed'))
-          refreshCaptcha()
+          ElMessage.error(error.response?.data?.error || t("auth.loginFailed"));
+          refreshCaptcha();
         } finally {
-          loading.value = false
+          loading.value = false;
         }
       }
-    })
-    return
+    });
+    return;
   }
 
   // 密码模式
   await formRef.value.validate(async (valid) => {
     if (valid) {
-      loading.value = true
+      loading.value = true;
       try {
-        await userStore.login(form)
-        ElMessage.success(t('auth.loginSuccess'))
-        await router.replace('/home')
+        await userStore.login(form);
+        ElMessage.success(t("auth.loginSuccess"));
+        await router.replace("/home");
       } catch (error) {
-        ElMessage.error(error.response?.data?.error || t('auth.loginFailed'))
+        ElMessage.error(error.response?.data?.error || t("auth.loginFailed"));
       } finally {
-        loading.value = false
+        loading.value = false;
       }
     }
-  })
-}
+  });
+};
 
 onUnmounted(() => {
   if (countdownTimer) {
-    clearInterval(countdownTimer)
-    countdownTimer = null
+    clearInterval(countdownTimer);
+    countdownTimer = null;
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -498,10 +618,10 @@ onUnmounted(() => {
         justify-content: center;
         backdrop-filter: blur(10px);
 
-        svg {
-          width: 32px;
-          height: 32px;
-          color: white;
+        img {
+          width: 36px;
+          height: 36px;
+          object-fit: contain;
         }
       }
 
@@ -874,7 +994,8 @@ onUnmounted(() => {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) rotate(0deg);
   }
   25% {

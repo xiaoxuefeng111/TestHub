@@ -14,6 +14,7 @@ import json
 import re
 import random
 import time
+import traceback
 
 from .models import (
     UiProject, LocatorStrategy, Element, TestScript, TestSuite,
@@ -3051,7 +3052,8 @@ class AICaseViewSet(viewsets.ModelViewSet):
                 safe_save(execution_record)
 
             except Exception as e:
-                error_message = str(e)
+                error_message = format_execution_exception(e)
+                logger.error(f"AI execution failed: {error_message}", exc_info=True)
                 failed_task_id = None if is_infrastructure_failure(error_message) else mark_first_active_task(execution_record.planned_tasks, 'failed')
                 execution_record.status = 'failed'
                 execution_record.end_time = timezone.now()
@@ -3297,6 +3299,38 @@ def append_execution_summary(logs, summary):
     )
 
 
+def format_execution_exception(exc: Exception) -> str:
+    """格式化执行异常，避免 NotImplementedError 等空消息异常丢失。"""
+    if exc is None:
+        return 'Unknown error'
+
+    def _format_single_error(item: BaseException) -> str:
+        exc_name = type(item).__name__
+        message = str(item).strip()
+        if message:
+            return f"{exc_name}: {message}"
+
+        tb = getattr(item, '__traceback__', None)
+        if tb:
+            frames = traceback.extract_tb(tb)
+            if frames:
+                last_frame = frames[-1]
+                filename = str(last_frame.filename).replace('\\', '/').rsplit('/', 1)[-1]
+                return f"{exc_name} at {filename}:{last_frame.lineno} in {last_frame.name}"
+
+        return exc_name
+
+    chain = []
+    seen = set()
+    current = exc
+    while current and id(current) not in seen:
+        seen.add(id(current))
+        chain.append(_format_single_error(current))
+        current = current.__cause__ or current.__context__
+
+    return ' <- '.join(chain) if chain else 'Unknown error'
+
+
 def is_infrastructure_failure(error_message: str) -> bool:
     """判断是否为模型/网络/初始化类故障，这类问题不应直接把首个子任务标失败。"""
     message = (error_message or '').lower()
@@ -3311,6 +3345,10 @@ def is_infrastructure_failure(error_message: str) -> bool:
         'forbidden',
         'rate limit',
         'service unavailable',
+        'current event loop does not support subprocesses',
+        'browser launch failed',
+        'local_browser_watchdog',
+        'create_subprocess_exec',
     ]
     return any(marker in message for marker in infra_markers)
 
@@ -3389,16 +3427,67 @@ class AIExecutionRecordViewSet(viewsets.ModelViewSet):
             except UiProject.DoesNotExist:
                 return Response({'error': '项目不存在'}, status=status.HTTP_404_NOT_FOUND)
 
+        app_device = None
+        app_package = None
+        if execution_mode == 'mobile':
+            from apps.app_automation.models import AppDevice, AppPackage
+
+            device_id = request.data.get('device_id')
+            app_package_id = request.data.get('app_package_id')
+            if not device_id or not app_package_id:
+                return Response(
+                    {'error': 'device_id and app_package_id are required for mobile mode'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            try:
+                app_device = AppDevice.objects.get(id=device_id)
+            except AppDevice.DoesNotExist:
+                return Response({'error': '目标设备不存在'}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                app_package = AppPackage.objects.get(id=app_package_id)
+            except AppPackage.DoesNotExist:
+                return Response({'error': '目标应用包不存在'}, status=status.HTTP_404_NOT_FOUND)
+
         # 创建执行记录
         execution_record = AIExecutionRecord.objects.create(
             project=project,
             case_name="Adhoc Task",
             task_description=task_description,
+            app_device=app_device,
+            app_package=app_package,
             execution_mode=execution_mode,
             status='running',
             executed_by=request.user,
-            logs="正在分析任务...\n"
+            logs="正在生成移动端执行计划...\n" if execution_mode == 'mobile' else "正在分析任务...\n"
         )
+
+        if execution_mode == 'mobile':
+            import threading
+            from .mobile_agent import run_mobile_execution
+
+            STOP_SIGNALS[execution_record.id] = False
+
+            def should_stop_sync():
+                if STOP_SIGNALS.get(execution_record.id, False):
+                    return True
+                execution_record.refresh_from_db()
+                return execution_record.status == 'stopped'
+
+            mobile_thread = threading.Thread(
+                target=run_mobile_execution,
+                kwargs={
+                    'execution_record_id': execution_record.id,
+                    'should_stop': should_stop_sync,
+                },
+                daemon=True,
+            )
+            mobile_thread.start()
+
+            return Response({
+                'message': '移动端 AI 任务已开始执行',
+                'execution_id': execution_record.id,
+                'execution_mode': execution_mode,
+            })
 
         # 异步执行
         import threading
@@ -3595,7 +3684,8 @@ class AIExecutionRecordViewSet(viewsets.ModelViewSet):
                 safe_save(execution_record)
 
             except Exception as e:
-                error_message = str(e)
+                error_message = format_execution_exception(e)
+                logger.error(f"AI execution failed: {error_message}", exc_info=True)
                 failed_task_id = None if is_infrastructure_failure(error_message) else mark_first_active_task(execution_record.planned_tasks, 'failed')
                 execution_record.status = 'failed'
                 execution_record.end_time = timezone.now()

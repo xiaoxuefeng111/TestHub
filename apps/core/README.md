@@ -137,7 +137,7 @@ python manage.py download_webdrivers --browsers chrome
 
 ```ini
 [Unit]
-Description=TestHub 统一定时任务调度器
+Description=通达信测试平台统一定时任务调度器
 After=network.target
 
 [Service]

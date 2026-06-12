@@ -1,21 +1,30 @@
 <template>
   <div class="dify-config-container">
     <div class="page-header">
-      <h1>{{ $t('configuration.dify.title') }}</h1>
-      <p>{{ $t('configuration.dify.description') }}</p>
+      <h1>{{ $t("configuration.dify.title") }}</h1>
+      <p>{{ $t("configuration.dify.description") }}</p>
     </div>
 
     <div class="config-content">
       <el-card class="config-card">
         <template #header>
           <div class="card-header">
-            <span>{{ $t('configuration.dify.apiConfig') }}</span>
-            <el-tag v-if="currentConfig" type="success">{{ $t('configuration.common.configured') }}</el-tag>
-            <el-tag v-else type="info">{{ $t('configuration.common.notConfigured') }}</el-tag>
+            <span>{{ $t("configuration.dify.apiConfig") }}</span>
+            <el-tag v-if="currentConfig" type="success">{{
+              $t("configuration.common.configured")
+            }}</el-tag>
+            <el-tag v-else type="info">{{
+              $t("configuration.common.notConfigured")
+            }}</el-tag>
           </div>
         </template>
 
-        <el-form :model="form" :rules="rules" ref="configForm" label-width="120px">
+        <el-form
+          ref="configForm"
+          :model="form"
+          :rules="rules"
+          label-width="120px"
+        >
           <el-form-item :label="$t('configuration.dify.apiUrl')" prop="api_url">
             <el-input
               v-model="form.api_url"
@@ -26,14 +35,18 @@
                 <el-icon><Link /></el-icon>
               </template>
             </el-input>
-            <div class="form-tip">{{ $t('configuration.dify.apiUrlTip') }}</div>
+            <div class="form-tip">{{ $t("configuration.dify.apiUrlTip") }}</div>
           </el-form-item>
 
           <el-form-item :label="$t('configuration.dify.apiKey')" prop="api_key">
             <el-input
               v-model="form.api_key"
               type="password"
-              :placeholder="currentConfig ? $t('configuration.dify.apiKeyPlaceholderEdit') : $t('configuration.dify.apiKeyPlaceholder')"
+              :placeholder="
+                currentConfig
+                  ? $t('configuration.dify.apiKeyPlaceholderEdit')
+                  : $t('configuration.dify.apiKeyPlaceholder')
+              "
               show-password
               clearable
             >
@@ -41,45 +54,60 @@
                 <el-icon><Key /></el-icon>
               </template>
             </el-input>
-            <div class="form-tip">{{ $t('configuration.dify.apiKeyTip') }}</div>
+            <div class="form-tip">{{ $t("configuration.dify.apiKeyTip") }}</div>
           </el-form-item>
 
-          <el-form-item :label="$t('configuration.dify.enableStatus')" prop="is_active">
+          <el-form-item
+            :label="$t('configuration.dify.enableStatus')"
+            prop="is_active"
+          >
             <el-switch v-model="form.is_active" />
-            <span class="switch-label">{{ form.is_active ? $t('configuration.common.enabled') : $t('configuration.common.disabled') }}</span>
+            <span class="switch-label">{{
+              form.is_active
+                ? $t("configuration.common.enabled")
+                : $t("configuration.common.disabled")
+            }}</span>
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" @click="testConnection" :loading="testing">
+            <el-button
+              type="primary"
+              :loading="testing"
+              @click="testConnection"
+            >
               <el-icon><Connection /></el-icon>
-              {{ $t('configuration.dify.testConnection') }}
+              {{ $t("configuration.dify.testConnection") }}
             </el-button>
-            <el-button type="success" @click="saveConfig" :loading="saving">
+            <el-button type="success" :loading="saving" @click="saveConfig">
               <el-icon><Check /></el-icon>
-              {{ $t('configuration.common.save') }}
+              {{ $t("configuration.common.save") }}
             </el-button>
             <el-button @click="resetForm">
               <el-icon><RefreshLeft /></el-icon>
-              {{ $t('configuration.common.reset') }}
+              {{ $t("configuration.common.reset") }}
             </el-button>
           </el-form-item>
         </el-form>
       </el-card>
 
-      <el-card class="info-card" v-if="currentConfig">
+      <el-card v-if="currentConfig" class="info-card">
         <template #header>
-          <span>{{ $t('configuration.dify.currentConfig') }}</span>
+          <span>{{ $t("configuration.dify.currentConfig") }}</span>
         </template>
         <el-descriptions :column="1" border>
           <el-descriptions-item :label="$t('configuration.dify.apiUrl')">
             {{ currentConfig.api_url }}
           </el-descriptions-item>
           <el-descriptions-item :label="$t('configuration.dify.apiKey')">
-            {{ currentConfig.api_key_masked || '****' }}
+            {{ currentConfig.api_key_masked || "****" }}
           </el-descriptions-item>
           <el-descriptions-item :label="$t('configuration.common.status')">
             <el-tag :type="currentConfig.is_active ? 'success' : 'info'">
-              {{ currentConfig.is_active ? $t('configuration.common.enabled') : $t('configuration.common.disabled') }}
+              {{
+                currentConfig.is_active
+                  ? $t("configuration.common.enabled")
+                  : $t("configuration.common.disabled")
+              }}
             </el-tag>
           </el-descriptions-item>
           <el-descriptions-item :label="$t('configuration.common.createdAt')">
@@ -95,146 +123,178 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
-import { Link, Key, Connection, Check, RefreshLeft } from '@element-plus/icons-vue'
-import api from '@/utils/api'
+import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import {
+  Link,
+  Key,
+  Connection,
+  Check,
+  RefreshLeft,
+} from "@element-plus/icons-vue";
+import api from "@/utils/api";
 
-const { t, locale } = useI18n()
+const { t, locale } = useI18n();
 
-const configForm = ref(null)
-const currentConfig = ref(null)
-const testing = ref(false)
-const saving = ref(false)
+const configForm = ref(null);
+const currentConfig = ref(null);
+const testing = ref(false);
+const saving = ref(false);
 
 const form = ref({
-  api_url: '',
-  api_key: '',
-  is_active: true
-})
+  api_url: "",
+  api_key: "",
+  is_active: true,
+});
 
 const rules = computed(() => ({
   api_url: [
-    { required: true, message: t('configuration.dify.validation.apiUrlRequired'), trigger: 'blur' },
-    { type: 'url', message: t('configuration.dify.validation.apiUrlInvalid'), trigger: 'blur' }
+    {
+      required: true,
+      message: t("configuration.dify.validation.apiUrlRequired"),
+      trigger: "blur",
+    },
+    {
+      type: "url",
+      message: t("configuration.dify.validation.apiUrlInvalid"),
+      trigger: "blur",
+    },
   ],
   api_key: [
-    { min: 8, message: t('configuration.dify.validation.apiKeyMinLength'), trigger: 'blur' }
-  ]
-}))
+    {
+      min: 8,
+      message: t("configuration.dify.validation.apiKeyMinLength"),
+      trigger: "blur",
+    },
+  ],
+}));
 
 const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  const date = new Date(dateString)
-  return date.toLocaleString(locale.value === 'zh-cn' ? 'zh-CN' : 'en-US')
-}
+  if (!dateString) return "-";
+  const date = new Date(dateString);
+  return date.toLocaleString(locale.value === "zh-cn" ? "zh-CN" : "en-US");
+};
 
 const loadConfig = async () => {
   try {
-    const response = await api.get('/assistant/config/dify/')
-    currentConfig.value = response.data
+    const response = await api.get("/assistant/config/dify/");
+    currentConfig.value = response.data;
     form.value = {
       api_url: response.data.api_url,
-      api_key: '', // Don't populate API key for security
-      is_active: response.data.is_active
-    }
+      api_key: "", // Don't populate API key for security
+      is_active: response.data.is_active,
+    };
   } catch (error) {
     if (error.response?.status !== 404) {
-      console.error(t('configuration.dify.messages.loadFailed'), error)
+      console.error(t("configuration.dify.messages.loadFailed"), error);
     }
   }
-}
+};
 
 const testConnection = async () => {
-  if (!configForm.value) return
+  if (!configForm.value) return;
 
   await configForm.value.validate(async (valid) => {
-    if (!valid) return
+    if (!valid) return;
 
-    testing.value = true
+    testing.value = true;
     try {
-      const response = await api.post('/assistant/config/dify/test_connection/', {
-        api_url: form.value.api_url,
-        api_key: form.value.api_key
-      })
+      const response = await api.post(
+        "/assistant/config/dify/test_connection/",
+        {
+          api_url: form.value.api_url,
+          api_key: form.value.api_key,
+        },
+      );
 
       if (response.data.success) {
-        ElMessage.success(t('configuration.dify.messages.testSuccess'))
+        ElMessage.success(t("configuration.dify.messages.testSuccess"));
       } else {
-        ElMessage.error(response.data.error || t('configuration.dify.messages.testFailed'))
+        ElMessage.error(
+          response.data.error || t("configuration.dify.messages.testFailed"),
+        );
       }
     } catch (error) {
-      console.error(t('configuration.dify.messages.testFailed'), error)
-      ElMessage.error(error.response?.data?.error || t('configuration.dify.messages.testFailed'))
+      console.error(t("configuration.dify.messages.testFailed"), error);
+      ElMessage.error(
+        error.response?.data?.error ||
+          t("configuration.dify.messages.testFailed"),
+      );
     } finally {
-      testing.value = false
+      testing.value = false;
     }
-  })
-}
+  });
+};
 
 const saveConfig = async () => {
-  if (!configForm.value) return
+  if (!configForm.value) return;
 
   await configForm.value.validate(async (valid) => {
-    if (!valid) return
+    if (!valid) return;
 
-    saving.value = true
+    saving.value = true;
     try {
       // Prepare data to save
       const dataToSave = {
         api_url: form.value.api_url,
-        is_active: form.value.is_active
-      }
+        is_active: form.value.is_active,
+      };
 
       // Only send API Key if user entered a new one
       if (form.value.api_key && form.value.api_key.trim()) {
-        dataToSave.api_key = form.value.api_key
+        dataToSave.api_key = form.value.api_key;
       }
 
       if (currentConfig.value) {
         // Update existing config
-        await api.patch(`/assistant/config/dify/${currentConfig.value.id}/`, dataToSave)
-        ElMessage.success(t('configuration.dify.messages.updateSuccess'))
+        await api.patch(
+          `/assistant/config/dify/${currentConfig.value.id}/`,
+          dataToSave,
+        );
+        ElMessage.success(t("configuration.dify.messages.updateSuccess"));
       } else {
         // Create new config - API key is required
         if (!form.value.api_key || !form.value.api_key.trim()) {
-          ElMessage.error(t('configuration.dify.messages.apiKeyRequired'))
-          saving.value = false
-          return
+          ElMessage.error(t("configuration.dify.messages.apiKeyRequired"));
+          saving.value = false;
+          return;
         }
-        await api.post('/assistant/config/dify/', dataToSave)
-        ElMessage.success(t('configuration.dify.messages.saveSuccess'))
+        await api.post("/assistant/config/dify/", dataToSave);
+        ElMessage.success(t("configuration.dify.messages.saveSuccess"));
       }
 
       // Clear API Key input for security
-      form.value.api_key = ''
-      await loadConfig()
+      form.value.api_key = "";
+      await loadConfig();
     } catch (error) {
-      console.error(t('configuration.dify.messages.saveFailed'), error)
-      ElMessage.error(error.response?.data?.error || t('configuration.dify.messages.saveFailed'))
+      console.error(t("configuration.dify.messages.saveFailed"), error);
+      ElMessage.error(
+        error.response?.data?.error ||
+          t("configuration.dify.messages.saveFailed"),
+      );
     } finally {
-      saving.value = false
+      saving.value = false;
     }
-  })
-}
+  });
+};
 
 const resetForm = () => {
   if (configForm.value) {
-    configForm.value.resetFields()
+    configForm.value.resetFields();
   }
   if (currentConfig.value) {
     form.value = {
       api_url: currentConfig.value.api_url,
-      api_key: '',
-      is_active: currentConfig.value.is_active
-    }
+      api_key: "",
+      is_active: currentConfig.value.is_active,
+    };
   }
-}
+};
 
 onMounted(() => {
-  loadConfig()
-})
+  loadConfig();
+});
 </script>
 
 <style scoped lang="scss">
@@ -266,7 +326,8 @@ onMounted(() => {
   gap: 20px;
 }
 
-.config-card, .info-card {
+.config-card,
+.info-card {
   .card-header {
     display: flex;
     justify-content: space-between;

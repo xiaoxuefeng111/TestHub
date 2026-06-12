@@ -9,6 +9,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from django.contrib.auth.models import User
+from django.db import connection
 from django.db.models import Q, Count
 from django.utils import timezone
 from django.http import HttpResponse
@@ -33,6 +34,31 @@ from .tools.crontab_tools import CrontabTools
 from .tools.image_tools import ImageTools
 
 logger = logging.getLogger(__name__)
+
+
+def _tag_matches(tags, expected_tag):
+    if isinstance(tags, list):
+        return expected_tag in tags
+    return tags == expected_tag
+
+
+def _filter_queryset_by_tag(queryset, tag_value):
+    if not tag_value:
+        return queryset
+
+    if connection.vendor != 'sqlite':
+        return queryset.filter(tags__contains=tag_value)
+
+    matching_ids = [
+        record.pk
+        for record in queryset.only('id', 'tags')
+        if _tag_matches(record.tags, tag_value)
+    ]
+    if not matching_ids:
+        return queryset.none()
+
+    return queryset.filter(pk__in=matching_ids)
+
 
 class DataFactoryPagination(PageNumberPagination):
     """数据工厂自定义分页"""
@@ -60,7 +86,7 @@ class DataFactoryViewSet(viewsets.ModelViewSet):
         # 支持tags字段的过滤（JSONField）
         tags_contains = self.request.query_params.get('tags__contains')
         if tags_contains:
-            queryset = queryset.filter(tags__contains=tags_contains)
+            queryset = _filter_queryset_by_tag(queryset, tags_contains)
 
         # 支持tool_name的模糊查询
         tool_name_icontains = self.request.query_params.get('tool_name__icontains')
