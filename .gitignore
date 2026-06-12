@@ -19,10 +19,7 @@ logs/*/*
 .sql
 static_files/img/
 .bak
-# 忽略所有 app/*/migrations/ 目录下的所有内容 (包括文件和子目录)
-apps/*/migrations/*
-# 使用否定模式，例外地跟踪 __init__.py 文件
-!apps/*/migrations/__init__.py
+# Django migrations 源码需要纳入版本控制，避免新克隆仓库缺失 schema 迁移基础
 
 # 忽略 allure-static 下的所有文件（运行时生成）
 media/allure-static/*
