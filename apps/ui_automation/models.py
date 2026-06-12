@@ -1036,7 +1036,9 @@ class AIExecutionRecord(models.Model):
     ai_case = models.ForeignKey(AICase, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='关联AI用例')
     case_name = models.CharField(max_length=200, verbose_name='用例名称快照')
     task_description = models.TextField(blank=True, default='', verbose_name='任务描述', help_text='用户输入的原始任务描述')
-    execution_mode = models.CharField(max_length=20, choices=[('text', '文本模式')], default='text', verbose_name='执行模式')
+    app_device = models.ForeignKey('app_automation.AppDevice', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='目标设备')
+    app_package = models.ForeignKey('app_automation.AppPackage', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='目标应用包')
+    execution_mode = models.CharField(max_length=20, choices=[('text', '文本模式'), ('mobile', '移动端自主模式')], default='text', verbose_name='执行模式')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name='执行状态')
     start_time = models.DateTimeField(auto_now_add=True, verbose_name='开始时间')
     end_time = models.DateTimeField(null=True, blank=True, verbose_name='结束时间')
@@ -1044,6 +1046,15 @@ class AIExecutionRecord(models.Model):
     logs = models.TextField(blank=True, default='', verbose_name='执行日志')
     steps_completed = models.JSONField(default=list, verbose_name='已完成步骤')
     planned_tasks = models.JSONField(default=list, verbose_name='规划任务') # 规划的任务列表 [{'id': 1, 'description': '...', 'status': 'pending'}]
+    ui_flow_snapshot = models.JSONField(default=list, blank=True, verbose_name='移动端 UI Flow 快照')
+    saved_app_test_case = models.ForeignKey(
+        'app_automation.AppTestCase',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='source_ai_execution_records',
+        verbose_name='已保存 APP 测试用例',
+    )
     executed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='执行人')
     gif_path = models.CharField(max_length=500, null=True, blank=True, verbose_name='GIF录制路径')
     screenshots_sequence = models.JSONField(default=list, verbose_name='截图序列')

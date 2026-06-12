@@ -3370,6 +3370,83 @@ class AIExecutionRecordViewSet(viewsets.ModelViewSet):
             logger.error(f"批量删除AI执行记录失败: {str(e)}", exc_info=True)
             return Response({'error': f'批量删除失败: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=True, methods=['post'], url_path='save_as_app_test_case')
+    def save_as_app_test_case(self, request, pk=None):
+        """将一次成功的移动端 AI 执行记录保存为 APP 测试用例。"""
+        from django.db import transaction
+        from apps.app_automation.models import AppTestCase
+        from .app_test_case_snapshot import sanitize_ui_flow_snapshot
+
+        with transaction.atomic():
+            record = self.get_queryset().select_for_update().filter(pk=pk).first()
+            if not record:
+                return Response({'error': '执行记录不存在或无权访问'}, status=status.HTTP_404_NOT_FOUND)
+
+            if record.saved_app_test_case_id:
+                return Response({
+                    'success': True,
+                    'already_saved': True,
+                    'app_test_case': {
+                        'id': record.saved_app_test_case_id,
+                        'name': record.saved_app_test_case.name,
+                    },
+                })
+
+            if record.execution_mode != 'mobile':
+                return Response({'error': '仅移动端 AI 执行记录支持保存为 APP 测试用例'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if record.status != 'passed':
+                return Response({'error': '仅执行成功的记录可以保存为 APP 测试用例'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not record.ui_flow_snapshot:
+                return Response({'error': '该执行记录缺少 ui_flow_snapshot，无法保存为 APP 测试用例'}, status=status.HTTP_400_BAD_REQUEST)
+
+            name = str(request.data.get('name') or '').strip()
+            if not name:
+                return Response({'error': {'name': '请输入 APP 测试用例名称'}}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                ui_flow = sanitize_ui_flow_snapshot(record.ui_flow_snapshot)
+            except ValueError as exc:
+                return Response({'error': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not ui_flow:
+                return Response({'error': '清洗后的 ui_flow 为空，无法保存为 APP 测试用例'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user_description = str(request.data.get('description') or '').strip()
+            source_lines = [
+                f'来源：AIExecutionRecord #{record.id}',
+                f'原始任务：{record.task_description or "-"}',
+            ]
+            if record.app_package_id:
+                source_lines.append(f'原始应用包：{record.app_package.package_name}')
+            description_parts = []
+            if user_description:
+                description_parts.append(user_description)
+            description_parts.append('\n'.join(source_lines))
+
+            app_test_case = AppTestCase.objects.create(
+                name=name,
+                description='\n\n'.join(description_parts),
+                ui_flow=ui_flow,
+                variables=[],
+                project=None,
+                app_package=None,
+                retry_count=0,
+                created_by=request.user,
+            )
+            record.saved_app_test_case = app_test_case
+            record.save(update_fields=['saved_app_test_case'])
+
+        return Response({
+            'success': True,
+            'already_saved': False,
+            'app_test_case': {
+                'id': app_test_case.id,
+                'name': app_test_case.name,
+            },
+        })
+
     @action(detail=False, methods=['post'], url_path='run_adhoc')
     def run_adhoc(self, request):
         """执行临时 AI 任务"""
@@ -3389,16 +3466,67 @@ class AIExecutionRecordViewSet(viewsets.ModelViewSet):
             except UiProject.DoesNotExist:
                 return Response({'error': '项目不存在'}, status=status.HTTP_404_NOT_FOUND)
 
+        app_device = None
+        app_package = None
+        if execution_mode == 'mobile':
+            from apps.app_automation.models import AppDevice, AppPackage
+
+            device_id = request.data.get('device_id')
+            app_package_id = request.data.get('app_package_id')
+            if not device_id or not app_package_id:
+                return Response(
+                    {'error': 'device_id and app_package_id are required for mobile mode'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            try:
+                app_device = AppDevice.objects.get(id=device_id)
+            except AppDevice.DoesNotExist:
+                return Response({'error': '目标设备不存在'}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                app_package = AppPackage.objects.get(id=app_package_id)
+            except AppPackage.DoesNotExist:
+                return Response({'error': '目标应用包不存在'}, status=status.HTTP_404_NOT_FOUND)
+
         # 创建执行记录
         execution_record = AIExecutionRecord.objects.create(
             project=project,
             case_name="Adhoc Task",
             task_description=task_description,
+            app_device=app_device,
+            app_package=app_package,
             execution_mode=execution_mode,
             status='running',
             executed_by=request.user,
-            logs="正在分析任务...\n"
+            logs="正在生成移动端执行计划...\n" if execution_mode == 'mobile' else "正在分析任务...\n"
         )
+
+        if execution_mode == 'mobile':
+            import threading
+            from .mobile_agent import run_mobile_execution
+
+            STOP_SIGNALS[execution_record.id] = False
+
+            def should_stop_sync():
+                if STOP_SIGNALS.get(execution_record.id, False):
+                    return True
+                execution_record.refresh_from_db()
+                return execution_record.status == 'stopped'
+
+            mobile_thread = threading.Thread(
+                target=run_mobile_execution,
+                kwargs={
+                    'execution_record_id': execution_record.id,
+                    'should_stop': should_stop_sync,
+                },
+                daemon=True,
+            )
+            mobile_thread.start()
+
+            return Response({
+                'message': '移动端 AI 任务已开始执行',
+                'execution_id': execution_record.id,
+                'execution_mode': execution_mode,
+            })
 
         # 异步执行
         import threading

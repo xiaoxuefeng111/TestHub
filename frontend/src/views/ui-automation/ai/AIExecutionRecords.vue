@@ -45,6 +45,13 @@
         </el-table-column>
         <el-table-column prop="start_time" :label="$t('uiAutomation.ai.executionRecords.startTime')" width="180" :formatter="formatDate" />
         <el-table-column prop="executed_by.username" :label="$t('uiAutomation.ai.executionRecords.executor')" width="120" />
+        <el-table-column label="APP 测试用例" width="180">
+          <template #default="{ row }">
+            <el-tag v-if="row.saved_app_test_case" type="success">已保存</el-tag>
+            <el-tag v-else-if="row.can_save_as_app_test_case" type="warning">可保存</el-tag>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column :label="$t('uiAutomation.common.operation')" width="200" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="viewDetail(row)">
@@ -91,6 +98,10 @@
         <div class="detail-item">
           <span class="label">{{ $t('uiAutomation.ai.executionRecords.duration') }}:</span>
           <span>{{ currentRecord.duration ? currentRecord.duration.toFixed(2) + ' ' + $t('uiAutomation.ai.executionRecords.seconds') : $t('uiAutomation.ai.executionRecords.unknown') }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">APP 测试用例:</span>
+          <span>{{ currentRecord.saved_app_test_case_name || '-' }}</span>
         </div>
 
         <!-- 任务描述 -->

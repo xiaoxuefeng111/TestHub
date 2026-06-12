@@ -1031,6 +1031,15 @@ export function stopAITask(id) {
   })
 }
 
+// 将 AI 执行记录保存为 APP 测试用例
+export function saveAIExecutionAsAppTestCase(id, data) {
+  return request({
+    url: `/ui-automation/ai-execution-records/${id}/save_as_app_test_case/`,
+    method: 'post',
+    data
+  })
+}
+
 // 批量删除 AI 执行记录
 export function batchDeleteAIExecutionRecords(ids) {
   return request({
